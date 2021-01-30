@@ -1,0 +1,16 @@
+﻿<Project>
+
+  <PropertyGroup>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);PackBuildOutputs</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <Target Name="PackBuildOutputs" DependsOnTargets="ResolveProjectReferences;SatelliteDllsProjectOutputGroup;SatelliteDllsProjectOutputGroupDependencies">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(TargetPath)" PackagePath="analyzers\cs\" />
+      <TfmSpecificPackageFile Include="@(SatelliteDllsProjectOutputGroupDependency)" PackagePath="analyzers\cs\%(SatelliteDllsProjectOutputGroupDependency.DestinationSubDirectory)" Condition=" '%(SatelliteDllsProjectOutputGroupDependency.DestinationSubDirectory)' != '' " />
+      <TfmSpecificPackageFile Include="@(SatelliteDllsProjectOutputGroupOutput->'%(FinalOutputPath)')" PackagePath="analyzers\cs\%(SatelliteDllsProjectOutputGroupOutput.Culture)\" />
+      <TfmSpecificPackageFile Include="%(_ResolvedProjectReferencePaths.Identity)" PackagePath="analyzers\cs\" />
+    </ItemGroup>
+  </Target>
+
+</Project>

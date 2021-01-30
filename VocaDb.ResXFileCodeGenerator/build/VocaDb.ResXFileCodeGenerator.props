@@ -1,0 +1,14 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <AdditionalFileItemNames>$(AdditionalFileItemNames);EmbeddedResource</AdditionalFileItemNames>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <CompilerVisibleProperty Include="MSBuildProjectFullPath" />
+    <CompilerVisibleProperty Include="RootNamespace" />
+    <CompilerVisibleProperty Include="CustomToolNamespace" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="CustomToolNamespace" />
+  </ItemGroup>
+
+</Project>
