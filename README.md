@@ -1,5 +1,5 @@
 # ResXFileCodeGenerator
-ResX Designer Source Generator.
+ResX Designer Source Generator. Generates strongly-typed resource classes for looking up localized strings.
 
 ## Usage
 
