@@ -51,3 +51,4 @@ namespace Resources
 - [dotnet/ResXResourceManager: Manage localization of all ResX-Based resources in one central place.](https://github.com/dotnet/ResXResourceManager)
 - [roslyn/source-generators.cookbook.md at master · dotnet/roslyn](https://github.com/dotnet/roslyn/blob/master/docs/features/source-generators.cookbook.md)
 - [roslyn/Using Additional Files.md at master · dotnet/roslyn](https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Using%20Additional%20Files.md)
+- [ufcpp - YouTube](https://www.youtube.com/channel/UCY-z_9mau6X-Vr4gk2aWtMQ)
