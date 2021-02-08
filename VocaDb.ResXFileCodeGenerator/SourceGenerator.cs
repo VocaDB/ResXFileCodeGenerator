@@ -49,12 +49,36 @@ namespace VocaDb.ResXFileCodeGenerator
 			return IsValidLanguageName(languageName) ? Path.GetFileNameWithoutExtension(name) : name;
 		}
 
-		// Code from: https://stackoverflow.com/questions/51179331/is-it-possible-to-use-path-getrelativepath-net-core2-in-winforms-proj-targeti/51180239#51180239
-		private string GetRelativePath(string relativeTo, string path)
+		// Code from: https://github.com/dotnet/ResXResourceManager/blob/c8b5798d760f202a1842a74191e6010c6e8bbbc0/src/ResXManager.VSIX/Visuals/MoveToResourceViewModel.cs#L120
+		private static string GetLocalNamespace(string? resxPath, string? projectPath, string? rootNamespace)
 		{
-			var uri = new Uri(relativeTo);
-			var rel = Uri.UnescapeDataString(uri.MakeRelativeUri(new Uri(path)).ToString()).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-			return rel.Contains(Path.DirectorySeparatorChar.ToString()) ? rel : $".{Path.DirectorySeparatorChar}{rel}";
+			try
+			{
+				if (resxPath is null)
+					return string.Empty;
+
+				var resxFolder = Path.GetDirectoryName(resxPath);
+				var projectFolder = Path.GetDirectoryName(projectPath);
+				rootNamespace ??= string.Empty;
+
+				if (resxFolder is null || projectFolder is null)
+					return string.Empty;
+
+				var localNamespace = rootNamespace;
+				if (resxFolder.StartsWith(projectFolder, StringComparison.OrdinalIgnoreCase))
+				{
+					localNamespace += resxFolder.Substring(projectFolder.Length)
+						.Replace(Path.DirectorySeparatorChar, '.')
+						.Replace(Path.AltDirectorySeparatorChar, '.')
+						.Replace("My Project", "My");
+				}
+
+				return localNamespace;
+			}
+			catch (Exception)
+			{
+				return string.Empty;
+			}
 		}
 
 		public void Execute(GeneratorExecutionContext context)
@@ -70,14 +94,13 @@ namespace VocaDb.ResXFileCodeGenerator
 				.Where(af => Path.GetFileNameWithoutExtension(af.Path) == GetBaseName(af.Path));
 			foreach (var resxFile in resxFiles)
 			{
-				static string ReplaceSpecialChars(string value) => value.Replace(Path.DirectorySeparatorChar, '.').Replace(Path.AltDirectorySeparatorChar, '.').Trim().Replace(' ', '_');
 				using var resxStream = File.OpenRead(resxFile.Path);
-				var defaultNamespace = $"{rootNamespace}.{ReplaceSpecialChars(Path.GetDirectoryName(GetRelativePath(projectFullPath, resxFile.Path)) ?? string.Empty)}";
+				var localNamespace = GetLocalNamespace(resxFile.Path, projectFullPath, rootNamespace);
 				var customToolNamespace = context.AnalyzerConfigOptions.GetOptions(resxFile).GetValueOrDefault("build_metadata.EmbeddedResource.CustomToolNamespace").NullIfEmpty();
-				var className = ReplaceSpecialChars(Path.GetFileNameWithoutExtension(resxFile.Path));
-				using var generator = new Generator(resxStream, new GeneratorOptions(defaultNamespace, customToolNamespace, className));
+				var className = Path.GetFileNameWithoutExtension(resxFile.Path);
+				using var generator = new Generator(resxStream, new GeneratorOptions(localNamespace, customToolNamespace, className));
 				var unit = generator.Generate();
-				context.AddSource($"{defaultNamespace}.{className}.g.cs", unit.ToFullString());
+				context.AddSource($"{localNamespace}.{className}.g.cs", unit.ToFullString());
 			}
 		}
 

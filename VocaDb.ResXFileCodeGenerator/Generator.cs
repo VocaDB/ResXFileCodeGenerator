@@ -13,7 +13,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace VocaDb.ResXFileCodeGenerator
 {
-	public sealed record GeneratorOptions(string DefaultNamespace, string? CustomToolNamespace, string ClassName);
+	public sealed record GeneratorOptions(string LocalNamespace, string? CustomToolNamespace, string ClassName);
 
 	public sealed class Generator : IDisposable
 	{
@@ -60,7 +60,7 @@ namespace VocaDb.ResXFileCodeGenerator
 		~Generator() => Dispose(false);
 
 		private NamespaceDeclarationSyntax CreateNamespace() =>
-			NamespaceDeclaration(ParseName(_options.CustomToolNamespace ?? _options.DefaultNamespace))
+			NamespaceDeclaration(ParseName(_options.CustomToolNamespace ?? _options.LocalNamespace))
 				.AddUsings(
 					UsingDirective(IdentifierName(SystemGlobalization)),
 					UsingDirective(IdentifierName(SystemResources)));
@@ -83,7 +83,7 @@ namespace VocaDb.ResXFileCodeGenerator
 											IdentifierName(s_resourceManagerVariable),
 											ObjectCreationExpression(IdentifierName(nameof(ResourceManager)))
 												.AddArgumentListArguments(
-													Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal($"{_options.DefaultNamespace}.{_options.ClassName}"))),
+													Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal($"{_options.LocalNamespace}.{_options.ClassName}"))),
 													Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, TypeOfExpression(IdentifierName(_options.ClassName)), IdentifierName(nameof(Type.Assembly))))))))))
 						.WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
 				PropertyDeclaration(NullableType(IdentifierName(nameof(CultureInfo))), CultureInfoVariable)
