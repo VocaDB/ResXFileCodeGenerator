@@ -10,7 +10,7 @@ namespace VocaDb.ResXFileCodeGenerator.Tests
 		[Fact]
 		public void GetCompilationUnit()
 		{
-            var text = @"<?xml version=""1.0"" encoding=""utf-8""?>
+			var text = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <root>
   <xsd:schema id=""root"" xmlns="""" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:msdata=""urn:schemas-microsoft-com:xml-msdata"">
     <xsd:import namespace=""http://www.w3.org/XML/1998/namespace"" />
@@ -107,9 +107,9 @@ namespace Resources
         public static string CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo)!;
     }
 }";
-            using var resxStream = new MemoryStream(Encoding.UTF8.GetBytes(text));
-            using var generator = new Generator(resxStream, new GeneratorOptions(LocalNamespace: "VocaDb.Web.App_GlobalResources", CustomToolNamespace: "Resources", ClassName: "ActivityEntrySortRuleNames"));
-            generator.Generate().ToFullString().Should().Be(expected);
+			using var resxStream = new MemoryStream(Encoding.UTF8.GetBytes(text));
+			using var generator = new Generator(resxStream, new GeneratorOptions(LocalNamespace: "VocaDb.Web.App_GlobalResources", CustomToolNamespace: "Resources", ClassName: "ActivityEntrySortRuleNames"));
+			generator.Generate().ToFullString().Should().Be(expected);
 		}
 	}
 }
