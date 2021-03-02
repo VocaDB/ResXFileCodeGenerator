@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text;
+using FluentAssertions;
 using Xunit;
 
 namespace VocaDb.ResXFileCodeGenerator.Tests
@@ -99,16 +100,16 @@ namespace Resources
         /// <summary>
         /// Looks up a localized string similar to Oldest.
         /// </summary>
-        public static string? CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo);
+        public static string CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo)!;
         /// <summary>
         /// Looks up a localized string similar to Newest.
         /// </summary>
-        public static string? CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo);
+        public static string CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo)!;
     }
 }";
             using var resxStream = new MemoryStream(Encoding.UTF8.GetBytes(text));
             using var generator = new Generator(resxStream, new GeneratorOptions(LocalNamespace: "VocaDb.Web.App_GlobalResources", CustomToolNamespace: "Resources", ClassName: "ActivityEntrySortRuleNames"));
-			Assert.Equal(expected, actual: generator.Generate().ToFullString());
+            generator.Generate().ToFullString().Should().Be(expected);
 		}
 	}
 }
