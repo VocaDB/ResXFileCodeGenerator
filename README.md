@@ -29,17 +29,17 @@ namespace Resources
     public static class ActivityEntrySortRuleNames
     {
         private static ResourceManager? s_resourceManager;
-        public static ResourceManager ResourceManager => s_resourceManager ?? (s_resourceManager = new ResourceManager("VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames", typeof(ActivityEntrySortRuleNames).Assembly));
+        public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager("VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames", typeof(ActivityEntrySortRuleNames).Assembly);
         public static CultureInfo? CultureInfo { get; set; }
 
         /// <summary>
         /// Looks up a localized string similar to Oldest.
         /// </summary>
-        public static string? CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo);
+        public static string CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo)!;
         /// <summary>
         /// Looks up a localized string similar to Newest.
         /// </summary>
-        public static string? CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo);
+        public static string CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo)!;
     }
 }
 ```
