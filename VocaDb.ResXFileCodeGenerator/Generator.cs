@@ -74,17 +74,13 @@ namespace VocaDb.ResXFileCodeGenerator
 					.AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword))
 						.WithExpressionBody(
 							ArrowExpressionClause(
-								BinaryExpression(
-									SyntaxKind.CoalesceExpression,
+								AssignmentExpression(
+									SyntaxKind.CoalesceAssignmentExpression,
 									IdentifierName(s_resourceManagerVariable),
-									ParenthesizedExpression(
-										AssignmentExpression(
-											SyntaxKind.SimpleAssignmentExpression,
-											IdentifierName(s_resourceManagerVariable),
-											ObjectCreationExpression(IdentifierName(nameof(ResourceManager)))
-												.AddArgumentListArguments(
-													Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal($"{_options.LocalNamespace}.{_options.ClassName}"))),
-													Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, TypeOfExpression(IdentifierName(_options.ClassName)), IdentifierName(nameof(Type.Assembly))))))))))
+									ObjectCreationExpression(IdentifierName(nameof(ResourceManager)))
+										.AddArgumentListArguments(
+											Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal($"{_options.LocalNamespace}.{_options.ClassName}"))),
+											Argument(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, TypeOfExpression(IdentifierName(_options.ClassName)), IdentifierName(nameof(Type.Assembly))))))))
 						.WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
 				PropertyDeclaration(NullableType(IdentifierName(nameof(CultureInfo))), CultureInfoVariable)
 					.AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword))

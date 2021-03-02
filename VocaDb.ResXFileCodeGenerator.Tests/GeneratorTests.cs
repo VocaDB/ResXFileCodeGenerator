@@ -94,7 +94,7 @@ namespace Resources
     public static class ActivityEntrySortRuleNames
     {
         private static ResourceManager? s_resourceManager;
-        public static ResourceManager ResourceManager => s_resourceManager ?? (s_resourceManager = new ResourceManager(""VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames"", typeof(ActivityEntrySortRuleNames).Assembly));
+        public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager(""VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames"", typeof(ActivityEntrySortRuleNames).Assembly);
         public static CultureInfo? CultureInfo { get; set; }
 
         /// <summary>
