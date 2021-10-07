@@ -15,6 +15,8 @@ namespace VocaDb.ResXFileCodeGenerator
 	[Generator]
 	public class SourceGenerator : ISourceGenerator
 	{
+		private static readonly IGenerator s_generator = new StringBuilderGenerator();
+
 		// Code from: https://github.com/dotnet/ResXResourceManager/blob/0ec11bae232151400a5a8ca7b9835ac063c516d0/src/ResXManager.Model/ResourceManager.cs#L267
 		private static bool IsValidLanguageName(string? languageName)
 		{
@@ -98,9 +100,8 @@ namespace VocaDb.ResXFileCodeGenerator
 				var localNamespace = GetLocalNamespace(resxFile.Path, projectFullPath, rootNamespace);
 				var customToolNamespace = context.AnalyzerConfigOptions.GetOptions(resxFile).GetValueOrDefault("build_metadata.EmbeddedResource.CustomToolNamespace").NullIfEmpty();
 				var className = Path.GetFileNameWithoutExtension(resxFile.Path);
-				using var generator = new Generator(resxStream, new GeneratorOptions(localNamespace, customToolNamespace, className));
-				var unit = generator.Generate();
-				context.AddSource($"{localNamespace}.{className}.g.cs", unit.ToFullString());
+				var source = s_generator.Generate(resxStream, new GeneratorOptions(localNamespace, customToolNamespace, className));
+				context.AddSource($"{localNamespace}.{className}.g.cs", source);
 			}
 		}
 

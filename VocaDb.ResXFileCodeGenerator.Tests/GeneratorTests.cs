@@ -7,8 +7,7 @@ namespace VocaDb.ResXFileCodeGenerator.Tests
 {
 	public class GeneratorTests
 	{
-		[Fact]
-		public void GetCompilationUnit()
+		private static void Generate(IGenerator generator)
 		{
 			var text = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <root>
@@ -108,8 +107,20 @@ namespace Resources
     }
 }";
 			using var resxStream = new MemoryStream(Encoding.UTF8.GetBytes(text));
-			using var generator = new Generator(resxStream, new GeneratorOptions(LocalNamespace: "VocaDb.Web.App_GlobalResources", CustomToolNamespace: "Resources", ClassName: "ActivityEntrySortRuleNames"));
-			generator.Generate().ToFullString().Should().Be(expected);
+			var source = generator.Generate(resxStream, new GeneratorOptions(LocalNamespace: "VocaDb.Web.App_GlobalResources", CustomToolNamespace: "Resources", ClassName: "ActivityEntrySortRuleNames"));
+			source.Should().Be(expected);
+		}
+
+		[Fact]
+		public void Generate_SyntaxFactory()
+		{
+			Generate(generator: new SyntaxFactoryGenerator());
+		}
+
+		[Fact]
+		public void Generate_StringBuilder()
+		{
+			Generate(generator: new StringBuilderGenerator());
 		}
 	}
 }
