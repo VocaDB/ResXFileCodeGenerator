@@ -35,11 +35,11 @@ namespace Resources
         /// <summary>
         /// Looks up a localized string similar to Oldest.
         /// </summary>
-        public static string CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo)!;
+        public static string? CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo);
         /// <summary>
         /// Looks up a localized string similar to Newest.
         /// </summary>
-        public static string CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo)!;
+        public static string? CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo);
     }
 }
 ```
