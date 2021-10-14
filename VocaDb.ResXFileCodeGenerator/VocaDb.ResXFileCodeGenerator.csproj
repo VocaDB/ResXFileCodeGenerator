@@ -16,6 +16,7 @@
     <NoWarn>$(NoWarn);NU5128</NoWarn>
     <DevelopmentDependency>true</DevelopmentDependency>
     <Version>1.0.3</Version>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
