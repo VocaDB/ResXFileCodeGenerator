@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Resources;
 using System.Web;
 using System.Xml.Linq;
@@ -19,7 +19,7 @@ public sealed class SyntaxFactoryGenerator : IGenerator
 				UsingDirective(IdentifierName(Constants.SystemResources)));
 
 	private ClassDeclarationSyntax CreateClass(GeneratorOptions options) => ClassDeclaration(options.ClassName)
-		.AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword))
+		.AddModifiers(Token(options.PublicClass ? SyntaxKind.PublicKeyword : SyntaxKind.InternalKeyword), Token(SyntaxKind.StaticKeyword))
 		.AddMembers(
 			FieldDeclaration(VariableDeclaration(NullableType(IdentifierName(nameof(ResourceManager)))).AddVariables(VariableDeclarator(Constants.s_resourceManagerVariable)))
 				.AddModifiers(Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.StaticKeyword)),

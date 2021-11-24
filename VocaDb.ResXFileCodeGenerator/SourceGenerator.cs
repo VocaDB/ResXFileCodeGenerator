@@ -97,7 +97,15 @@ public class SourceGenerator : ISourceGenerator
 			var localNamespace = GetLocalNamespace(resxFile.Path, projectFullPath, rootNamespace);
 			var customToolNamespace = context.AnalyzerConfigOptions.GetOptions(resxFile).GetValueOrDefault("build_metadata.EmbeddedResource.CustomToolNamespace").NullIfEmpty();
 			var className = Path.GetFileNameWithoutExtension(resxFile.Path);
-			var source = s_generator.Generate(resxStream, new GeneratorOptions(localNamespace, customToolNamespace, className));
+			var source = s_generator.Generate(
+				resxStream: resxStream,
+				options: new GeneratorOptions(
+					LocalNamespace: localNamespace,
+					CustomToolNamespace: customToolNamespace,
+					ClassName: className,
+					PublicClass: true
+				)
+			);
 			context.AddSource($"{localNamespace}.{className}.g.cs", source);
 		}
 	}

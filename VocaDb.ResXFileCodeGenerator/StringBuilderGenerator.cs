@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Resources;
 using System.Text;
 using System.Web;
@@ -30,7 +30,7 @@ public sealed class StringBuilderGenerator : IGenerator
 
 		builder.AppendLine();
 
-		builder.Append("    public static class ");
+		builder.Append($"    {(options.PublicClass ? "public" : "internal")} static class ");
 		builder.AppendLine(options.ClassName);
 		builder.AppendLine("    {");
 
