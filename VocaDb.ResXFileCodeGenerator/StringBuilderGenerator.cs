@@ -30,7 +30,9 @@ public sealed class StringBuilderGenerator : IGenerator
 
 		builder.AppendLine();
 
-		builder.Append($"    {(options.PublicClass ? "public" : "internal")} static class ");
+		builder.Append("    ");
+		builder.Append(options.PublicClass ? "public" : "internal");
+		builder.Append(" static class ");
 		builder.AppendLine(options.ClassName);
 		builder.AppendLine("    {");
 

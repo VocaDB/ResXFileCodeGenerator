@@ -89,6 +89,11 @@ public class SourceGenerator : ISourceGenerator
 		if (!context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.RootNamespace", out var rootNamespace))
 			return;
 
+		// Code from: https://github.com/dotnet/roslyn/blob/main/docs/features/source-generators.cookbook.md#consume-msbuild-properties-and-metadata
+		var publicClassGlobal = false;
+		if (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.ResXFileCodeGenerator_PublicClass", out var publicClassSwitch))
+			publicClassGlobal = publicClassSwitch.Equals("true", StringComparison.OrdinalIgnoreCase);
+
 		var resxFiles = context.AdditionalFiles
 			.Where(af => af.Path.EndsWith(".resx"))
 			.Where(af => Path.GetFileNameWithoutExtension(af.Path) == GetBaseName(af.Path));
@@ -106,13 +111,17 @@ public class SourceGenerator : ISourceGenerator
 
 			var className = Path.GetFileNameWithoutExtension(resxFile.Path);
 
+			var publicClass = publicClassGlobal;
+			if (context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.PublicClass", out var perFilePublicClassSwitch) && perFilePublicClassSwitch is { Length: > 0 })
+				publicClass = perFilePublicClassSwitch.Equals("true", StringComparison.OrdinalIgnoreCase);
+
 			var source = s_generator.Generate(
 				resxStream: resxStream,
 				options: new GeneratorOptions(
 					LocalNamespace: localNamespace,
 					CustomToolNamespace: customToolNamespace,
 					ClassName: className,
-					PublicClass: true
+					PublicClass: publicClass
 				)
 			);
 
@@ -120,7 +129,5 @@ public class SourceGenerator : ISourceGenerator
 		}
 	}
 
-	public void Initialize(GeneratorInitializationContext context)
-	{
-	}
+	public void Initialize(GeneratorInitializationContext context) { }
 }

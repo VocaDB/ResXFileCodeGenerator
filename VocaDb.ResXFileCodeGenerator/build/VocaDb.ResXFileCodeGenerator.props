@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
     <AdditionalFileItemNames>$(AdditionalFileItemNames);EmbeddedResource</AdditionalFileItemNames>
@@ -8,7 +8,9 @@
     <CompilerVisibleProperty Include="MSBuildProjectFullPath" />
     <CompilerVisibleProperty Include="RootNamespace" />
     <CompilerVisibleProperty Include="CustomToolNamespace" />
+    <CompilerVisibleProperty Include="ResXFileCodeGenerator_PublicClass" />
     <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="CustomToolNamespace" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="PublicClass" />
   </ItemGroup>
 
 </Project>
