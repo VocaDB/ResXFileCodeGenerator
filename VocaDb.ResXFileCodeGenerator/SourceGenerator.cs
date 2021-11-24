@@ -64,6 +64,7 @@ public class SourceGenerator : ISourceGenerator
 				return string.Empty;
 
 			var localNamespace = rootNamespace;
+
 			if (resxFolder.StartsWith(projectFolder, StringComparison.OrdinalIgnoreCase))
 			{
 				localNamespace += resxFolder.Substring(projectFolder.Length)
@@ -91,12 +92,20 @@ public class SourceGenerator : ISourceGenerator
 		var resxFiles = context.AdditionalFiles
 			.Where(af => af.Path.EndsWith(".resx"))
 			.Where(af => Path.GetFileNameWithoutExtension(af.Path) == GetBaseName(af.Path));
+
 		foreach (var resxFile in resxFiles)
 		{
 			using var resxStream = File.OpenRead(resxFile.Path);
+
 			var localNamespace = GetLocalNamespace(resxFile.Path, projectFullPath, rootNamespace);
-			var customToolNamespace = context.AnalyzerConfigOptions.GetOptions(resxFile).GetValueOrDefault("build_metadata.EmbeddedResource.CustomToolNamespace").NullIfEmpty();
+
+			var customToolNamespace = context.AnalyzerConfigOptions
+				.GetOptions(resxFile)
+				.GetValueOrDefault("build_metadata.EmbeddedResource.CustomToolNamespace")
+				.NullIfEmpty();
+
 			var className = Path.GetFileNameWithoutExtension(resxFile.Path);
+
 			var source = s_generator.Generate(
 				resxStream: resxStream,
 				options: new GeneratorOptions(
@@ -106,6 +115,7 @@ public class SourceGenerator : ISourceGenerator
 					PublicClass: true
 				)
 			);
+
 			context.AddSource($"{localNamespace}.{className}.g.cs", source);
 		}
 	}
