@@ -76,13 +76,13 @@ public sealed class StringBuilderGenerator : IGenerator
 
 			builder.AppendLine("        /// </summary>");
 
-			builder.Append("        public static string ");
+			builder.Append("        public static string? ");
 			builder.Append(name);
 			builder.Append(" => ResourceManager.GetString(nameof(");
 			builder.Append(name);
 			builder.Append("), ");
 			builder.Append(Constants.CultureInfoVariable);
-			builder.AppendLine(")!;");
+			builder.AppendLine(");");
 		}
 
 		if (XDocument.Load(resxStream).Root is XElement element)

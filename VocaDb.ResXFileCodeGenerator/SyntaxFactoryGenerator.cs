@@ -41,18 +41,18 @@ public sealed class SyntaxFactoryGenerator : IGenerator
 					AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken)),
 					AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithSemicolonToken(Token(SyntaxKind.SemicolonToken))));
 
-	private MemberDeclarationSyntax CreateMember(string name, string value) => PropertyDeclaration(IdentifierName("string"), name)
+	private MemberDeclarationSyntax CreateMember(string name, string value) => PropertyDeclaration(NullableType(IdentifierName("string")), name)
 		.AddModifiers(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword))
 		.WithExpressionBody(
 			ArrowExpressionClause(
-				PostfixUnaryExpression(SyntaxKind.SuppressNullableWarningExpression, InvocationExpression(
+				InvocationExpression(
 					MemberAccessExpression(
 						SyntaxKind.SimpleMemberAccessExpression,
 						IdentifierName(Constants.ResourceManagerVariable),
 						IdentifierName(nameof(ResourceManager.GetString)))).AddArgumentListArguments(
 							Argument(InvocationExpression(IdentifierName("nameof")).AddArgumentListArguments(
 								Argument(IdentifierName(name)))),
-							Argument(IdentifierName(Constants.CultureInfoVariable))))))
+							Argument(IdentifierName(Constants.CultureInfoVariable)))))
 		.WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
 		.WithLeadingTrivia(ParseLeadingTrivia($@"/// <summary>
 /// Looks up a localized string similar to {HttpUtility.HtmlEncode(value.Trim().Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n/// "))}.
