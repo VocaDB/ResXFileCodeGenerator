@@ -35,13 +35,61 @@ namespace Resources
         /// <summary>
         /// Looks up a localized string similar to Oldest.
         /// </summary>
-        public static string CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo)!;
+        public static string? CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo);
         /// <summary>
         /// Looks up a localized string similar to Newest.
         /// </summary>
-        public static string CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo)!;
+        public static string? CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo);
     }
 }
+```
+
+## Options
+
+### PublicClass (per file or globally)
+
+Use cases: https://github.com/VocaDB/ResXFileCodeGenerator/issues/2.
+
+Since version 2.0.0, VocaDB.ResXFileCodeGenerator generates internal classes by default. You can change this behavior by setting `PublicClass` to `true`.
+
+```xml
+<ItemGroup>
+  <EmbeddedResource Update="Resources\ArtistCategoriesNames.resx">
+    <PublicClass>true</PublicClass>
+  </EmbeddedResource>
+</ItemGroup>
+```
+or
+```xml
+<ItemGroup>
+  <EmbeddedResource Update="Resources\ArtistCategoriesNames.resx" PublicClass="true" />
+</ItemGroup>
+```
+
+If you want to apply this globally, use
+```xml
+<PropertyGroup>
+  <ResXFileCodeGenerator_PublicClass>true</ResXFileCodeGenerator_PublicClass>
+</PropertyGroup>
+```
+
+### NullForgivingOperators (globally)
+
+Use cases: https://github.com/VocaDB/ResXFileCodeGenerator/issues/1.
+
+```xml
+<PropertyGroup>
+  <ResXFileCodeGenerator_NullForgivingOperators>true</ResXFileCodeGenerator_NullForgivingOperators>
+</PropertyGroup>
+```
+
+By setting `ResXFileCodeGenerator_NullForgivingOperators` to `true`, VocaDB.ResXFileCodeGenerator generates
+```cs
+public static string CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo)!;
+```
+instead of
+```cs
+public static string? CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo);
 ```
 
 ## References
