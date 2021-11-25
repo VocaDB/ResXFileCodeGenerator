@@ -1,13 +1,7 @@
 using System.Globalization;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace VocaDb.ResXFileCodeGenerator;
-
-internal static class AnalyzerConfigOptionsExtensions
-{
-	public static string? GetValueOrDefault(this AnalyzerConfigOptions options, string key) => options.TryGetValue(key, out var value) ? value : null;
-}
 
 [Generator]
 public class SourceGenerator : ISourceGenerator
@@ -102,30 +96,22 @@ public class SourceGenerator : ISourceGenerator
 		{
 			using var resxStream = File.OpenRead(resxFile.Path);
 
-			var localNamespace = GetLocalNamespace(resxFile.Path, projectFullPath, rootNamespace);
-
-			var customToolNamespace = context.AnalyzerConfigOptions
-				.GetOptions(resxFile)
-				.GetValueOrDefault("build_metadata.EmbeddedResource.CustomToolNamespace")
-				.NullIfEmpty();
-
-			var className = Path.GetFileNameWithoutExtension(resxFile.Path);
-
-			var publicClass = publicClassGlobal;
-			if (context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.PublicClass", out var perFilePublicClassSwitch) && perFilePublicClassSwitch is { Length: > 0 })
-				publicClass = perFilePublicClassSwitch.Equals("true", StringComparison.OrdinalIgnoreCase);
-
-			var source = s_generator.Generate(
-				resxStream: resxStream,
-				options: new GeneratorOptions(
-					LocalNamespace: localNamespace,
-					CustomToolNamespace: customToolNamespace,
-					ClassName: className,
-					PublicClass: publicClass
-				)
+			var options = new GeneratorOptions(
+				LocalNamespace: GetLocalNamespace(resxFile.Path, projectFullPath, rootNamespace),
+				CustomToolNamespace:
+					context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.CustomToolNamespace", out var customToolNamespace) && customToolNamespace is { Length: > 0 }
+						? customToolNamespace
+						: null,
+				ClassName: Path.GetFileNameWithoutExtension(resxFile.Path),
+				PublicClass:
+					context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.PublicClass", out var perFilePublicClassSwitch) && perFilePublicClassSwitch is { Length: > 0 }
+						? perFilePublicClassSwitch.Equals("true", StringComparison.OrdinalIgnoreCase)
+						: publicClassGlobal
 			);
 
-			context.AddSource($"{localNamespace}.{className}.g.cs", source);
+			var source = s_generator.Generate(resxStream, options);
+
+			context.AddSource($"{options.LocalNamespace}.{options.ClassName}.g.cs", source);
 		}
 	}
 
