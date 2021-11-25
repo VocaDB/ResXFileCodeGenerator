@@ -66,7 +66,7 @@ public sealed class StringBuilderGenerator : IGenerator
 
 		builder.AppendLine();
 
-		static void CreateMember(StringBuilder builder, string name, string value)
+		static void CreateMember(StringBuilder builder, GeneratorOptions options, string name, string value)
 		{
 			builder.AppendLine("        /// <summary>");
 
@@ -76,24 +76,28 @@ public sealed class StringBuilderGenerator : IGenerator
 
 			builder.AppendLine("        /// </summary>");
 
-			builder.Append("        public static string? ");
+			builder.Append("        public static string");
+			builder.Append(options.NullForgivingOperators ? null : "?");
+			builder.Append(" ");
 			builder.Append(name);
 			builder.Append(" => ResourceManager.GetString(nameof(");
 			builder.Append(name);
 			builder.Append("), ");
 			builder.Append(Constants.CultureInfoVariable);
-			builder.AppendLine(");");
+			builder.Append(")");
+			builder.Append(options.NullForgivingOperators ? "!" : null);
+			builder.AppendLine(";");
 		}
 
 		if (XDocument.Load(resxStream).Root is XElement element)
 		{
 			var members = element
 				.Descendants()
-				.Where(data => data.Name == "data")
-				.Select(data => (data.Attribute("name")!.Value, data.Descendants("value").First().Value));
+				.Where(static data => data.Name == "data")
+				.Select(static data => (data.Attribute("name")!.Value, data.Descendants("value").First().Value));
 
 			foreach (var (key, value) in members)
-				CreateMember(builder, key, value);
+				CreateMember(builder, options, key, value);
 		}
 
 		builder.AppendLine("    }");

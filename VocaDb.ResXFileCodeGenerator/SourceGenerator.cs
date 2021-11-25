@@ -88,6 +88,11 @@ public class SourceGenerator : ISourceGenerator
 		if (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.ResXFileCodeGenerator_PublicClass", out var publicClassSwitch))
 			publicClassGlobal = publicClassSwitch.Equals("true", StringComparison.OrdinalIgnoreCase);
 
+		var nullForgivingOperators =
+			context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.ResXFileCodeGenerator_NullForgivingOperators", out var nullForgivingOperatorsSwitch) &&
+			nullForgivingOperatorsSwitch is { Length: > 0 } &&
+			nullForgivingOperatorsSwitch.Equals("true", StringComparison.OrdinalIgnoreCase);
+
 		var resxFiles = context.AdditionalFiles
 			.Where(af => af.Path.EndsWith(".resx"))
 			.Where(af => Path.GetFileNameWithoutExtension(af.Path) == GetBaseName(af.Path));
@@ -106,7 +111,8 @@ public class SourceGenerator : ISourceGenerator
 				PublicClass:
 					context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.PublicClass", out var perFilePublicClassSwitch) && perFilePublicClassSwitch is { Length: > 0 }
 						? perFilePublicClassSwitch.Equals("true", StringComparison.OrdinalIgnoreCase)
-						: publicClassGlobal
+						: publicClassGlobal,
+				NullForgivingOperators: nullForgivingOperators
 			);
 
 			var source = s_generator.Generate(resxStream, options);
