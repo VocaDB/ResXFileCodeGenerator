@@ -36,6 +36,7 @@ namespace Resources
         /// Looks up a localized string similar to Oldest.
         /// </summary>
         public static string? CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo);
+
         /// <summary>
         /// Looks up a localized string similar to Newest.
         /// </summary>
