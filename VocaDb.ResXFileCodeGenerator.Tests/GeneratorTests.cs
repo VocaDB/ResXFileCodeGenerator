@@ -100,6 +100,7 @@ namespace Resources
         /// Looks up a localized string similar to Oldest.
         /// </summary>
         public static string? CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo);
+
         /// <summary>
         /// Looks up a localized string similar to Newest.
         /// </summary>
@@ -146,6 +147,7 @@ namespace Resources
         /// Looks up a localized string similar to Oldest.
         /// </summary>
         public static string CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo)!;
+
         /// <summary>
         /// Looks up a localized string similar to Newest.
         /// </summary>
@@ -180,5 +182,216 @@ namespace Resources
 		var generator = new StringBuilderGenerator();
 		Generate(generator, publicClass: false);
 		Generate_NullForgivingOperators(generator, publicClass: false);
+	}
+
+	[Fact]
+	public void Generate_StringBuilder_NewLine()
+	{
+		var text = $@"<?xml version=""1.0"" encoding=""utf-8""?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name=""resmimetype"">text/microsoft-resx</resheader>
+    <resheader name=""version"">2.0</resheader>
+    <resheader name=""reader"">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name=""writer"">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name=""Name1""><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name=""Color1"" type=""System.Drawing.Color, System.Drawing"">Blue</data>
+    <data name=""Bitmap1"" mimetype=""application/x-microsoft.net.object.binary.base64"">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name=""Icon1"" type=""System.Drawing.Icon, System.Drawing"" mimetype=""application/x-microsoft.net.object.bytearray.base64"">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of ""resheader"" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id=""root"" xmlns="""" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:msdata=""urn:schemas-microsoft-com:xml-msdata"">
+    <xsd:import namespace=""http://www.w3.org/XML/1998/namespace"" />
+    <xsd:element name=""root"" msdata:IsDataSet=""true"">
+      <xsd:complexType>
+        <xsd:choice maxOccurs=""unbounded"">
+          <xsd:element name=""metadata"">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name=""value"" type=""xsd:string"" minOccurs=""0"" />
+              </xsd:sequence>
+              <xsd:attribute name=""name"" use=""required"" type=""xsd:string"" />
+              <xsd:attribute name=""type"" type=""xsd:string"" />
+              <xsd:attribute name=""mimetype"" type=""xsd:string"" />
+              <xsd:attribute ref=""xml:space"" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name=""assembly"">
+            <xsd:complexType>
+              <xsd:attribute name=""alias"" type=""xsd:string"" />
+              <xsd:attribute name=""name"" type=""xsd:string"" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name=""data"">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name=""value"" type=""xsd:string"" minOccurs=""0"" msdata:Ordinal=""1"" />
+                <xsd:element name=""comment"" type=""xsd:string"" minOccurs=""0"" msdata:Ordinal=""2"" />
+              </xsd:sequence>
+              <xsd:attribute name=""name"" type=""xsd:string"" use=""required"" msdata:Ordinal=""1"" />
+              <xsd:attribute name=""type"" type=""xsd:string"" msdata:Ordinal=""3"" />
+              <xsd:attribute name=""mimetype"" type=""xsd:string"" msdata:Ordinal=""4"" />
+              <xsd:attribute ref=""xml:space"" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name=""resheader"">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name=""value"" type=""xsd:string"" minOccurs=""0"" msdata:Ordinal=""1"" />
+              </xsd:sequence>
+              <xsd:attribute name=""name"" type=""xsd:string"" use=""required"" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name=""resmimetype"">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name=""version"">
+    <value>2.0</value>
+  </resheader>
+  <resheader name=""reader"">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name=""writer"">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name=""EntryDeleted"" xml:space=""preserve"">
+    <value>This entry has been deleted. It is still temporarily accessible, but won't show up in any of the listings.</value>
+  </data>
+  <data name=""EntryMergedTo"" xml:space=""preserve"">
+    <value>This entry was merged to</value>
+  </data>
+  <data name=""EntryStatusExplanation"" xml:space=""preserve"">
+    <value>Draft = entry is missing crucial information. This status indicates that you're requesting additional information to be added or corrected.&lt;br /&gt;
+Finished = The entry has all the necessary information, but it hasn't been inspected by a trusted user yet.&lt;br /&gt;
+Approved = The entry has been inspected and approved by a trusted user. Approved entries can only be edited by trusted users.</value>
+  </data>
+  <data name=""Locked"" xml:space=""preserve"">
+    <value>This entry is locked, meaning that only moderators are allowed to edit it.</value>
+  </data>
+  <data name=""NameLanguageHelp"" xml:space=""preserve"">
+    <value>Choose the language for this name. ""Original"" is the name in original language that isn't English, for example Japanese. If the original language is English, do not input a name in the ""Original"" language.</value>
+  </data>
+  <data name=""RevisionHidden"" xml:space=""preserve"">
+    <value>This page revision has been hidden.</value>
+  </data>
+</root>";
+		var expected = $@"// ------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+// ------------------------------------------------------------------------------
+#nullable enable
+namespace VocaDb.Web.App_GlobalResources
+{{
+    using System.Globalization;
+    using System.Resources;
+
+    public static class CommonMessages
+    {{
+        private static ResourceManager? s_resourceManager;
+        public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager(""VocaDb.Web.App_GlobalResources.CommonMessages"", typeof(CommonMessages).Assembly);
+        public static CultureInfo? CultureInfo {{ get; set; }}
+
+        /// <summary>
+        /// Looks up a localized string similar to This entry has been deleted. It is still temporarily accessible, but won&#39;t show up in any of the listings..
+        /// </summary>
+        public static string? EntryDeleted => ResourceManager.GetString(nameof(EntryDeleted), CultureInfo);
+
+        /// <summary>
+        /// Looks up a localized string similar to This entry was merged to.
+        /// </summary>
+        public static string? EntryMergedTo => ResourceManager.GetString(nameof(EntryMergedTo), CultureInfo);
+
+        /// <summary>
+        /// Looks up a localized string similar to Draft = entry is missing crucial information. This status indicates that you&#39;re requesting additional information to be added or corrected.&lt;br /&gt;
+        /// Finished = The entry has all the necessary information, but it hasn&#39;t been inspected by a trusted user yet.&lt;br /&gt;
+        /// Approved = The entry has been inspected and approved by a trusted user. Approved entries can only be edited by trusted users..
+        /// </summary>
+        public static string? EntryStatusExplanation => ResourceManager.GetString(nameof(EntryStatusExplanation), CultureInfo);
+
+        /// <summary>
+        /// Looks up a localized string similar to This entry is locked, meaning that only moderators are allowed to edit it..
+        /// </summary>
+        public static string? Locked => ResourceManager.GetString(nameof(Locked), CultureInfo);
+
+        /// <summary>
+        /// Looks up a localized string similar to Choose the language for this name. &quot;Original&quot; is the name in original language that isn&#39;t English, for example Japanese. If the original language is English, do not input a name in the &quot;Original&quot; language..
+        /// </summary>
+        public static string? NameLanguageHelp => ResourceManager.GetString(nameof(NameLanguageHelp), CultureInfo);
+
+        /// <summary>
+        /// Looks up a localized string similar to This page revision has been hidden..
+        /// </summary>
+        public static string? RevisionHidden => ResourceManager.GetString(nameof(RevisionHidden), CultureInfo);
+    }}
+}}";
+		var generator = new StringBuilderGenerator();
+		using var resxStream = new MemoryStream(Encoding.UTF8.GetBytes(text));
+		var source = generator.Generate(
+			resxStream: resxStream,
+			options: new GeneratorOptions(
+				LocalNamespace: "VocaDb.Web.App_GlobalResources",
+				CustomToolNamespace: null,
+				ClassName: "CommonMessages",
+				PublicClass: true,
+				NullForgivingOperators: false
+			)
+		);
+		source.Should().Be(expected);
 	}
 }

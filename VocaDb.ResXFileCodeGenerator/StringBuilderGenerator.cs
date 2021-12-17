@@ -71,7 +71,7 @@ public sealed class StringBuilderGenerator : IGenerator
 			builder.AppendLine("        /// <summary>");
 
 			builder.Append("        /// Looks up a localized string similar to ");
-			builder.Append(HttpUtility.HtmlEncode(value.Trim().Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n/// ")));
+			builder.Append(HttpUtility.HtmlEncode(value.Trim().Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n        /// ")));
 			builder.AppendLine(".");
 
 			builder.AppendLine("        /// </summary>");
@@ -96,8 +96,12 @@ public sealed class StringBuilderGenerator : IGenerator
 				.Where(static data => data.Name == "data")
 				.Select(static data => (data.Attribute("name")!.Value, data.Descendants("value").First().Value));
 
-			foreach (var (key, value) in members)
+			foreach (var ((key, value), index) in members.Select((kv, index) => (kv, index)))
+			{
+				if (index > 0) builder.AppendLine();
+
 				CreateMember(builder, options, key, value);
+			}
 		}
 
 		builder.AppendLine("    }");
