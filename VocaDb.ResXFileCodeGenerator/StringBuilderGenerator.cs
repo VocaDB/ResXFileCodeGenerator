@@ -123,7 +123,7 @@ public sealed class StringBuilderGenerator : IGenerator
 				.Where(static data => data.Name == "data")
 				.Select(static data => (data.Attribute("name")!.Value, data.Descendants("value").First().Value));
 
-			foreach (var((key, value), index) in members.Select((kv, index) => (kv, index)))
+			foreach (var ((key, value), index) in members.Select((kv, index) => (kv, index)))
 			{
 				if (index > 0)
 				{
