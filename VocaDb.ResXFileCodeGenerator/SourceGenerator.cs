@@ -86,24 +86,22 @@ public class SourceGenerator : ISourceGenerator
 		// Code from: https://github.com/dotnet/roslyn/blob/main/docs/features/source-generators.cookbook.md#consume-msbuild-properties-and-metadata
 		var publicClassGlobal = false;
 		if (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.ResXFileCodeGenerator_PublicClass", out var publicClassSwitch))
-		{
 			publicClassGlobal = publicClassSwitch.Equals("true", StringComparison.OrdinalIgnoreCase);
-		}
 
 		var nullForgivingOperators =
 			context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.ResXFileCodeGenerator_NullForgivingOperators", out var nullForgivingOperatorsSwitch) &&
 			nullForgivingOperatorsSwitch is { Length: > 0 } &&
 			nullForgivingOperatorsSwitch.Equals("true", StringComparison.OrdinalIgnoreCase);
 
-		IEnumerable<AdditionalText>? resxFiles = context.AdditionalFiles
+		var resxFiles = context.AdditionalFiles
 			.Where(af => af.Path.EndsWith(".resx"))
 			.Where(af => Path.GetFileNameWithoutExtension(af.Path) == GetBaseName(af.Path));
 
-		foreach (AdditionalText? resxFile in resxFiles)
+		foreach (var resxFile in resxFiles)
 		{
-			using FileStream? resxStream = File.OpenRead(resxFile.Path);
+			using var resxStream = File.OpenRead(resxFile.Path);
 
-			GeneratorOptions? options = new GeneratorOptions(
+			var options = new GeneratorOptions(
 				LocalNamespace:
 					GetLocalNamespace(
 						context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.TargetPath", out var targetPath) && targetPath is { Length: > 0 }
