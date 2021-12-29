@@ -14,21 +14,15 @@ public class SourceGenerator : ISourceGenerator
 		try
 		{
 			if (languageName.IsNullOrEmpty())
-			{
 				return false;
-			}
 
 			if (languageName.StartsWith("qps-", StringComparison.Ordinal))
-			{
 				return true;
-			}
 
-			CultureInfo? culture = new CultureInfo(languageName);
+			var culture = new CultureInfo(languageName);
 
 			while (!culture.IsNeutralCulture)
-			{
 				culture = culture.Parent;
-			}
 
 			return culture.LCID != 4096;
 		}
@@ -41,9 +35,9 @@ public class SourceGenerator : ISourceGenerator
 	// Code from: https://github.com/dotnet/ResXResourceManager/blob/0ec11bae232151400a5a8ca7b9835ac063c516d0/src/ResXManager.Model/ProjectFileExtensions.cs#L77
 	private static string GetBaseName(string filePath)
 	{
-		string? name = Path.GetFileNameWithoutExtension(filePath);
-		string? innerExtension = Path.GetExtension(name);
-		string? languageName = innerExtension.TrimStart('.');
+		var name = Path.GetFileNameWithoutExtension(filePath);
+		var innerExtension = Path.GetExtension(name);
+		var languageName = innerExtension.TrimStart('.');
 
 		return IsValidLanguageName(languageName) ? Path.GetFileNameWithoutExtension(name) : name;
 	}
@@ -54,20 +48,16 @@ public class SourceGenerator : ISourceGenerator
 		try
 		{
 			if (resxPath is null)
-			{
 				return string.Empty;
-			}
 
-			string? resxFolder = Path.GetDirectoryName(resxPath);
-			string? projectFolder = Path.GetDirectoryName(projectPath);
+			var resxFolder = Path.GetDirectoryName(resxPath);
+			var projectFolder = Path.GetDirectoryName(projectPath);
 			rootNamespace ??= string.Empty;
 
 			if (resxFolder is null || projectFolder is null)
-			{
 				return string.Empty;
-			}
 
-			string? localNamespace = rootNamespace;
+			var localNamespace = rootNamespace;
 
 			if (resxFolder.StartsWith(projectFolder, StringComparison.OrdinalIgnoreCase))
 			{
@@ -87,25 +77,21 @@ public class SourceGenerator : ISourceGenerator
 
 	public void Execute(GeneratorExecutionContext context)
 	{
-		if (!context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.MSBuildProjectFullPath", out string? projectFullPath))
-		{
+		if (!context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.MSBuildProjectFullPath", out var projectFullPath))
 			return;
-		}
 
-		if (!context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.RootNamespace", out string? rootNamespace))
-		{
+		if (!context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.RootNamespace", out var rootNamespace))
 			return;
-		}
 
 		// Code from: https://github.com/dotnet/roslyn/blob/main/docs/features/source-generators.cookbook.md#consume-msbuild-properties-and-metadata
-		bool publicClassGlobal = false;
-		if (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.ResXFileCodeGenerator_PublicClass", out string? publicClassSwitch))
+		var publicClassGlobal = false;
+		if (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.ResXFileCodeGenerator_PublicClass", out var publicClassSwitch))
 		{
 			publicClassGlobal = publicClassSwitch.Equals("true", StringComparison.OrdinalIgnoreCase);
 		}
 
-		bool nullForgivingOperators =
-			context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.ResXFileCodeGenerator_NullForgivingOperators", out string? nullForgivingOperatorsSwitch) &&
+		var nullForgivingOperators =
+			context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.ResXFileCodeGenerator_NullForgivingOperators", out var nullForgivingOperatorsSwitch) &&
 			nullForgivingOperatorsSwitch is { Length: > 0 } &&
 			nullForgivingOperatorsSwitch.Equals("true", StringComparison.OrdinalIgnoreCase);
 
@@ -120,24 +106,24 @@ public class SourceGenerator : ISourceGenerator
 			GeneratorOptions? options = new GeneratorOptions(
 				LocalNamespace:
 					GetLocalNamespace(
-						context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.TargetPath", out string? targetPath) && targetPath is { Length: > 0 }
+						context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.TargetPath", out var targetPath) && targetPath is { Length: > 0 }
 							? targetPath
 							: resxFile.Path,
 						projectFullPath,
 						rootNamespace),
 				CustomToolNamespace:
-					context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.CustomToolNamespace", out string? customToolNamespace) && customToolNamespace is { Length: > 0 }
+					context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.CustomToolNamespace", out var customToolNamespace) && customToolNamespace is { Length: > 0 }
 						? customToolNamespace
 						: null,
 				ClassName: Path.GetFileNameWithoutExtension(resxFile.Path),
 				PublicClass:
-					context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.PublicClass", out string? perFilePublicClassSwitch) && perFilePublicClassSwitch is { Length: > 0 }
+					context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.PublicClass", out var perFilePublicClassSwitch) && perFilePublicClassSwitch is { Length: > 0 }
 						? perFilePublicClassSwitch.Equals("true", StringComparison.OrdinalIgnoreCase)
 						: publicClassGlobal,
 				NullForgivingOperators: nullForgivingOperators
 			);
 
-			string? source = s_generator.Generate(resxStream, options);
+			var source = s_generator.Generate(resxStream, options);
 
 			context.AddSource($"{options.LocalNamespace}.{options.ClassName}.g.cs", source);
 		}

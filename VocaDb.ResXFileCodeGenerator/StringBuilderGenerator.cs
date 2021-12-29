@@ -118,12 +118,12 @@ public sealed class StringBuilderGenerator : IGenerator
 
 		if (XDocument.Load(resxStream).Root is XElement element)
 		{
-			IEnumerable<(string, string)>? members = element
+			var members = element
 				.Descendants()
 				.Where(static data => data.Name == "data")
 				.Select(static data => (data.Attribute("name")!.Value, data.Descendants("value").First().Value));
 
-			foreach (((string key, string value), int index) in members.Select((kv, index) => (kv, index)))
+			foreach (var((key, value), index) in members.Select((kv, index) => (kv, index)))
 			{
 				if (index > 0)
 				{
