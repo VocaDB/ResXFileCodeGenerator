@@ -116,7 +116,9 @@ namespace Resources
 				CustomToolNamespace: "Resources",
 				ClassName: "ActivityEntrySortRuleNames",
 				PublicClass: publicClass,
-				NullForgivingOperators: false
+				NullForgivingOperators: false,
+        StaticClass: true
+        
 			)
 		);
 		source.Should().Be(expected);
@@ -163,7 +165,8 @@ namespace Resources
 				CustomToolNamespace: "Resources",
 				ClassName: "ActivityEntrySortRuleNames",
 				PublicClass: publicClass,
-				NullForgivingOperators: true
+				NullForgivingOperators: true,
+        StaticClass: true
 			)
 		);
 		source.Should().Be(expected);
@@ -390,7 +393,8 @@ namespace VocaDb.Web.App_GlobalResources
 				CustomToolNamespace: null,
 				ClassName: "CommonMessages",
 				PublicClass: true,
-				NullForgivingOperators: false
+				NullForgivingOperators: false,
+        StaticClass: true
 			)
 		);
 		source.Should().Be(expected);
@@ -499,7 +503,8 @@ namespace VocaDb.Web.App_GlobalResources
 				CustomToolNamespace: null,
 				ClassName: "CommonMessages",
 				PublicClass: true,
-				NullForgivingOperators: false
+				NullForgivingOperators: false,
+        StaticClass: true
 			)
 		);
 		source.Should().Be(expected);
@@ -582,7 +587,8 @@ namespace VocaDb.Web.App_GlobalResources
 			CustomToolNamespace: "Resources",
 			ClassName: "ActivityEntrySortRuleNames",
 			PublicClass: true,
-			NullForgivingOperators: false
+			NullForgivingOperators: false,
+      StaticClass: true
 		);
 		generator.Invoking(subject => subject.Generate(resxStream, options)).Should().Throw<XmlException>();
 	}
@@ -664,7 +670,8 @@ namespace VocaDb.Web.App_GlobalResources
 			CustomToolNamespace: "Resources",
 			ClassName: "ActivityEntrySortRuleNames",
 			PublicClass: true,
-			NullForgivingOperators: false
+			NullForgivingOperators: false,
+      StaticClass: true
 		);
 		generator.Invoking(subject => subject.Generate(resxStream, options)).Should().Throw<XmlException>();
 	}

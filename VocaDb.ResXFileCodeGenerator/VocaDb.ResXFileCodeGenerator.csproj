@@ -15,7 +15,7 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <NoWarn>$(NoWarn);NU5128</NoWarn>
     <DevelopmentDependency>true</DevelopmentDependency>
-    <Version>2.0.2</Version>
+    <Version>2.0.2-Antti-Pre7</Version>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 

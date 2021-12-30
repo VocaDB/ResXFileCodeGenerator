@@ -5,7 +5,8 @@ public sealed record GeneratorOptions(
 	string? CustomToolNamespace,
 	string ClassName,
 	bool PublicClass,
-	bool NullForgivingOperators
+	bool NullForgivingOperators,
+	bool StaticClass
 );
 
 public interface IGenerator

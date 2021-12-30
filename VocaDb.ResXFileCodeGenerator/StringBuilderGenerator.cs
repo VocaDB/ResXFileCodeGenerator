@@ -35,7 +35,7 @@ public sealed class StringBuilderGenerator : IGenerator
 
 		builder.Append("    ");
 		builder.Append(options.PublicClass ? "public" : "internal");
-		builder.Append(" static class ");
+		builder.Append(options.StaticClass ? " static class " : " class ");
 		builder.AppendLine(options.ClassName);
 		builder.AppendLine("    {");
 
@@ -125,11 +125,8 @@ public sealed class StringBuilderGenerator : IGenerator
 
 			foreach (var ((key, value), index) in members.Select((kv, index) => (kv, index)))
 			{
-				if (index > 0)
-				{
-					builder.AppendLine();
-				}
-
+				if (index > 0) builder.AppendLine();
+				
 				CreateMember(builder, options, key, value);
 			}
 		}
