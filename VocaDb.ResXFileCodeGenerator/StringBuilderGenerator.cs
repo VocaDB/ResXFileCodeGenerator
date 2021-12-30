@@ -126,7 +126,7 @@ public sealed class StringBuilderGenerator : IGenerator
 			foreach (var ((key, value), index) in members.Select((kv, index) => (kv, index)))
 			{
 				if (index > 0) builder.AppendLine();
-				
+
 				CreateMember(builder, options, key, value);
 			}
 		}
