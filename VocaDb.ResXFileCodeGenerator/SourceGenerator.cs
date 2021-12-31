@@ -43,7 +43,7 @@ public class SourceGenerator : ISourceGenerator
 	}
 
 	// Code from: https://github.com/dotnet/ResXResourceManager/blob/c8b5798d760f202a1842a74191e6010c6e8bbbc0/src/ResXManager.VSIX/Visuals/MoveToResourceViewModel.cs#L120
-	private static string GetLocalNamespace(string? resxPath, string? projectPath, string? rootNamespace)
+	private static string GetLocalNamespace(string? resxPath, string? targetPath, string? projectPath, string? rootNamespace)
 	{
 		try
 		{
@@ -59,14 +59,20 @@ public class SourceGenerator : ISourceGenerator
 
 			var localNamespace = rootNamespace;
 
-			if (resxFolder.StartsWith(projectFolder, StringComparison.OrdinalIgnoreCase))
+			if (!string.IsNullOrWhiteSpace(targetPath))
+			{
+				localNamespace += ".";
+				localNamespace += Path.GetDirectoryName(targetPath).Replace(Path.DirectorySeparatorChar, '.')
+					.Replace(Path.AltDirectorySeparatorChar, '.')
+					.Replace(" ", "");
+			}
+			else if (resxFolder.StartsWith(projectFolder, StringComparison.OrdinalIgnoreCase))
 			{
 				localNamespace += resxFolder.Substring(projectFolder.Length)
 					.Replace(Path.DirectorySeparatorChar, '.')
 					.Replace(Path.AltDirectorySeparatorChar, '.')
-					.Replace("My Project", "My");
+					.Replace(" ", "");
 			}
-
 			return localNamespace;
 		}
 		catch (Exception)
@@ -92,6 +98,10 @@ public class SourceGenerator : ISourceGenerator
 			context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.ResXFileCodeGenerator_NullForgivingOperators", out var nullForgivingOperatorsSwitch) &&
 			nullForgivingOperatorsSwitch is { Length: > 0 } &&
 			nullForgivingOperatorsSwitch.Equals("true", StringComparison.OrdinalIgnoreCase);
+		
+		var staticClass = !(context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.ResXFileCodeGenerator_StaticClass", out var staticClassSwitch) &&
+			staticClassSwitch is { Length: > 0 } &&
+			staticClassSwitch.Equals("false", StringComparison.OrdinalIgnoreCase));
 
 		var resxFiles = context.AdditionalFiles
 			.Where(af => af.Path.EndsWith(".resx"))
@@ -102,7 +112,14 @@ public class SourceGenerator : ISourceGenerator
 			using var resxStream = File.OpenRead(resxFile.Path);
 
 			var options = new GeneratorOptions(
-				LocalNamespace: GetLocalNamespace(resxFile.Path, projectFullPath, rootNamespace),
+				LocalNamespace:
+					GetLocalNamespace(
+						resxFile.Path,
+						context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.TargetPath", out var targetPath) && targetPath is { Length: > 0 }
+							? targetPath
+							: null,
+						projectFullPath,
+						rootNamespace),
 				CustomToolNamespace:
 					context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.CustomToolNamespace", out var customToolNamespace) && customToolNamespace is { Length: > 0 }
 						? customToolNamespace
@@ -112,7 +129,11 @@ public class SourceGenerator : ISourceGenerator
 					context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.PublicClass", out var perFilePublicClassSwitch) && perFilePublicClassSwitch is { Length: > 0 }
 						? perFilePublicClassSwitch.Equals("true", StringComparison.OrdinalIgnoreCase)
 						: publicClassGlobal,
-				NullForgivingOperators: nullForgivingOperators
+				NullForgivingOperators: nullForgivingOperators,
+				StaticClass:
+					context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.StaticClass", out var perFileStaticClassSwitch) && perFileStaticClassSwitch is { Length: > 0 }
+						? !perFileStaticClassSwitch.Equals("false", StringComparison.OrdinalIgnoreCase)
+			 			: staticClass
 			);
 
 			var source = s_generator.Generate(resxStream, options);

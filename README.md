@@ -93,6 +93,50 @@ instead of
 public static string? CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo);
 ```
 
+### Non-static classes
+
+To use generated resources with [Microsoft.Extensions.Localization](https://docs.microsoft.com/en-us/dotnet/core/extensions/localization) `IStringLocalizer<T>` and resource manager, the resolved type cannot be a static class. You can disable default behaviour per file by setting the value to `false`.
+
+```xml
+<ItemGroup>
+  <EmbeddedResource Update="Resources\ArtistCategoriesNames.resx">
+    <StaticClass>false</StaticClass>
+  </EmbeddedResource>
+</ItemGroup>
+```
+
+or globally
+
+```xml
+<PropertyGroup>
+  <ResXFileCodeGenerator_StaticClass>false</ResXFileCodeGenerator_StaticClass>
+</PropertyGroup>
+```
+
+With global non-static class you can also reset `StaticClass` per file by setting the value to anything but `false`.
+
+### Linked resource file namespaces
+
+Linked resources namespace follow `TargetPath` if it is set.
+
+Use-case: Linking `.resx` files from outside source (e.g. generated in a localization sub-module by translators) and expose them as "Resources" namespace.
+
+```xml
+<ItemGroup>
+  <EmbeddedResource Include="..\..\Another.Project\Translations\*.resx" Exclude="..\..\Another.Project\Translations\*.*.resx">
+    <Link>Resources\%(FileName)%(Extension)</Link>
+    <TargetPath>Resources\%(FileName)%(Extension)</TargetPath>
+    <PublicClass>true</PublicClass>
+    <StaticClass>false</StaticClass>
+  </EmbeddedResource>
+  <EmbeddedResource Include="..\..\Another.Project\Translations\*.*.resx">
+    <Link>Resources\%(FileName)%(Extension)</Link>
+    <TargetPath>Resources\%(FileName)%(Extension)</TargetPath>
+    <DependentUpon>$([System.IO.Path]::GetFilenameWithoutExtension([System.String]::Copy('%(FileName)'))).resx</DependentUpon>
+  </EmbeddedResource>
+</ItemGroup>
+```
+
 ## References
 - [Introducing C# Source Generators | .NET Blog](https://devblogs.microsoft.com/dotnet/introducing-c-source-generators/)
 - [microsoft/CsWin32: A source generator to add a user-defined set of Win32 P/Invoke methods and supporting types to a C# project.](https://github.com/microsoft/cswin32)

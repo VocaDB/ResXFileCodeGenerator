@@ -9,9 +9,12 @@
     <CompilerVisibleProperty Include="RootNamespace" />
     <CompilerVisibleProperty Include="CustomToolNamespace" />
     <CompilerVisibleProperty Include="ResXFileCodeGenerator_PublicClass" />
+    <CompilerVisibleProperty Include="ResXFileCodeGenerator_StaticClass" />
     <CompilerVisibleProperty Include="ResXFileCodeGenerator_NullForgivingOperators" />
     <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="CustomToolNamespace" />
     <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="PublicClass" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="StaticClass" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="TargetPath" />
   </ItemGroup>
 
 </Project>

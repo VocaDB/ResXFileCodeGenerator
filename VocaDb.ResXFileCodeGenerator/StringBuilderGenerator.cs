@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Resources;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml.Linq;
 
@@ -8,6 +9,8 @@ namespace VocaDb.ResXFileCodeGenerator;
 
 public sealed class StringBuilderGenerator : IGenerator
 {
+	private static readonly Regex ValidMemberNamePattern = new(@"^[\p{L}\p{Nl}_][\p{Cf}\p{L}\p{Mc}\p{Mn}\p{Nd}\p{Nl}\p{Pc}]*$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+	private static readonly Regex InvalidMemberNameSymbols = new(@"[^\p{Cf}\p{L}\p{Mc}\p{Mn}\p{Nd}\p{Nl}\p{Pc}]", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 	public string Generate(Stream resxStream, GeneratorOptions options)
 	{
 		// HACK: netstandard2.0 doesn't support improved interpolated strings?
@@ -32,7 +35,7 @@ public sealed class StringBuilderGenerator : IGenerator
 
 		builder.Append("    ");
 		builder.Append(options.PublicClass ? "public" : "internal");
-		builder.Append(" static class ");
+		builder.Append(options.StaticClass ? " static class " : " class ");
 		builder.AppendLine(options.ClassName);
 		builder.AppendLine("    {");
 
@@ -68,10 +71,24 @@ public sealed class StringBuilderGenerator : IGenerator
 
 		static void CreateMember(StringBuilder builder, GeneratorOptions options, string name, string value)
 		{
+			string memberName;
+			bool resourceAccessByName;
+
+			if (ValidMemberNamePattern.IsMatch(name))
+			{
+				memberName = name;
+				resourceAccessByName = true;
+			}
+			else
+			{
+				memberName = InvalidMemberNameSymbols.Replace(name, "_");
+				resourceAccessByName = false;
+			}
+
 			builder.AppendLine("        /// <summary>");
 
 			builder.Append("        /// Looks up a localized string similar to ");
-			builder.Append(HttpUtility.HtmlEncode(value.Trim().Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n        /// ")));
+			builder.Append(HttpUtility.HtmlEncode(value.Trim().Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", Environment.NewLine + "        /// ")));
 			builder.AppendLine(".");
 
 			builder.AppendLine("        /// </summary>");
@@ -79,10 +96,20 @@ public sealed class StringBuilderGenerator : IGenerator
 			builder.Append("        public static string");
 			builder.Append(options.NullForgivingOperators ? null : "?");
 			builder.Append(" ");
-			builder.Append(name);
-			builder.Append(" => ResourceManager.GetString(nameof(");
-			builder.Append(name);
-			builder.Append("), ");
+			builder.Append(memberName);
+
+			if (resourceAccessByName)
+			{
+				builder.Append(" => ResourceManager.GetString(nameof(");
+				builder.Append(name);
+				builder.Append("), ");
+			}
+			else
+			{
+				builder.Append(@" => ResourceManager.GetString(""");
+				builder.Append(name.Replace(@"""", @"\"""));
+				builder.Append(@""", ");
+			}
 			builder.Append(Constants.CultureInfoVariable);
 			builder.Append(")");
 			builder.Append(options.NullForgivingOperators ? "!" : null);

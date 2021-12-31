@@ -116,10 +116,11 @@ namespace Resources
 				CustomToolNamespace: "Resources",
 				ClassName: "ActivityEntrySortRuleNames",
 				PublicClass: publicClass,
-				NullForgivingOperators: false
+				NullForgivingOperators: false,
+				StaticClass: true
 			)
 		);
-		source.Should().Be(expected);
+		source.ReplaceLineEndings().Should().Be(expected.ReplaceLineEndings());
 	}
 
 	private static void Generate_NullForgivingOperators(IGenerator generator, bool publicClass)
@@ -163,10 +164,11 @@ namespace Resources
 				CustomToolNamespace: "Resources",
 				ClassName: "ActivityEntrySortRuleNames",
 				PublicClass: publicClass,
-				NullForgivingOperators: true
+				NullForgivingOperators: true,
+				StaticClass: true
 			)
 		);
-		source.Should().Be(expected);
+		source.ReplaceLineEndings().Should().Be(expected.ReplaceLineEndings());
 	}
 
 	[Fact]
@@ -190,18 +192,18 @@ namespace Resources
 	{
 		var text = $@"<?xml version=""1.0"" encoding=""utf-8""?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
+  <!--
+    Microsoft ResX Schema
+
     Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
     associated with the data types.
-    
+
     Example:
-    
+
     ... ado.net/XML headers & schema ...
     <resheader name=""resmimetype"">text/microsoft-resx</resheader>
     <resheader name=""version"">2.0</resheader>
@@ -216,36 +218,36 @@ namespace Resources
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-                
-    There are any number of ""resheader"" rows that contain simple 
+
+    There are any number of ""resheader"" rows that contain simple
     name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
     mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
     extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
     read any of the formats listed below.
-    
+
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-    
+
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
+    value   : The object must be serialized into a byte array
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -390,10 +392,11 @@ namespace VocaDb.Web.App_GlobalResources
 				CustomToolNamespace: null,
 				ClassName: "CommonMessages",
 				PublicClass: true,
-				NullForgivingOperators: false
+				NullForgivingOperators: false,
+				StaticClass: true
 			)
 		);
-		source.Should().Be(expected);
+		source.ReplaceLineEndings().Should().Be(expected.ReplaceLineEndings());
 	}
 
 	[Fact]
@@ -473,7 +476,8 @@ namespace VocaDb.Web.App_GlobalResources
 			CustomToolNamespace: "Resources",
 			ClassName: "ActivityEntrySortRuleNames",
 			PublicClass: true,
-			NullForgivingOperators: false
+			NullForgivingOperators: false,
+			StaticClass: true
 		);
 		generator.Invoking(subject => subject.Generate(resxStream, options)).Should().Throw<XmlException>();
 	}
@@ -555,7 +559,8 @@ namespace VocaDb.Web.App_GlobalResources
 			CustomToolNamespace: "Resources",
 			ClassName: "ActivityEntrySortRuleNames",
 			PublicClass: true,
-			NullForgivingOperators: false
+			NullForgivingOperators: false,
+			StaticClass: true
 		);
 		generator.Invoking(subject => subject.Generate(resxStream, options)).Should().Throw<XmlException>();
 	}
