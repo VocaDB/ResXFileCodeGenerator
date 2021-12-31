@@ -88,7 +88,7 @@ public sealed class StringBuilderGenerator : IGenerator
 			builder.AppendLine("        /// <summary>");
 
 			builder.Append("        /// Looks up a localized string similar to ");
-			builder.Append(HttpUtility.HtmlEncode(value.Trim().Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n        /// ")));
+			builder.Append(HttpUtility.HtmlEncode(value.Trim().Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", Environment.NewLine + "        /// ")));
 			builder.AppendLine(".");
 
 			builder.AppendLine("        /// </summary>");
