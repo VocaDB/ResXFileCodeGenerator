@@ -1,164 +1,41 @@
-using System.Globalization;
 using Microsoft.CodeAnalysis;
 
 namespace VocaDb.ResXFileCodeGenerator;
 
 [Generator]
-public class SourceGenerator : ISourceGenerator
+public class SourceGenerator : IIncrementalGenerator
 {
 	private static readonly IGenerator s_generator = new StringBuilderGenerator();
 
-	// Code from: https://github.com/dotnet/ResXResourceManager/blob/0ec11bae232151400a5a8ca7b9835ac063c516d0/src/ResXManager.Model/ResourceManager.cs#L267
-	private static bool IsValidLanguageName(string? languageName)
+	public void Initialize(IncrementalGeneratorInitializationContext context)
 	{
-		try
+		var globalOptions = context.AnalyzerConfigOptionsProvider.Select(GlobalOptions.Select).WithComparer(EqualityComparer<GlobalOptions>.Default);
+
+		var monitor = context.AdditionalTextsProvider
+			.Where(af => af.Path.EndsWith(".resx") && Path.GetFileNameWithoutExtension(af.Path) == Utilities.GetBaseName(af.Path));
+
+		var inputs = monitor
+			.Combine(globalOptions)
+			.Combine(context.AnalyzerConfigOptionsProvider)
+			.Select((x,t)=>FileOptions.Select(x.Left.Left, x.Right, x.Left.Right, t))
+			.Where(x=>x.Valid);
+
+		context.RegisterSourceOutput(inputs, (ctx, file) =>
 		{
-			if (languageName.IsNullOrEmpty())
-				return false;
+			var filecontent = file.File.GetText(ctx.CancellationToken);
+			if (filecontent == null) return;
 
-			if (languageName.StartsWith("qps-", StringComparison.Ordinal))
-				return true;
-
-			var culture = new CultureInfo(languageName);
-
-			while (!culture.IsNeutralCulture)
-				culture = culture.Parent;
-
-			return culture.LCID != 4096;
-		}
-		catch
-		{
-			return false;
-		}
+			var source = s_generator.Generate(filecontent, new(
+				file.LocalNamespace,
+				file.CustomToolNamespace,
+				file.ClassName,
+				file.PublicClass,
+				file.NullForgivingOperators,
+				file.StaticClass,
+				file.FilePath,
+				ctx.ReportDiagnostic
+			));
+			ctx.AddSource($"{file.LocalNamespace}.{file.ClassName}.g.cs", source);
+		});
 	}
-
-	// Code from: https://github.com/dotnet/ResXResourceManager/blob/0ec11bae232151400a5a8ca7b9835ac063c516d0/src/ResXManager.Model/ProjectFileExtensions.cs#L77
-	private static string GetBaseName(string filePath)
-	{
-		var name = Path.GetFileNameWithoutExtension(filePath);
-		var innerExtension = Path.GetExtension(name);
-		var languageName = innerExtension.TrimStart('.');
-
-		return IsValidLanguageName(languageName) ? Path.GetFileNameWithoutExtension(name) : name;
-	}
-
-	// Code from: https://github.com/dotnet/ResXResourceManager/blob/c8b5798d760f202a1842a74191e6010c6e8bbbc0/src/ResXManager.VSIX/Visuals/MoveToResourceViewModel.cs#L120
-	public static string GetLocalNamespace(string? resxPath, string? targetPath, string? projectPath, string? rootNamespace)
-	{
-		try
-		{
-			if (resxPath is null)
-				return string.Empty;
-
-			var resxFolder = Path.GetDirectoryName(resxPath);
-			var projectFolder = Path.GetDirectoryName(projectPath);
-			rootNamespace ??= string.Empty;
-
-			if (resxFolder is null || projectFolder is null)
-				return string.Empty;
-
-			var localNamespace = rootNamespace;
-
-			if (!string.IsNullOrWhiteSpace(targetPath))
-			{
-				var ns = Path.GetDirectoryName(targetPath).Replace(Path.DirectorySeparatorChar, '.')
-					.Replace(Path.AltDirectorySeparatorChar, '.')
-					.Replace(" ", "");
-				if (!string.IsNullOrEmpty(ns))
-				{
-					localNamespace += ".";
-					localNamespace += ns;
-				}
-			}
-			else if (resxFolder.StartsWith(projectFolder, StringComparison.OrdinalIgnoreCase))
-			{
-				localNamespace += resxFolder.Substring(projectFolder.Length)
-					.Replace(Path.DirectorySeparatorChar, '.')
-					.Replace(Path.AltDirectorySeparatorChar, '.')
-					.Replace(" ", "");
-			}
-			return localNamespace;
-		}
-		catch (Exception)
-		{
-			return string.Empty;
-		}
-	}
-
-	public void Execute(GeneratorExecutionContext context)
-	{
-		if (!context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.MSBuildProjectFullPath", out var projectFullPath))
-			return;
-
-		if (!context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.RootNamespace", out var rootNamespace))
-			return;
-
-		// Code from: https://github.com/dotnet/roslyn/blob/main/docs/features/source-generators.cookbook.md#consume-msbuild-properties-and-metadata
-		var publicClassGlobal = false;
-		if (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.ResXFileCodeGenerator_PublicClass", out var publicClassSwitch))
-			publicClassGlobal = publicClassSwitch.Equals("true", StringComparison.OrdinalIgnoreCase);
-
-		var nullForgivingOperators =
-			context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.ResXFileCodeGenerator_NullForgivingOperators", out var nullForgivingOperatorsSwitch) &&
-			nullForgivingOperatorsSwitch is { Length: > 0 } &&
-			nullForgivingOperatorsSwitch.Equals("true", StringComparison.OrdinalIgnoreCase);
-		
-		var staticClass = !(context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.ResXFileCodeGenerator_StaticClass", out var staticClassSwitch) &&
-			staticClassSwitch is { Length: > 0 } &&
-			staticClassSwitch.Equals("false", StringComparison.OrdinalIgnoreCase));
-
-		var resxFiles = context.AdditionalFiles
-			.Where(af => af.Path.EndsWith(".resx"))
-			.Where(af => Path.GetFileNameWithoutExtension(af.Path) == GetBaseName(af.Path));
-
-		foreach (var resxFile in resxFiles)
-		{
-			var resxFilePath = resxFile.Path;
-			using var resxStream = File.OpenRead(resxFilePath);
-
-         var className = GetClassNameFromPath(resxFilePath);
-
-         var options = new GeneratorOptions(
-				LocalNamespace:
-					GetLocalNamespace(
-						resxFilePath,
-						context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.TargetPath", out var targetPath) && targetPath is { Length: > 0 }
-							? targetPath
-							: null,
-						projectFullPath,
-						rootNamespace),
-				CustomToolNamespace:
-					context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.CustomToolNamespace", out var customToolNamespace) && customToolNamespace is { Length: > 0 }
-						? customToolNamespace
-						: null,
-				ClassName: className,
-				PublicClass:
-					context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.PublicClass", out var perFilePublicClassSwitch) && perFilePublicClassSwitch is { Length: > 0 }
-						? perFilePublicClassSwitch.Equals("true", StringComparison.OrdinalIgnoreCase)
-						: publicClassGlobal,
-				NullForgivingOperators: nullForgivingOperators,
-				StaticClass:
-					context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.StaticClass", out var perFileStaticClassSwitch) && perFileStaticClassSwitch is { Length: > 0 }
-						? !perFileStaticClassSwitch.Equals("false", StringComparison.OrdinalIgnoreCase)
-			 			: staticClass,
-				FilePath: resxFilePath,
-				ReportError: context.ReportDiagnostic
-			);
-
-			var source = s_generator.Generate(resxStream, options);
-
-			context.AddSource($"{options.LocalNamespace}.{options.ClassName}.g.cs", source);
-		}
-	}
-
-	public static string GetClassNameFromPath(string resxFilePath)
-	{
-		//Fix issues with files that have names like xxx.aspx.resx
-		var className = resxFilePath;
-		while (className.Contains("."))
-			className = Path.GetFileNameWithoutExtension(className);
-		return className;
-	}
-
-	public void Initialize(GeneratorInitializationContext context) { }
 }

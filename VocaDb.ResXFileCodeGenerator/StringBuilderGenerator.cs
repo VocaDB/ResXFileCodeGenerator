@@ -6,6 +6,7 @@ using System.Web;
 using System.Xml;
 using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 
 namespace VocaDb.ResXFileCodeGenerator;
 
@@ -28,7 +29,7 @@ public sealed class StringBuilderGenerator : IGenerator
 		DiagnosticSeverity.Warning,
 		isEnabledByDefault: true);
 
-	public string Generate(Stream resxStream, GeneratorOptions options)
+	public string Generate(StringReader resxStream, GeneratorOptions options)
 	{
 		// HACK: netstandard2.0 doesn't support improved interpolated strings?
 		var builder = new StringBuilder();
@@ -165,5 +166,10 @@ public sealed class StringBuilderGenerator : IGenerator
 		builder.Append("}");
 
 		return builder.ToString();
+	}
+
+	public string Generate(SourceText resxStream, GeneratorOptions options)
+	{
+		return Generate(new StringReader(resxStream.ToString()), options);
 	}
 }

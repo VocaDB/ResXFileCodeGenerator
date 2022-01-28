@@ -1,4 +1,5 @@
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 
 namespace VocaDb.ResXFileCodeGenerator;
 
@@ -14,5 +15,6 @@ public sealed record GeneratorOptions(
 
 public interface IGenerator
 {
-	string Generate(Stream resxStream, GeneratorOptions options);
+	string Generate(StringReader resxStream, GeneratorOptions options);
+	string Generate(SourceText resxStream, GeneratorOptions options);
 }

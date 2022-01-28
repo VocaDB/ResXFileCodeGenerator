@@ -108,7 +108,7 @@ namespace Resources
         public static string? CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo);
     }}
 }}";
-		using var resxStream = new MemoryStream(Encoding.UTF8.GetBytes(Text));
+		using var resxStream = new StringReader(Text);
 		var source = generator.Generate(
 			resxStream: resxStream,
 			options: new GeneratorOptions(
@@ -156,7 +156,7 @@ namespace Resources
         public static string CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo)!;
     }}
 }}";
-		using var resxStream = new MemoryStream(Encoding.UTF8.GetBytes(Text));
+		using var resxStream = new StringReader(Text);
 		var source = generator.Generate(
 			resxStream: resxStream,
 			options: new GeneratorOptions(
@@ -384,7 +384,7 @@ namespace VocaDb.Web.App_GlobalResources
     }}
 }}";
 		var generator = new StringBuilderGenerator();
-		using var resxStream = new MemoryStream(Encoding.UTF8.GetBytes(text));
+		using var resxStream = new StringReader(text);
 		var source = generator.Generate(
 			resxStream: resxStream,
 			options: new GeneratorOptions(
@@ -470,7 +470,7 @@ namespace VocaDb.Web.App_GlobalResources
   </data>
 </root>";
 		var generator = new StringBuilderGenerator();
-		using var resxStream = new MemoryStream(Encoding.UTF8.GetBytes(text));
+		using var resxStream = new StringReader(text);
 		var options = new GeneratorOptions(
 			LocalNamespace: "VocaDb.Web.App_GlobalResources",
 			CustomToolNamespace: "Resources",
@@ -553,7 +553,7 @@ namespace VocaDb.Web.App_GlobalResources
   </data>
 </root>";
 		var generator = new StringBuilderGenerator();
-		using var resxStream = new MemoryStream(Encoding.UTF8.GetBytes(text));
+		using var resxStream = new StringReader(text);
 		var options = new GeneratorOptions(
 			LocalNamespace: "VocaDb.Web.App_GlobalResources",
 			CustomToolNamespace: "Resources",

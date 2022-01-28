@@ -103,7 +103,7 @@ namespace VocaDb.Web.App_GlobalResources
     }}
 }}";
 		var generator = new StringBuilderGenerator();
-		using var resxStream = new MemoryStream(Encoding.UTF8.GetBytes(text));
+		using var resxStream = new StringReader(text);
 		var source = generator.Generate(
 			resxStream: resxStream,
 			options: new GeneratorOptions(
@@ -155,7 +155,7 @@ namespace VocaDb.Web.App_GlobalResources
     }}
 }}";
 		var generator = new StringBuilderGenerator();
-		using var resxStream = new MemoryStream(Encoding.UTF8.GetBytes(text));
+		using var resxStream = new StringReader(text);
 		var source = generator.Generate(
 			resxStream: resxStream,
 			options: new GeneratorOptions(
@@ -184,7 +184,7 @@ namespace VocaDb.Web.App_GlobalResources
 </root>";
 
 		var generator = new StringBuilderGenerator();
-		using var resxStream = new MemoryStream(Encoding.UTF8.GetBytes(text));
+		using var resxStream = new StringReader(text);
 		List<Diagnostic> errs = new();
 
 		var source = generator.Generate(
@@ -218,7 +218,7 @@ namespace VocaDb.Web.App_GlobalResources
 </root>";
 
 		var generator = new StringBuilderGenerator();
-		using var resxStream = new MemoryStream(Encoding.UTF8.GetBytes(text));
+		using var resxStream = new StringReader(text);
 		List<Diagnostic> errs = new();
 
 		var source = generator.Generate(
@@ -244,14 +244,14 @@ namespace VocaDb.Web.App_GlobalResources
 	[Fact]
 	public void GetLocalNamespace_ShouldNotGenerateIllegalNamespace()
 	{
-		var ns = SourceGenerator.GetLocalNamespace("resx", "asd.asd", "path", "root");
+		var ns = Utilities.GetLocalNamespace("resx", "asd.asd", "path", "root");
 		ns.Should().Be("root");
 	}
 
 	[Fact]
 	public void ResxFileName_ShouldNotGenerateIllegalClassnames()
 	{
-		var ns = SourceGenerator.GetClassNameFromPath("test.cshtml.resx");
+		var ns = Utilities.GetClassNameFromPath("test.cshtml.resx");
 		ns.Should().Be("test");
 	}
 }
