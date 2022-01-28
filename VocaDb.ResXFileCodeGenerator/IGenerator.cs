@@ -1,3 +1,5 @@
+using Microsoft.CodeAnalysis;
+
 namespace VocaDb.ResXFileCodeGenerator;
 
 public sealed record GeneratorOptions(
@@ -6,8 +8,9 @@ public sealed record GeneratorOptions(
 	string ClassName,
 	bool PublicClass,
 	bool NullForgivingOperators,
-	bool StaticClass
-);
+	bool StaticClass,
+	string? FilePath = null,
+	Action<Diagnostic>? ReportError = null);
 
 public interface IGenerator
 {

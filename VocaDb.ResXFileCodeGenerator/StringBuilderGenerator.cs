@@ -3,7 +3,9 @@ using System.Resources;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Xml;
 using System.Xml.Linq;
+using Microsoft.CodeAnalysis;
 
 namespace VocaDb.ResXFileCodeGenerator;
 
@@ -11,6 +13,21 @@ public sealed class StringBuilderGenerator : IGenerator
 {
 	private static readonly Regex ValidMemberNamePattern = new(@"^[\p{L}\p{Nl}_][\p{Cf}\p{L}\p{Mc}\p{Mn}\p{Nd}\p{Nl}\p{Pc}]*$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 	private static readonly Regex InvalidMemberNameSymbols = new(@"[^\p{Cf}\p{L}\p{Mc}\p{Mn}\p{Nd}\p{Nl}\p{Pc}]", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+	private static readonly DiagnosticDescriptor DuplicateError = new(id: "VocaDbResXFileCodeGenerator001",
+		title: "Duplicate member",
+		messageFormat: "Ignored added member '{0}'",
+		category: "ResXFileCodeGenerator",
+		DiagnosticSeverity.Warning,
+		isEnabledByDefault: true);
+
+	private static readonly DiagnosticDescriptor MemberSameAsClassError = new(id: "VocaDbResXFileCodeGenerator002",
+		title: "Member same name as class",
+		messageFormat: "Ignored member '{0}' has same name as class",
+		category: "ResXFileCodeGenerator",
+		DiagnosticSeverity.Warning,
+		isEnabledByDefault: true);
+
 	public string Generate(Stream resxStream, GeneratorOptions options)
 	{
 		// HACK: netstandard2.0 doesn't support improved interpolated strings?
@@ -69,7 +86,8 @@ public sealed class StringBuilderGenerator : IGenerator
 
 		builder.AppendLine();
 
-		static void CreateMember(StringBuilder builder, GeneratorOptions options, string name, string value)
+		static void CreateMember(StringBuilder builder, GeneratorOptions options, string name, string value,
+			int line, HashSet<string> alreadyAddedMembers)
 		{
 			string memberName;
 			bool resourceAccessByName;
@@ -85,6 +103,16 @@ public sealed class StringBuilderGenerator : IGenerator
 				resourceAccessByName = false;
 			}
 
+			if (!alreadyAddedMembers.Add(memberName))
+			{
+				options.ReportError?.Invoke(Diagnostic.Create(DuplicateError, Location.Create(options.FilePath!, new(), new(new(line, 14), new (line,14+memberName.Length))), memberName));
+				return;
+			}
+			if (memberName == options.ClassName)
+			{
+				options.ReportError?.Invoke(Diagnostic.Create(MemberSameAsClassError, Location.Create(options.FilePath!, new(), new(new(line, 14), new (line,14+memberName.Length))), memberName));
+				return;
+			}
 			builder.AppendLine("        /// <summary>");
 
 			builder.Append("        /// Looks up a localized string similar to ");
@@ -116,18 +144,19 @@ public sealed class StringBuilderGenerator : IGenerator
 			builder.AppendLine(";");
 		}
 
-		if (XDocument.Load(resxStream).Root is XElement element)
+		if (XDocument.Load(resxStream, LoadOptions.SetLineInfo).Root is XElement element)
 		{
 			var members = element
 				.Descendants()
 				.Where(static data => data.Name == "data")
-				.Select(static data => (data.Attribute("name")!.Value, data.Descendants("value").First().Value));
+				.Select(static data => (data.Attribute("name")!.Value, data.Descendants("value").First().Value, (data as IXmlLineInfo).LineNumber-1));
 
-			foreach (var ((key, value), index) in members.Select((kv, index) => (kv, index)))
+			HashSet<string> alreadyAddedMembers = new();
+			foreach (var ((key, value, line), index) in members.Select((kv, index) => (kv, index)))
 			{
 				if (index > 0) builder.AppendLine();
 
-				CreateMember(builder, options, key, value);
+				CreateMember(builder, options, key, value, line, alreadyAddedMembers);
 			}
 		}
 

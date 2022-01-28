@@ -43,7 +43,7 @@ public class SourceGenerator : ISourceGenerator
 	}
 
 	// Code from: https://github.com/dotnet/ResXResourceManager/blob/c8b5798d760f202a1842a74191e6010c6e8bbbc0/src/ResXManager.VSIX/Visuals/MoveToResourceViewModel.cs#L120
-	private static string GetLocalNamespace(string? resxPath, string? targetPath, string? projectPath, string? rootNamespace)
+	public static string GetLocalNamespace(string? resxPath, string? targetPath, string? projectPath, string? rootNamespace)
 	{
 		try
 		{
@@ -61,10 +61,14 @@ public class SourceGenerator : ISourceGenerator
 
 			if (!string.IsNullOrWhiteSpace(targetPath))
 			{
-				localNamespace += ".";
-				localNamespace += Path.GetDirectoryName(targetPath).Replace(Path.DirectorySeparatorChar, '.')
+				var ns = Path.GetDirectoryName(targetPath).Replace(Path.DirectorySeparatorChar, '.')
 					.Replace(Path.AltDirectorySeparatorChar, '.')
 					.Replace(" ", "");
+				if (!string.IsNullOrEmpty(ns))
+				{
+					localNamespace += ".";
+					localNamespace += ns;
+				}
 			}
 			else if (resxFolder.StartsWith(projectFolder, StringComparison.OrdinalIgnoreCase))
 			{
@@ -109,12 +113,15 @@ public class SourceGenerator : ISourceGenerator
 
 		foreach (var resxFile in resxFiles)
 		{
-			using var resxStream = File.OpenRead(resxFile.Path);
+			var resxFilePath = resxFile.Path;
+			using var resxStream = File.OpenRead(resxFilePath);
 
-			var options = new GeneratorOptions(
+         var className = GetClassNameFromPath(resxFilePath);
+
+         var options = new GeneratorOptions(
 				LocalNamespace:
 					GetLocalNamespace(
-						resxFile.Path,
+						resxFilePath,
 						context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.TargetPath", out var targetPath) && targetPath is { Length: > 0 }
 							? targetPath
 							: null,
@@ -124,7 +131,7 @@ public class SourceGenerator : ISourceGenerator
 					context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.CustomToolNamespace", out var customToolNamespace) && customToolNamespace is { Length: > 0 }
 						? customToolNamespace
 						: null,
-				ClassName: Path.GetFileNameWithoutExtension(resxFile.Path),
+				ClassName: className,
 				PublicClass:
 					context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.PublicClass", out var perFilePublicClassSwitch) && perFilePublicClassSwitch is { Length: > 0 }
 						? perFilePublicClassSwitch.Equals("true", StringComparison.OrdinalIgnoreCase)
@@ -133,13 +140,24 @@ public class SourceGenerator : ISourceGenerator
 				StaticClass:
 					context.AnalyzerConfigOptions.GetOptions(resxFile).TryGetValue("build_metadata.EmbeddedResource.StaticClass", out var perFileStaticClassSwitch) && perFileStaticClassSwitch is { Length: > 0 }
 						? !perFileStaticClassSwitch.Equals("false", StringComparison.OrdinalIgnoreCase)
-			 			: staticClass
+			 			: staticClass,
+				FilePath: resxFilePath,
+				ReportError: context.ReportDiagnostic
 			);
 
 			var source = s_generator.Generate(resxStream, options);
 
 			context.AddSource($"{options.LocalNamespace}.{options.ClassName}.g.cs", source);
 		}
+	}
+
+	public static string GetClassNameFromPath(string resxFilePath)
+	{
+		//Fix issues with files that have names like xxx.aspx.resx
+		var className = resxFilePath;
+		while (className.Contains("."))
+			className = Path.GetFileNameWithoutExtension(className);
+		return className;
 	}
 
 	public void Initialize(GeneratorInitializationContext context) { }
