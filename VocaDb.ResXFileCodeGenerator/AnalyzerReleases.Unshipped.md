@@ -6,3 +6,4 @@ Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
 VocaDbResXFileCodeGenerator001 | ResXFileCodeGenerator | Warning | StringBuilderGenerator
 VocaDbResXFileCodeGenerator002 | ResXFileCodeGenerator | Warning | StringBuilderGenerator
+VocaDbResXFileCodeGenerator003 | ResXFileCodeGenerator | Error | StringBuilderGenerator

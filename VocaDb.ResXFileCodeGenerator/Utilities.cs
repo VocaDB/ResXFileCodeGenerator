@@ -11,15 +11,21 @@ public static class Utilities
 		try
 		{
 			if (languageName.IsNullOrEmpty())
+			{
 				return false;
+			}
 
 			if (languageName.StartsWith("qps-", StringComparison.Ordinal))
+			{
 				return true;
+			}
 
 			var culture = new CultureInfo(languageName);
 
 			while (!culture.IsNeutralCulture)
+			{
 				culture = culture.Parent;
+			}
 
 			return culture.LCID != 4096;
 		}
@@ -42,19 +48,24 @@ public static class Utilities
 
 	// Code from: https://github.com/dotnet/ResXResourceManager/blob/c8b5798d760f202a1842a74191e6010c6e8bbbc0/src/ResXManager.VSIX/Visuals/MoveToResourceViewModel.cs#L120
 
-	public static string GetLocalNamespace(string? resxPath, string? targetPath, string? projectPath, string? rootNamespace)
+	public static string GetLocalNamespace(string? resxPath, string? targetPath, string? projectPath,
+		string? rootNamespace)
 	{
 		try
 		{
 			if (resxPath is null)
+			{
 				return string.Empty;
+			}
 
 			var resxFolder = Path.GetDirectoryName(resxPath);
 			var projectFolder = Path.GetDirectoryName(projectPath);
 			rootNamespace ??= string.Empty;
 
 			if (resxFolder is null || projectFolder is null)
+			{
 				return string.Empty;
+			}
 
 			var localNamespace = rootNamespace;
 
@@ -76,6 +87,7 @@ public static class Utilities
 					.Replace(Path.AltDirectorySeparatorChar, '.')
 					.Replace(" ", "");
 			}
+
 			return localNamespace;
 		}
 		catch (Exception)
@@ -89,7 +101,10 @@ public static class Utilities
 		//Fix issues with files that have names like xxx.aspx.resx
 		var className = resxFilePath;
 		while (className.Contains("."))
+		{
 			className = Path.GetFileNameWithoutExtension(className);
+		}
+
 		return className;
 	}
 }
