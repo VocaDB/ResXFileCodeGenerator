@@ -9,12 +9,22 @@
     <CompilerVisibleProperty Include="RootNamespace" />
     <CompilerVisibleProperty Include="CustomToolNamespace" />
     <CompilerVisibleProperty Include="ResXFileCodeGenerator_PublicClass" />
-    <CompilerVisibleProperty Include="ResXFileCodeGenerator_StaticClass" />
     <CompilerVisibleProperty Include="ResXFileCodeGenerator_NullForgivingOperators" />
+    <CompilerVisibleProperty Include="ResXFileCodeGenerator_StaticClass" />
+    <CompilerVisibleProperty Include="ResXFileCodeGenerator_StaticMembers" />
+    <CompilerVisibleProperty Include="ResXFileCodeGenerator_PartialClass" />
+    <CompilerVisibleProperty Include="ResXFileCodeGenerator_InnerClassVisibility" />
+    <CompilerVisibleProperty Include="ResXFileCodeGenerator_InnerClassName" />
+    <CompilerVisibleProperty Include="ResXFileCodeGenerator_InnerClassInstanceName" />
     <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="CustomToolNamespace" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="TargetPath" />
     <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="PublicClass" />
     <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="StaticClass" />
-    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="TargetPath" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="StaticMembers" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="PartialClass" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="InnerClassVisibility" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="InnerClassName" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="InnerClassInstanceName" />
   </ItemGroup>
 
 </Project>

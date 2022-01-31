@@ -2,7 +2,7 @@
 
 namespace VocaDb.ResXFileCodeGenerator;
 
-internal sealed class GlobalOptions
+public sealed class GlobalOptions
 {
 	public string InnerClassInstanceName { get; }
 	public bool StaticMembers { get; }

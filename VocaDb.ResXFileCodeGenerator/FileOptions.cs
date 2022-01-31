@@ -20,15 +20,18 @@ public sealed record FileOptions
 	public string LocalNamespace { get; init; }
 	public bool Valid { get; init; }
 
+	/// <summary>
+	/// Unit test ctor
+	/// </summary>
 	public FileOptions()
 	{
-		LocalNamespace = "";
-		CustomToolNamespace = "";
-		ClassName = "";
-		InnerClassInstanceName = "";
-		InnerClassName = "";
+		LocalNamespace = string.Empty;
+		CustomToolNamespace = string.Empty;
+		ClassName = string.Empty;
+		InnerClassInstanceName = string.Empty;
+		InnerClassName = string.Empty;
 		File = null!;
-		FilePath = "";
+		FilePath = string.Empty;
 	}
 
 	private FileOptions(AdditionalText file, AnalyzerConfigOptions options, GlobalOptions globalOptions)
@@ -69,7 +72,7 @@ public sealed record FileOptions
 		StaticMembers =
 			options.TryGetValue("build_metadata.EmbeddedResource.StaticMembers", out var staticMembersSwitch) &&
 			staticMembersSwitch is { Length: > 0 }
-				? staticMembersSwitch.Equals("false", StringComparison.OrdinalIgnoreCase)
+				? !staticMembersSwitch.Equals("false", StringComparison.OrdinalIgnoreCase)
 				: globalOptions.StaticMembers;
 
 		PartialClass =
@@ -88,14 +91,15 @@ public sealed record FileOptions
 		}
 
 		InnerClassName = globalOptions.InnerClassName;
-		if (options.TryGetValue("build_metadata.EmbeddedResource.InnerClassName", out var innerClassNameSwitch))
+		if (options.TryGetValue("build_metadata.EmbeddedResource.InnerClassName", out var innerClassNameSwitch) &&
+		    innerClassNameSwitch is { Length: > 0 })
 		{
 			InnerClassName = innerClassNameSwitch;
 		}
 
 		InnerClassInstanceName = globalOptions.InnerClassInstanceName;
-		if (options.TryGetValue("build_metadata.EmbeddedResource.InnerClassInstanceName",
-			    out var innerClassInstanceNameSwitch))
+		if (options.TryGetValue("build_metadata.EmbeddedResource.InnerClassInstanceName", out var innerClassInstanceNameSwitch)&&
+		    innerClassInstanceNameSwitch is { Length: > 0 })
 		{
 			InnerClassInstanceName = innerClassInstanceNameSwitch;
 		}
@@ -105,7 +109,7 @@ public sealed record FileOptions
 		Valid = globalOptions.Valid;
 	}
 
-	internal static FileOptions Select(AdditionalText file, AnalyzerConfigOptionsProvider options,
+	public static FileOptions Select(AdditionalText file, AnalyzerConfigOptionsProvider options,
 		GlobalOptions globalOptions, CancellationToken token)
 	{
 		token.ThrowIfCancellationRequested();

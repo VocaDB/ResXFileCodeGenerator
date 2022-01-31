@@ -88,7 +88,7 @@ public sealed class StringBuilderGenerator : IGenerator
 				if (options.StaticClass || options.StaticMembers)
 				{
 					reportError?.Invoke(Diagnostic.Create(s_memberWithStaticError,
-						Location.Create(options.FilePath!, new(), new())));
+						Location.Create(options.FilePath, new(), new())));
 				}
 
 				builder.Append(indent);
@@ -96,7 +96,6 @@ public sealed class StringBuilderGenerator : IGenerator
 				builder.Append(options.ClassName);
 				builder.Append(" ");
 				builder.Append(options.InnerClassInstanceName);
-				builder.Append(Constants.CultureInfoVariable);
 				builder.AppendLine(" { get; } = new();");
 				builder.AppendLine();
 			}

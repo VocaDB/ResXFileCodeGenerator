@@ -244,7 +244,7 @@ namespace Resources
 
 ### Inner Class Visibility (per file or globally)
 
-Per default inner classes are not generated, unless this setting is one of the following:
+By default inner classes are not generated, unless this setting is one of the following:
 
  * Public
  * Internal
@@ -274,7 +274,7 @@ or globally
 
 ### Inner Class name (per file or globally)
 
-Per default the inner class is named "Resources", which can be overriden with this setting:
+By default the inner class is named "Resources", which can be overriden with this setting:
 
 ```xml
 <ItemGroup>
@@ -295,7 +295,7 @@ or globally
 
 ### Inner Class instance name (per file or globally)
 
-Per default no instance is available of the class, but that can be made available if this setting is given.
+By default no instance is available of the class, but that can be made available if this setting is given.
 
 ```xml
 <ItemGroup>
