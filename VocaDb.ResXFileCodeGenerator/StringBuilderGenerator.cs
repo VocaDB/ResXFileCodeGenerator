@@ -69,6 +69,8 @@ public sealed class StringBuilderGenerator : IGenerator
 		builder.AppendLine("    {");
 
 		var indent = "        ";
+		string containerClassName = options.ClassName;
+
 		if (options.InnerClassVisibility != InnerClassVisibility.NotGenerated)
 		{
 			builder.Append(indent);
@@ -78,7 +80,8 @@ public sealed class StringBuilderGenerator : IGenerator
 			builder.Append(options.PartialClass ? " partial" : "");
 			builder.Append(options.StaticClass ? " static class " : " class ");
 
-			builder.AppendLine(string.IsNullOrEmpty(options.InnerClassName) ? "Resources" : options.InnerClassName);
+			containerClassName = string.IsNullOrEmpty(options.InnerClassName) ? "Resources" : options.InnerClassName;
+			builder.AppendLine(containerClassName);
 			builder.Append(indent);
 			builder.AppendLine("{");
 
@@ -133,10 +136,8 @@ public sealed class StringBuilderGenerator : IGenerator
 		builder.Append(Constants.CultureInfoVariable);
 		builder.AppendLine(" { get; set; }");
 
-		builder.AppendLine();
-
 		static void CreateMember(string indent, StringBuilder builder, FileOptions options, string name, string value,
-			IXmlLineInfo line, HashSet<string> alreadyAddedMembers, Action<Diagnostic>? reportError)
+			IXmlLineInfo line, HashSet<string> alreadyAddedMembers, Action<Diagnostic>? reportError, string containerclassname)
 		{
 			string memberName;
 			bool resourceAccessByName;
@@ -163,11 +164,12 @@ public sealed class StringBuilderGenerator : IGenerator
 				return;
 			}
 
-			if (memberName == options.ClassName)
+			if (memberName == containerclassname)
 			{
 				reportError?.Invoke(Diagnostic.Create(s_memberSameAsClassWarning, GetMemberLocation(options, line, memberName), memberName));
 				return;
 			}
+			builder.AppendLine();
 
 			builder.Append(indent);
 			builder.AppendLine("/// <summary>");
@@ -214,17 +216,12 @@ public sealed class StringBuilderGenerator : IGenerator
 				.Descendants()
 				.Where(static data => data.Name == "data")
 				.Select(static data => (data.Attribute("name")!.Value, data.Descendants("value").First().Value,
-					(data.Attribute("name") as IXmlLineInfo)));
+					(IXmlLineInfo)data.Attribute("name")!));
 
-			HashSet<string> alreadyAddedMembers = new() { "CultureInfo" };
+			HashSet<string> alreadyAddedMembers = new() { Constants.CultureInfoVariable };
 			foreach (var ((key, value, line), index) in members.Select((kv, index) => (kv, index)))
 			{
-				if (index > 0)
-				{
-					builder.AppendLine();
-				}
-
-				CreateMember(indent, builder, options, key, value, line, alreadyAddedMembers, reportError);
+				CreateMember(indent, builder, options, key, value, line, alreadyAddedMembers, reportError, containerClassName);
 			}
 		}
 
