@@ -4,5 +4,5 @@ namespace VocaDb.ResXFileCodeGenerator;
 
 public interface IGenerator
 {
-	string Generate(StringReader resxStream, FileOptions options, Action<Diagnostic>? reportError = null);
+	string Generate(TextReader resxStream, FileOptions options, Action<Diagnostic>? reportError = null);
 }

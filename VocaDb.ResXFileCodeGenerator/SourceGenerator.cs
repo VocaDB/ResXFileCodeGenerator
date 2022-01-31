@@ -30,7 +30,7 @@ public class SourceGenerator : IIncrementalGenerator
 			{
 				return;
 			}
-			var source = s_generator.Generate(new(filecontent.ToString()), file, ctx.ReportDiagnostic);
+			var source = s_generator.Generate(new StringReader(filecontent.ToString()), file, ctx.ReportDiagnostic);
 			ctx.AddSource($"{file.LocalNamespace}.{file.ClassName}.g.cs", source);
 		});
 	}

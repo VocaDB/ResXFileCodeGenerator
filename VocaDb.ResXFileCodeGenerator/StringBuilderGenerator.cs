@@ -39,7 +39,7 @@ public sealed class StringBuilderGenerator : IGenerator
 		DiagnosticSeverity.Error,
 		true);
 
-	public string Generate(StringReader resxStream, FileOptions options, Action<Diagnostic>? reportError = null)
+	public string Generate(TextReader resxStream, FileOptions options, Action<Diagnostic>? reportError = null)
 	{
 		// HACK: netstandard2.0 doesn't support improved interpolated strings?
 		var builder = GetBuilder();

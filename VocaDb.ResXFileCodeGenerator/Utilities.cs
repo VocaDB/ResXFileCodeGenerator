@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace VocaDb.ResXFileCodeGenerator;
 
@@ -19,6 +19,9 @@ public static class Utilities
 			{
 				return true;
 			}
+
+			var dash = languageName.IndexOf('-');
+			if (dash >= 4 || (dash == -1 && languageName.Length >= 4)) return false;
 
 			var culture = new CultureInfo(languageName);
 
