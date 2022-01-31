@@ -220,10 +220,10 @@ namespace Resources
 
     public partial class ActivityEntryModel
     {
+		public MyResources EveryoneLikeMyNaming { get; } = new();
+
 		private class MyResources
 		{
-			public MyResources EveryoneLikeMyNaming { get; } = new();
-
 			private static ResourceManager? s_resourceManager;
 			public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager("VocaDb.Web.App_GlobalResources.ActivityEntryModel", typeof(ActivityEntryModel).Assembly);
 			public CultureInfo? CultureInfo { get; set; }

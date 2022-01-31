@@ -146,9 +146,9 @@ namespace Resources
     using System.Resources;
 
     {(publicClass ? "public" : "internal")}{(partial ? " partial" : "")}{(staticClass ? " static" : "")} class ActivityEntrySortRuleNames
-    {{
+    {{{(string.IsNullOrEmpty(innerClassInstanceName) ? "" : $"\n        public {innerClassName} {innerClassInstanceName} {{ get; }} = new();\n")}
         {(publicClass ? "public" : "internal")}{(partial ? " partial" : "")}{(staticClass ? " static" : "")} class {innerClassName}
-        {{{(string.IsNullOrEmpty(innerClassInstanceName) ? "" : $"\n            public {innerClassInstanceName} {{ get; }} = new();\n")}
+        {{
             private static ResourceManager? s_resourceManager;
             public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager(""VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames"", typeof(ActivityEntrySortRuleNames).Assembly);
             public{(staticMembers ? " static" : "")} CultureInfo? CultureInfo {{ get; set; }}

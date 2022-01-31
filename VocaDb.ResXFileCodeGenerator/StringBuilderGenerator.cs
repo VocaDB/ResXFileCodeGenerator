@@ -73,19 +73,7 @@ public sealed class StringBuilderGenerator : IGenerator
 
 		if (options.InnerClassVisibility != InnerClassVisibility.NotGenerated)
 		{
-			builder.Append(indent);
-			builder.Append(options.InnerClassVisibility == InnerClassVisibility.SameAsOuter
-				? options.PublicClass ? "public" : "internal"
-				: options.InnerClassVisibility.ToString().ToLowerInvariant());
-			builder.Append(options.PartialClass ? " partial" : "");
-			builder.Append(options.StaticClass ? " static class " : " class ");
-
 			containerClassName = string.IsNullOrEmpty(options.InnerClassName) ? "Resources" : options.InnerClassName;
-			builder.AppendLine(containerClassName);
-			builder.Append(indent);
-			builder.AppendLine("{");
-
-			indent += "    ";
 			if (!string.IsNullOrEmpty(options.InnerClassInstanceName))
 			{
 				if (options.StaticClass || options.StaticMembers)
@@ -96,12 +84,26 @@ public sealed class StringBuilderGenerator : IGenerator
 
 				builder.Append(indent);
 				builder.Append("public ");
-				builder.Append(options.ClassName);
+				builder.Append(containerClassName);
 				builder.Append(" ");
 				builder.Append(options.InnerClassInstanceName);
 				builder.AppendLine(" { get; } = new();");
 				builder.AppendLine();
 			}
+
+			builder.Append(indent);
+			builder.Append(options.InnerClassVisibility == InnerClassVisibility.SameAsOuter
+				? options.PublicClass ? "public" : "internal"
+				: options.InnerClassVisibility.ToString().ToLowerInvariant());
+			builder.Append(options.PartialClass ? " partial" : "");
+			builder.Append(options.StaticClass ? " static class " : " class ");
+
+			builder.AppendLine(containerClassName);
+			builder.Append(indent);
+			builder.AppendLine("{");
+
+			indent += "    ";
+
 		}
 
 		builder.Append(indent);
