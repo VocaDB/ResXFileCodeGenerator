@@ -2,7 +2,7 @@
 
 namespace VocaDb.ResXFileCodeGenerator;
 
-public sealed class GlobalOptions
+public sealed record GlobalOptions //this must be a record or implement IEquatable<T>
 {
 	public string InnerClassInstanceName { get; }
 	public bool StaticMembers { get; }
@@ -14,6 +14,7 @@ public sealed class GlobalOptions
 	public bool StaticClass { get; }
 	public bool NullForgivingOperators { get; }
 	public bool PublicClass { get; }
+	public string ClassNamePostfix { get; }
 	public bool Valid { get; }
 
 	private GlobalOptions(AnalyzerConfigOptions options)
@@ -59,6 +60,12 @@ public sealed class GlobalOptions
 			partialClassSwitch is { Length: > 0 } &&
 			partialClassSwitch.Equals("true", StringComparison.OrdinalIgnoreCase);
 
+		ClassNamePostfix = "";
+		if (options.TryGetValue("build_property.ResXFileCodeGenerator_ClassNamePostfix", out var classNamePostfixSwitch))
+		{
+			ClassNamePostfix = classNamePostfixSwitch;
+		}
+
 		InnerClassVisibility = InnerClassVisibility.NotGenerated;
 		if (options.TryGetValue("build_property.ResXFileCodeGenerator_InnerClassVisibility",
 			    out var innerClassVisibilitySwitch) &&
@@ -86,4 +93,5 @@ public sealed class GlobalOptions
 		token.ThrowIfCancellationRequested();
 		return new(provider.GlobalOptions);
 	}
+
 }

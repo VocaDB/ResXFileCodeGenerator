@@ -114,6 +114,7 @@ namespace Resources
 			new()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
+				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames",
 				CustomToolNamespace = "Resources",
 				ClassName = "ActivityEntrySortRuleNames",
 				PublicClass = publicClass,
@@ -123,7 +124,8 @@ namespace Resources
 				StaticMembers = staticMembers
 			}
 		);
-		source.ReplaceLineEndings().Should().Be(expected.ReplaceLineEndings());
+		source.ErrorsAndWarnings.Should().BeNullOrEmpty();
+		source.SourceCode.ReplaceLineEndings().Should().Be(expected.ReplaceLineEndings());
 	}
 
 	private static void GenerateInner(IGenerator generator, bool publicClass = true, bool staticClass = false,
@@ -150,7 +152,7 @@ namespace Resources
         {(publicClass ? "public" : "internal")}{(partial ? " partial" : "")}{(staticClass ? " static" : "")} class {innerClassName}
         {{
             private static ResourceManager? s_resourceManager;
-            public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager(""VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames"", typeof(ActivityEntrySortRuleNames).Assembly);
+            public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager(""VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames"", typeof({innerClassName}).Assembly);
             public{(staticMembers ? " static" : "")} CultureInfo? CultureInfo {{ get; set; }}
 
             /// <summary>
@@ -166,12 +168,12 @@ namespace Resources
     }}
 }}";
 		using var resxStream = new StringReader(Text);
-		List<Diagnostic> errs = new();
 		var source = generator.Generate(
 			resxStream,
 			new()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
+				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames",
 				CustomToolNamespace = "Resources",
 				ClassName = "ActivityEntrySortRuleNames",
 				PublicClass = publicClass,
@@ -182,11 +184,10 @@ namespace Resources
 				InnerClassName = innerClassName,
 				InnerClassVisibility = innerClassVisibility,
 				InnerClassInstanceName = innerClassInstanceName
-			},
-			e => errs.Add(e)
+			}
 		);
-		errs.Should().HaveCount(0);
-		source.ReplaceLineEndings().Should().Be(expected.ReplaceLineEndings());
+		source.ErrorsAndWarnings.Should().BeNullOrEmpty();
+		source.SourceCode.ReplaceLineEndings().Should().Be(expected.ReplaceLineEndings());
 	}
 
 	[Fact]
@@ -446,6 +447,7 @@ namespace VocaDb.Web.App_GlobalResources
 			new()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
+				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
 				CustomToolNamespace = null,
 				ClassName = "CommonMessages",
 				PublicClass = true,
@@ -453,7 +455,8 @@ namespace VocaDb.Web.App_GlobalResources
 				StaticClass = true
 			}
 		);
-		source.ReplaceLineEndings().Should().Be(expected.ReplaceLineEndings());
+		source.ErrorsAndWarnings.Should().BeNullOrEmpty();
+		source.SourceCode.ReplaceLineEndings().Should().Be(expected.ReplaceLineEndings());
 	}
 
 	[Fact]
@@ -499,6 +502,7 @@ namespace VocaDb.Web.App_GlobalResources
 			new()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
+				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
 				CustomToolNamespace = null,
 				ClassName = "CommonMessages",
 				PublicClass = true,
@@ -506,7 +510,8 @@ namespace VocaDb.Web.App_GlobalResources
 				StaticClass = true
 			}
 		);
-		source.ReplaceLineEndings().Should().Be(expected.ReplaceLineEndings());
+		source.ErrorsAndWarnings.Should().BeNullOrEmpty();
+		source.SourceCode.ReplaceLineEndings().Should().Be(expected.ReplaceLineEndings());
 	}
 
 	[Fact]
@@ -524,21 +529,21 @@ namespace VocaDb.Web.App_GlobalResources
 
 		var generator = new StringBuilderGenerator();
 		using var resxStream = new StringReader(text);
-		List<Diagnostic> errs = new();
-
 		var source = generator.Generate(
 			resxStream,
 			new()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
+				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
 				CustomToolNamespace = null,
 				ClassName = "CommonMessages",
 				PublicClass = true,
 				NullForgivingOperators = false,
 				StaticClass = true
-			},
-			e => errs.Add(e)
+			}
 		);
+		var errs = source.ErrorsAndWarnings.ToList();
+		errs.Should().NotBeNull();
 		errs.Should().HaveCount(1);
 		errs[0].Id.Should().Be("VocaDbResXFileCodeGenerator001");
 		errs[0].Severity.Should().Be(DiagnosticSeverity.Warning);
@@ -558,21 +563,21 @@ namespace VocaDb.Web.App_GlobalResources
 
 		var generator = new StringBuilderGenerator();
 		using var resxStream = new StringReader(text);
-		List<Diagnostic> errs = new();
-
 		var source = generator.Generate(
 			resxStream,
 			new()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
+				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
 				CustomToolNamespace = null,
 				ClassName = "CommonMessages",
 				PublicClass = true,
 				NullForgivingOperators = false,
 				StaticClass = true
-			},
-			e => errs.Add(e)
+			}
 		);
+		var errs = source.ErrorsAndWarnings.ToList();
+		errs.Should().NotBeNull();
 		errs.Should().HaveCount(1);
 		errs[0].Id.Should().Be("VocaDbResXFileCodeGenerator002");
 		errs[0].Severity.Should().Be(DiagnosticSeverity.Warning);

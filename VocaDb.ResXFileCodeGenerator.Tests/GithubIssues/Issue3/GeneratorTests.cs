@@ -1,5 +1,6 @@
-using System.Xml;
+﻿using System.Xml;
 using FluentAssertions;
+using Microsoft.CodeAnalysis;
 using Xunit;
 
 namespace VocaDb.ResXFileCodeGenerator.Tests.GithubIssues.Issue3;
@@ -107,6 +108,7 @@ namespace VocaDb.Web.App_GlobalResources
 			new()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
+				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
 				CustomToolNamespace = null,
 				ClassName = "CommonMessages",
 				PublicClass = true,
@@ -114,7 +116,8 @@ namespace VocaDb.Web.App_GlobalResources
 				StaticClass = true
 			}
 		);
-		source.ReplaceLineEndings().Should().Be(expected.ReplaceLineEndings());
+		source.ErrorsAndWarnings.Should().BeNullOrEmpty();
+		source.SourceCode.ReplaceLineEndings().Should().Be(expected.ReplaceLineEndings());
 	}
 
 	[Fact]

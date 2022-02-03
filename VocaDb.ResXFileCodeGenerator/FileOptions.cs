@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace VocaDb.ResXFileCodeGenerator;
 
-public sealed record FileOptions
+public sealed record FileOptions //this must be a record or implement IEquatable<T>
 {
 	public string InnerClassInstanceName { get; init; }
 	public string InnerClassName { get; init; }
@@ -19,6 +19,7 @@ public sealed record FileOptions
 	public string? CustomToolNamespace { get; init; }
 	public string LocalNamespace { get; init; }
 	public bool Valid { get; init; }
+	public string EmbeddedFilename { get; init; }
 
 	/// <summary>
 	/// Unit test ctor
@@ -32,20 +33,33 @@ public sealed record FileOptions
 		InnerClassName = string.Empty;
 		File = null!;
 		FilePath = string.Empty;
+		EmbeddedFilename = string.Empty;
 	}
 
 	private FileOptions(AdditionalText file, AnalyzerConfigOptions options, GlobalOptions globalOptions)
 	{
 		File = file;
 		var resxFilePath = file.Path;
-		LocalNamespace = Utilities.GetLocalNamespace(
+
+		var classNameFromFileName = Utilities.GetClassNameFromPath(resxFilePath);
+
+		var detectedNamespace = Utilities.GetLocalNamespace(
 			resxFilePath,
-			options.TryGetValue("build_metadata.EmbeddedResource.TargetPath", out var targetPath) &&
-			targetPath is { Length: > 0 }
-				? targetPath
+			options.TryGetValue("build_metadata.EmbeddedResource.Link", out var link) &&
+			link is { Length: > 0 }
+				? link
 				: null,
 			globalOptions.ProjectFullPath,
 			globalOptions.RootNamespace);
+		EmbeddedFilename = detectedNamespace + "." + classNameFromFileName;
+
+		LocalNamespace = options.TryGetValue("build_metadata.EmbeddedResource.TargetPath", out var targetPath) &&
+		                 targetPath is { Length: > 0 }
+			? Utilities.GetLocalNamespace(
+				resxFilePath, targetPath,
+				globalOptions.ProjectFullPath,
+				globalOptions.RootNamespace)
+			: detectedNamespace;
 
 		CustomToolNamespace =
 			options.TryGetValue("build_metadata.EmbeddedResource.CustomToolNamespace",
@@ -53,7 +67,11 @@ public sealed record FileOptions
 				? customToolNamespace
 				: null;
 
-		ClassName = Utilities.GetClassNameFromPath(resxFilePath);
+		ClassName =
+			options.TryGetValue("build_metadata.EmbeddedResource.ClassNamePostfix", out var perFileClassNameSwitch) &&
+			perFileClassNameSwitch is { Length: > 0 }
+				? classNameFromFileName + perFileClassNameSwitch
+				: classNameFromFileName + globalOptions.ClassNamePostfix;
 
 		NullForgivingOperators = globalOptions.NullForgivingOperators;
 

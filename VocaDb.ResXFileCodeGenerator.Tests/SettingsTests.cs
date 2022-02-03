@@ -19,6 +19,7 @@ public class SettingsTests
 		globalOptions.RootNamespace.Should().Be("required1");
 		globalOptions.ProjectFullPath.Should().Be("required2");
 		globalOptions.InnerClassName.Should().BeNullOrEmpty();
+		globalOptions.ClassNamePostfix.Should().BeNullOrEmpty();
 		globalOptions.InnerClassInstanceName.Should().BeNullOrEmpty();
 		globalOptions.InnerClassVisibility.Should().Be(InnerClassVisibility.NotGenerated);
 		globalOptions.NullForgivingOperators.Should().Be(false);
@@ -38,6 +39,7 @@ public class SettingsTests
 				RootNamespace = "required1", MSBuildProjectFullPath = "required2",
 				ResXFileCodeGenerator_InnerClassName = "test1",
 				ResXFileCodeGenerator_InnerClassInstanceName = "test2",
+				ResXFileCodeGenerator_ClassNamePostfix= "test3",
 				ResXFileCodeGenerator_InnerClassVisibility = "public",
 				ResXFileCodeGenerator_NullForgivingOperators = "true",
 				ResXFileCodeGenerator_StaticClass = "false",
@@ -49,6 +51,7 @@ public class SettingsTests
 		globalOptions.ProjectFullPath.Should().Be("required2");
 		globalOptions.InnerClassName.Should().Be("test1");
 		globalOptions.InnerClassInstanceName.Should().Be("test2");
+		globalOptions.ClassNamePostfix.Should().Be("test3");
 		globalOptions.InnerClassVisibility.Should().Be(InnerClassVisibility.Public);
 		globalOptions.NullForgivingOperators.Should().Be(true);
 		globalOptions.StaticClass.Should().Be(false);
@@ -75,6 +78,16 @@ public class SettingsTests
 		fileOptions.CustomToolNamespace.Should().BeNullOrEmpty();
 		fileOptions.FilePath.Should().Be("Path1.resx");
 		fileOptions.ClassName.Should().Be("Path1");
+		fileOptions.Valid.Should().Be(true);
+	}
+
+	
+	[Fact]
+	public void File_PostFix()
+	{
+		var fileOptions = FileOptions.Select(new AdditionalTextStub("Path1.resx"), new AnalyzerConfigOptionsProviderStub(
+			null!, new AnalyzerConfigOptionsStub(){ClassNamePostfix = "test1"}), s_globalOptions, default);
+		fileOptions.ClassName.Should().Be("Path1test1");
 		fileOptions.Valid.Should().Be(true);
 	}
 
@@ -111,6 +124,41 @@ public class SettingsTests
 		fileOptions.ClassName.Should().Be("Path1");
 	}
 
+	[Fact]
+	public void FileSettings_RespectsGlobalDefaults()
+	{
+		var globalOptions = GlobalOptions.Select(new AnalyzerConfigOptionsProviderStub(
+			new AnalyzerConfigOptionsStub
+			{
+				RootNamespace = "required1", MSBuildProjectFullPath = "required2",
+				ResXFileCodeGenerator_InnerClassName = "test1",
+				ResXFileCodeGenerator_InnerClassInstanceName = "test2",
+				ResXFileCodeGenerator_ClassNamePostfix= "test3",
+				ResXFileCodeGenerator_InnerClassVisibility = "public",
+				ResXFileCodeGenerator_NullForgivingOperators = "true",
+				ResXFileCodeGenerator_StaticClass = "false",
+				ResXFileCodeGenerator_StaticMembers = "false",
+				ResXFileCodeGenerator_PublicClass = "true",
+				ResXFileCodeGenerator_PartialClass = "true",
+			}, null!), default);
+		var fileOptions = FileOptions.Select(new AdditionalTextStub("Path1.resx"), new AnalyzerConfigOptionsProviderStub(
+			null!, new AnalyzerConfigOptionsStub()), globalOptions, default);
+		fileOptions.InnerClassName.Should().Be("test1");
+		fileOptions.InnerClassInstanceName.Should().Be("test2");
+		fileOptions.InnerClassVisibility.Should().Be(InnerClassVisibility.Public);
+		fileOptions.NullForgivingOperators.Should().Be(true);
+		fileOptions.StaticClass.Should().Be(false);
+		fileOptions.StaticMembers.Should().Be(false);
+		fileOptions.PublicClass.Should().Be(true);
+		fileOptions.PartialClass.Should().Be(true);
+		fileOptions.Valid.Should().Be(true);
+		fileOptions.LocalNamespace.Should().Be("required1");
+		fileOptions.CustomToolNamespace.Should().BeNullOrEmpty();
+		fileOptions.FilePath.Should().Be("Path1.resx");
+		fileOptions.ClassName.Should().Be("Path1test3");
+		fileOptions.Valid.Should().Be(true);
+	}
+
 	private class AdditionalTextStub : AdditionalText
 	{
 		public override SourceText? GetText(CancellationToken cancellationToken = new()) => throw new NotImplementedException();
@@ -122,6 +170,7 @@ public class SettingsTests
 		// ReSharper disable InconsistentNaming
 		public string? MSBuildProjectFullPath { get; init; }
 		public string? RootNamespace { get; init; }
+		public string? ResXFileCodeGenerator_ClassNamePostfix { get; init; }
 		public string? ResXFileCodeGenerator_PublicClass { get; init; }
 		public string? ResXFileCodeGenerator_NullForgivingOperators { get; init; }
 		public string? ResXFileCodeGenerator_StaticClass { get; init; }
@@ -132,6 +181,7 @@ public class SettingsTests
 		public string? ResXFileCodeGenerator_InnerClassInstanceName { get; init; }
 		public string? CustomToolNamespace { get; init; }
 		public string? TargetPath { get; init; }
+		public string? ClassNamePostfix { get; init; }
 		public string? PublicClass { get; init; }
 		public string? NullForgivingOperators { get; init; }
 		public string? StaticClass { get; init; }
@@ -149,6 +199,7 @@ public class SettingsTests
 				{
 					"build_property.MSBuildProjectFullPath" => MSBuildProjectFullPath,
 					"build_property.RootNamespace" => RootNamespace,
+					"build_property.ResXFileCodeGenerator_ClassNamePostfix" => ResXFileCodeGenerator_ClassNamePostfix,
 					"build_property.ResXFileCodeGenerator_PublicClass" => ResXFileCodeGenerator_PublicClass,
 					"build_property.ResXFileCodeGenerator_NullForgivingOperators" => ResXFileCodeGenerator_NullForgivingOperators,
 					"build_property.ResXFileCodeGenerator_StaticClass" => ResXFileCodeGenerator_StaticClass,
@@ -159,6 +210,7 @@ public class SettingsTests
 					"build_property.ResXFileCodeGenerator_InnerClassInstanceName" => ResXFileCodeGenerator_InnerClassInstanceName,
 					"build_metadata.EmbeddedResource.CustomToolNamespace" => CustomToolNamespace,
 					"build_metadata.EmbeddedResource.TargetPath" => TargetPath,
+					"build_metadata.EmbeddedResource.ClassNamePostfix" => ClassNamePostfix,
 					"build_metadata.EmbeddedResource.PublicClass" => PublicClass,
 					"build_metadata.EmbeddedResource.NullForgivingOperators" => NullForgivingOperators,
 					"build_metadata.EmbeddedResource.StaticClass" => StaticClass,

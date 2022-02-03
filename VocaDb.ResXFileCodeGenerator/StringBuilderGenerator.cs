@@ -39,8 +39,11 @@ public sealed class StringBuilderGenerator : IGenerator
 		DiagnosticSeverity.Error,
 		true);
 
-	public string Generate(TextReader resxStream, FileOptions options, Action<Diagnostic>? reportError = null)
+	public (string generatedFileName, string SourceCode, IEnumerable<Diagnostic> ErrorsAndWarnings) Generate(
+		TextReader resxStream, FileOptions options, CancellationToken cancellationToken = default)
 	{
+		var errorsAndWarnings = new List<Diagnostic>();
+
 		// HACK: netstandard2.0 doesn't support improved interpolated strings?
 		var builder = GetBuilder();
 
@@ -78,7 +81,7 @@ public sealed class StringBuilderGenerator : IGenerator
 			{
 				if (options.StaticClass || options.StaticMembers)
 				{
-					reportError?.Invoke(Diagnostic.Create(s_memberWithStaticError,
+					errorsAndWarnings.Add(Diagnostic.Create(s_memberWithStaticError,
 						Location.Create(options.FilePath, new(), new())));
 				}
 
@@ -123,11 +126,9 @@ public sealed class StringBuilderGenerator : IGenerator
 		builder.Append(" ??= new ");
 		builder.Append(nameof(ResourceManager));
 		builder.Append("(\"");
-		builder.Append(options.LocalNamespace);
-		builder.Append(".");
-		builder.Append(options.ClassName);
+		builder.Append(options.EmbeddedFilename);
 		builder.Append("\", typeof(");
-		builder.Append(options.ClassName);
+		builder.Append(containerClassName);
 		builder.AppendLine(").Assembly);");
 
 		builder.Append(indent);
@@ -137,80 +138,6 @@ public sealed class StringBuilderGenerator : IGenerator
 		builder.Append("? ");
 		builder.Append(Constants.CultureInfoVariable);
 		builder.AppendLine(" { get; set; }");
-
-		static void CreateMember(string indent, StringBuilder builder, FileOptions options, string name, string value,
-			IXmlLineInfo line, HashSet<string> alreadyAddedMembers, Action<Diagnostic>? reportError, string containerclassname)
-		{
-			string memberName;
-			bool resourceAccessByName;
-
-			if (s_validMemberNamePattern.IsMatch(name))
-			{
-				memberName = name;
-				resourceAccessByName = true;
-			}
-			else
-			{
-				memberName = s_invalidMemberNameSymbols.Replace(name, "_");
-				resourceAccessByName = false;
-			}
-
-			static Location GetMemberLocation(FileOptions fileOptions, IXmlLineInfo line, string memberName) =>
-				Location.Create(fileOptions.FilePath, new(),
-					new(new(line.LineNumber - 1, line.LinePosition - 1),
-						new(line.LineNumber - 1, line.LinePosition - 1 + memberName.Length)));
-
-			if (!alreadyAddedMembers.Add(memberName))
-			{
-				reportError?.Invoke(Diagnostic.Create(s_duplicateWarning, GetMemberLocation(options, line, memberName), memberName));
-				return;
-			}
-
-			if (memberName == containerclassname)
-			{
-				reportError?.Invoke(Diagnostic.Create(s_memberSameAsClassWarning, GetMemberLocation(options, line, memberName), memberName));
-				return;
-			}
-			builder.AppendLine();
-
-			builder.Append(indent);
-			builder.AppendLine("/// <summary>");
-
-			builder.Append(indent);
-			builder.Append("/// Looks up a localized string similar to ");
-			builder.Append(HttpUtility.HtmlEncode(value.Trim().Replace("\r\n", "\n").Replace("\r", "\n")
-				.Replace("\n", Environment.NewLine + "        /// ")));
-			builder.AppendLine(".");
-
-			builder.Append(indent);
-			builder.AppendLine("/// </summary>");
-
-			builder.Append(indent);
-			builder.Append("public ");
-			builder.Append(options.StaticMembers ? "static " : "");
-			builder.Append("string");
-			builder.Append(options.NullForgivingOperators ? null : "?");
-			builder.Append(" ");
-			builder.Append(memberName);
-
-			if (resourceAccessByName)
-			{
-				builder.Append(" => ResourceManager.GetString(nameof(");
-				builder.Append(name);
-				builder.Append("), ");
-			}
-			else
-			{
-				builder.Append(@" => ResourceManager.GetString(""");
-				builder.Append(name.Replace(@"""", @"\"""));
-				builder.Append(@""", ");
-			}
-
-			builder.Append(Constants.CultureInfoVariable);
-			builder.Append(")");
-			builder.Append(options.NullForgivingOperators ? "!" : null);
-			builder.AppendLine(";");
-		}
 
 		if (XDocument.Load(resxStream, LoadOptions.SetLineInfo).Root is { } element)
 		{
@@ -223,7 +150,8 @@ public sealed class StringBuilderGenerator : IGenerator
 			HashSet<string> alreadyAddedMembers = new() { Constants.CultureInfoVariable };
 			foreach (var ((key, value, line), index) in members.Select((kv, index) => (kv, index)))
 			{
-				CreateMember(indent, builder, options, key, value, line, alreadyAddedMembers, reportError, containerClassName);
+				cancellationToken.ThrowIfCancellationRequested();
+				CreateMember(indent, builder, options, key, value, line, alreadyAddedMembers, errorsAndWarnings, containerClassName);
 			}
 		}
 
@@ -236,8 +164,87 @@ public sealed class StringBuilderGenerator : IGenerator
 
 		builder.Append("}");
 
-		return builder.ToString();
+		return ($"{options.LocalNamespace}.{options.ClassName}.g.cs", builder.ToString(), errorsAndWarnings);
 	}
+
+	static void CreateMember(string indent, StringBuilder builder, FileOptions options, string name, string value,
+		IXmlLineInfo line, HashSet<string> alreadyAddedMembers, List<Diagnostic> errorsAndWarnings,
+		string containerclassname)
+	{
+		string memberName;
+		bool resourceAccessByName;
+
+		if (s_validMemberNamePattern.IsMatch(name))
+		{
+			memberName = name;
+			resourceAccessByName = true;
+		}
+		else
+		{
+			memberName = s_invalidMemberNameSymbols.Replace(name, "_");
+			resourceAccessByName = false;
+		}
+
+		static Location GetMemberLocation(FileOptions fileOptions, IXmlLineInfo line, string memberName) =>
+			Location.Create(fileOptions.FilePath, new(),
+				new(new(line.LineNumber - 1, line.LinePosition - 1),
+					new(line.LineNumber - 1, line.LinePosition - 1 + memberName.Length)));
+
+		if (!alreadyAddedMembers.Add(memberName))
+		{
+			errorsAndWarnings.Add(Diagnostic.Create(s_duplicateWarning, GetMemberLocation(options, line, memberName),
+				memberName));
+			return;
+		}
+
+		if (memberName == containerclassname)
+		{
+			errorsAndWarnings.Add(Diagnostic.Create(s_memberSameAsClassWarning,
+				GetMemberLocation(options, line, memberName), memberName));
+			return;
+		}
+
+		builder.AppendLine();
+
+		builder.Append(indent);
+		builder.AppendLine("/// <summary>");
+
+		builder.Append(indent);
+		builder.Append("/// Looks up a localized string similar to ");
+		builder.Append(HttpUtility.HtmlEncode(value.Trim().Replace("\r\n", "\n").Replace("\r", "\n")
+			.Replace("\n", Environment.NewLine + "        /// ")));
+		builder.AppendLine(".");
+
+		builder.Append(indent);
+		builder.AppendLine("/// </summary>");
+
+		builder.Append(indent);
+		builder.Append("public ");
+		builder.Append(options.StaticMembers ? "static " : "");
+		builder.Append("string");
+		builder.Append(options.NullForgivingOperators ? null : "?");
+		builder.Append(" ");
+		builder.Append(memberName);
+
+		if (resourceAccessByName)
+		{
+			builder.Append(" => ResourceManager.GetString(nameof(");
+			builder.Append(name);
+			builder.Append("), ");
+		}
+		else
+		{
+			builder.Append(@" => ResourceManager.GetString(""");
+			builder.Append(name.Replace(@"""", @"\"""));
+			builder.Append(@""", ");
+		}
+
+		builder.Append(Constants.CultureInfoVariable);
+		builder.Append(")");
+		builder.Append(options.NullForgivingOperators ? "!" : null);
+		builder.AppendLine(";");
+	}
+
 
 	private static StringBuilder GetBuilder()
 	{

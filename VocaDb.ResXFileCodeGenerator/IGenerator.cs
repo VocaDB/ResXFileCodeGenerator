@@ -4,5 +4,6 @@ namespace VocaDb.ResXFileCodeGenerator;
 
 public interface IGenerator
 {
-	string Generate(TextReader resxStream, FileOptions options, Action<Diagnostic>? reportError = null);
+	(string generatedFileName, string SourceCode, IEnumerable<Diagnostic> ErrorsAndWarnings) Generate(
+		TextReader resxStream, FileOptions options, CancellationToken cancellationToken = default);
 }

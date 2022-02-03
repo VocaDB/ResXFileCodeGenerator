@@ -57,6 +57,10 @@ namespace Resources
 
 * Added the ability to generate inner classes, partial outer classes and non-static members. Very useful if you want to ensure that only a particular class can use those resources instead of being spread around the codebase.
 
+* Use same 'Link' setting as msbuild uses to determine embedded file name.
+
+* Can set a class postfix name
+
 ## Options
 
 ### PublicClass (per file or globally)
@@ -164,6 +168,38 @@ or globally
 ```xml
 <PropertyGroup>
   <ResXFileCodeGenerator_StaticMembers>false</ResXFileCodeGenerator_StaticMembers>
+</PropertyGroup>
+```
+
+### Postfix class name (per file or globally)
+
+In some cases the it is useful if the name of the generated class doesn't follow the filename.
+
+A clear example is Razor pages that always generates a class for the code-behind named "-Model".
+This example configuration allows you to use Resources.MyResource in your model, or @Model.Resources.MyResource in your cshtml file.
+
+```xml
+<ItemGroup>
+  <EmbeddedResource Update="**/Pages/*.resx">
+    <ClassNamePostfix>Model</ClassNamePostfix>
+    <StaticMembers>false</StaticMembers>
+    <StaticClass>false</StaticClass>
+    <PartialClass>true</PartialClass>
+    <PublicClass>true</PublicClass>
+    <InnerClassVisibility>public</InnerClassVisibility>
+    <PartialClass>false</PartialClass>
+    <InnerClassInstanceName>Resources</InnerClassInstanceName>
+    <InnerClassName>_Resources</InnerClassName>
+  </EmbeddedResource>
+</ItemGroup>
+```
+
+
+or just the postfix globally
+
+```xml
+<PropertyGroup>
+  <ResXFileCodeGenerator_ClassNamePostfix>Model</ResXFileCodeGenerator_ClassNamePostfix>
 </PropertyGroup>
 ```
 
@@ -317,32 +353,44 @@ For brevity, settings to make everything non-static is obmitted.
 
 ## Resource file namespaces
 
-Linked resources namespace follow `TargetPath` if it is set.
+Linked resources namespace follow `Link` if it is set. The `Link` setting is also used by msbuild built-in 'resgen.exe' to determine the embedded filename.
 
 Use-case: Linking `.resx` files from outside source (e.g. generated in a localization sub-module by translators) and expose them as "Resources" namespace.
 
 ```xml
 <ItemGroup>
-  <EmbeddedResource Include="..\..\Another.Project\Translations\*.resx" Exclude="..\..\Another.Project\Translations\*.*.resx">
+  <EmbeddedResource Include="..\..\Another.Project\Translations\*.resx">
     <Link>Resources\%(FileName)%(Extension)</Link>
-    <TargetPath>Resources\%(FileName)%(Extension)</TargetPath>
     <PublicClass>true</PublicClass>
     <StaticClass>false</StaticClass>
   </EmbeddedResource>
-  <EmbeddedResource Include="..\..\Another.Project\Translations\*.*.resx">
-    <Link>Resources\%(FileName)%(Extension)</Link>
-    <TargetPath>Resources\%(FileName)%(Extension)</TargetPath>
+  <EmbeddedResource Update="..\..\Another.Project\Translations\*.*.resx">
     <DependentUpon>$([System.IO.Path]::GetFilenameWithoutExtension([System.String]::Copy('%(FileName)'))).resx</DependentUpon>
   </EmbeddedResource>
 </ItemGroup>
 ```
 
-It is also possible to set the namespace using the `CustomToolNamespace` setting. Unlike the `TargetPath`, which will prepend the assemblys namespace, the `CustomToolNamespace` is taken verbatim.
+You can also use the `TargetPath` to just overwrite the namespace
+
+```xml
+<ItemGroup>
+  <EmbeddedResource Include="..\..\Another.Project\Translations\*.resx">
+    <TargetPath>Resources\%(FileName)%(Extension)</TargetPath>
+    <PublicClass>true</PublicClass>
+    <StaticClass>false</StaticClass>
+  </EmbeddedResource>
+  <EmbeddedResource Update="..\..\Another.Project\Translations\*.*.resx">
+    <DependentUpon>$([System.IO.Path]::GetFilenameWithoutExtension([System.String]::Copy('%(FileName)'))).resx</DependentUpon>
+  </EmbeddedResource>
+</ItemGroup>
+```
+
+It is also possible to set the namespace using the `CustomToolNamespace` setting. Unlike the `Link` and `TargetPath`, which will prepend the assemblys namespace and includes the filename, the `CustomToolNamespace` is taken verbatim.
 
 ```xml
 <ItemGroup>
   <EmbeddedResource Update="**\*.resx">
-    <CustomToolNamespace>MyNamespace.AllMyResourcesNamespace</CustomToolNamespace>
+    <CustomToolNamespace>MyNamespace.AllMyResourcesAreBelongToYouNamespace</CustomToolNamespace>
   </EmbeddedResource>
 </ItemGroup>
 ```
