@@ -4,6 +4,15 @@ namespace VocaDb.ResXFileCodeGenerator;
 
 public interface IGenerator
 {
-	(string generatedFileName, string SourceCode, IEnumerable<Diagnostic> ErrorsAndWarnings) Generate(
-		TextReader resxStream, FileOptions options, CancellationToken cancellationToken = default);
+	/// <summary>
+	/// Generate source file with properties for each translated resource
+	/// </summary>
+	(string generatedFileName, string SourceCode, IEnumerable<Diagnostic> ErrorsAndWarnings)
+		Generate(FileOptions options, CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Generate helper functions to determine which translated resource to use in the current moment
+	/// </summary>
+	(string generatedFileName, string SourceCode, IEnumerable<Diagnostic> ErrorsAndWarnings)
+		Generate(CultureInfoCombo combo, CancellationToken cancellationToken);
 }

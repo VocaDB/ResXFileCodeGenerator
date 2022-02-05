@@ -1,6 +1,5 @@
 ﻿using System.Xml;
 using FluentAssertions;
-using Microsoft.CodeAnalysis;
 using Xunit;
 
 namespace VocaDb.ResXFileCodeGenerator.Tests.GithubIssues.Issue3;
@@ -84,32 +83,30 @@ public class GeneratorTests
 // </auto-generated>
 // ------------------------------------------------------------------------------
 #nullable enable
-namespace VocaDb.Web.App_GlobalResources
+namespace VocaDb.Web.App_GlobalResources;
+using System.Globalization;
+using System.Resources;
+
+public static class CommonMessages
 {
-    using System.Globalization;
-    using System.Resources;
+    private static ResourceManager? s_resourceManager;
+    public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager(""VocaDb.Web.App_GlobalResources.CommonMessages"", typeof(CommonMessages).Assembly);
+    public static CultureInfo? CultureInfo { get; set; }
 
-    public static class CommonMessages
-    {
-        private static ResourceManager? s_resourceManager;
-        public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager(""VocaDb.Web.App_GlobalResources.CommonMessages"", typeof(CommonMessages).Assembly);
-        public static CultureInfo? CultureInfo { get; set; }
-
-        /// <summary>
-        /// Looks up a localized string similar to String &#39;{0}&#39; is not a valid identifier..
-        /// </summary>
-        public static string? Invalid_identifier__0_ => ResourceManager.GetString(""Invalid identifier {0}"", CultureInfo);
-    }
-}";
+    /// <summary>
+    /// Looks up a localized string similar to String &#39;{0}&#39; is not a valid identifier..
+    /// </summary>
+    public static string? Invalid_identifier__0_ => ResourceManager.GetString(""Invalid identifier {0}"", CultureInfo);
+}
+";
 		var generator = new StringBuilderGenerator();
-		using var resxStream = new StringReader(text);
 		var source = generator.Generate(
-			resxStream,
 			new()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
 				CustomToolNamespace = null,
+				File = new AdditionalTextStub("", text),
 				ClassName = "CommonMessages",
 				PublicClass = true,
 				NullForgivingOperators = false,
@@ -191,16 +188,16 @@ namespace VocaDb.Web.App_GlobalResources
   </data>
 </root>";
 		var generator = new StringBuilderGenerator();
-		using var resxStream = new StringReader(text);
 		var options = new FileOptions
 		{
 			LocalNamespace = "VocaDb.Web.App_GlobalResources",
 			CustomToolNamespace = "Resources",
 			ClassName = "ActivityEntrySortRuleNames",
+			File = new AdditionalTextStub("", text),
 			PublicClass = true,
 			NullForgivingOperators = false,
 			StaticClass = true
 		};
-		generator.Invoking(subject => subject.Generate(resxStream, options)).Should().Throw<XmlException>();
+		generator.Invoking(subject => subject.Generate(options)).Should().Throw<XmlException>();
 	}
 }

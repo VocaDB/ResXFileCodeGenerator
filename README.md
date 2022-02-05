@@ -61,6 +61,10 @@ namespace Resources
 
 * Can set a class postfix name
 
+## New in version 3.1
+
+* The generator can now generate code to lookup translations instead of using the 20 year old System.Resources.ResourceManager
+
 ## Options
 
 ### PublicClass (per file or globally)
@@ -350,6 +354,77 @@ or globally
 ```
 
 For brevity, settings to make everything non-static is obmitted.
+
+### Generate Code (per file or globally)
+
+By default the ancient `System.Resources.ResourceManager` is used.
+
+Benefits of using `System.Resources.ResourceManager`:
+
+* Supports custom `CultureInfo`
+* Languages are only loaded the first time a language is referenced
+* Only use memory for the languages used
+* Can ship satellite dlls seperately
+
+Disadvantages of using `System.Resources.ResourceManager`
+
+* The satellite dlls are always lazy loaded, so cold start penalty is high
+* Satellite dlls requires that you can scan the dir for which files are available, which can cause issues in some project types
+* Loading a satellite dll takes way more memory than just loading the respective strings
+* Build time for .resources -> satellite dll can be quite slow (~150msec per file)
+* Linker optimization doesn't work, since it cannot know which resources are referenced
+
+Benefits of using `VocaDB` code generation:
+
+* All languages are placed in the main dll, no more satellite dlls
+* Lookup speed is ~600% faster (5ns vs 33ns)
+* Zero allocations
+* Very small code footprint (about 10 bytes per language, instead of including the entire `System.Resources`)
+* Very fast build time
+* Because all code is referencing the strings directly, the linker can see which strings are actually used and which are not.
+* No cold start penalty
+* Smaller combined size of dll (up to 50%, since it doesn't need to store the keys for every single language)
+
+Disadvantages of using `VocaDB` code generation
+
+* Since `CultureInfo` are pre-computed, custom `CultureInfo` are not supported (or rather, they always return the default language)
+* Cannot lookup "all" keys (unless using reflection)
+* Main dll size increased since it contains all language strings (sometimes, the compiler can pack code strings much better than resource strings and it doesn't need to store the keys)
+
+Notice, it is required to set `GenerateResource` to false for all resx files to prevent the built-in resgen.exe from running.
+
+```xml
+<ItemGroup>
+	<EmbeddedResource Update="**/*.resx">
+		<UseVocaDbResManager>true</UseVocaDbResManager>
+		<GenerateResource>false</GenerateResource>
+	</EmbeddedResource>
+</ItemGroup>
+```
+
+or globally
+
+```xml
+<PropertyGroup>
+  <ResXFileCodeGenerator_UseVocaDbResManager>true</ResXFileCodeGenerator_UseVocaDbResManager>
+</PropertyGroup>
+<ItemGroup>
+	<EmbeddedResource Update="@(EmbeddedResource)">
+		<GenerateResource>false</GenerateResource>
+	</EmbeddedResource>
+</ItemGroup>
+```
+
+If you get build error MSB3030, add this to your csproj to prevent it from trying to copy satellite dlls that no longer exists
+
+```xml
+<Target Name="PreventMSB3030" DependsOnTargets="ComputeIntermediateSatelliteAssemblies" BeforeTargets="GenerateSatelliteAssemblies" >
+  <ItemGroup>
+    <IntermediateSatelliteAssembliesWithTargetPath Remove="@(IntermediateSatelliteAssembliesWithTargetPath)"></IntermediateSatelliteAssembliesWithTargetPath>
+  </ItemGroup>   
+</Target>
+```
+
 
 ## Resource file namespaces
 

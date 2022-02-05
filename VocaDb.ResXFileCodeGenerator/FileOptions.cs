@@ -11,15 +11,16 @@ public sealed record FileOptions //this must be a record or implement IEquatable
 	public bool PartialClass { get; init; }
 	public bool StaticMembers { get; init; } = true;
 	public AdditionalText File { get; init; }
-	public string FilePath { get; init; }
 	public bool StaticClass { get; init; }
 	public bool NullForgivingOperators { get; init; }
 	public bool PublicClass { get; init; }
 	public string ClassName { get; init; }
 	public string? CustomToolNamespace { get; init; }
 	public string LocalNamespace { get; init; }
-	public bool Valid { get; init; }
+	public bool UseVocaDbResManager { get; init; }
 	public string EmbeddedFilename { get; init; }
+	public IReadOnlyList<AdditionalText> SubFiles { get; init; }
+	public bool Valid { get; init; }
 
 	/// <summary>
 	/// Unit test ctor
@@ -32,13 +33,15 @@ public sealed record FileOptions //this must be a record or implement IEquatable
 		InnerClassInstanceName = string.Empty;
 		InnerClassName = string.Empty;
 		File = null!;
-		FilePath = string.Empty;
 		EmbeddedFilename = string.Empty;
+		SubFiles = new List<AdditionalText>();
 	}
 
-	private FileOptions(AdditionalText file, AnalyzerConfigOptions options, GlobalOptions globalOptions)
+	private FileOptions(AdditionalText file, AnalyzerConfigOptions options, GlobalOptions globalOptions,
+		IReadOnlyList<AdditionalText>? additionalTexts = null)
 	{
 		File = file;
+		SubFiles = additionalTexts ?? Array.Empty<AdditionalText>();
 		var resxFilePath = file.Path;
 
 		var classNameFromFileName = Utilities.GetClassNameFromPath(resxFilePath);
@@ -122,15 +125,20 @@ public sealed record FileOptions //this must be a record or implement IEquatable
 			InnerClassInstanceName = innerClassInstanceNameSwitch;
 		}
 
-		FilePath = resxFilePath;
+		UseVocaDbResManager = globalOptions.UseVocaDbResManager;
+		if (options.TryGetValue("build_metadata.EmbeddedResource.UseVocaDbResManager", out var genCodeSwitch)&&
+		    genCodeSwitch is { Length: > 0 })
+		{
+			UseVocaDbResManager = genCodeSwitch.Equals("true", StringComparison.OrdinalIgnoreCase);
+		}
 
 		Valid = globalOptions.Valid;
 	}
 
-	public static FileOptions Select(AdditionalText file, AnalyzerConfigOptionsProvider options,
+	public static FileOptions Select(GroupedAdditionalFile file, AnalyzerConfigOptionsProvider options,
 		GlobalOptions globalOptions, CancellationToken token)
 	{
 		token.ThrowIfCancellationRequested();
-		return new(file, options.GetOptions(file), globalOptions);
+		return new(file.Mainfile, options.GetOptions(file.Mainfile), globalOptions, file.Subfiles);
 	}
 }

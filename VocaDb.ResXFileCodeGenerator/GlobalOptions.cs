@@ -15,7 +15,9 @@ public sealed record GlobalOptions //this must be a record or implement IEquatab
 	public bool NullForgivingOperators { get; }
 	public bool PublicClass { get; }
 	public string ClassNamePostfix { get; }
+	public bool UseVocaDbResManager { get; }
 	public bool Valid { get; }
+
 
 	private GlobalOptions(AnalyzerConfigOptions options)
 	{
@@ -85,6 +87,14 @@ public sealed record GlobalOptions //this must be a record or implement IEquatab
 			    out var innerClassInstanceNameSwitch))
 		{
 			InnerClassInstanceName = innerClassInstanceNameSwitch;
+		}
+
+		UseVocaDbResManager = false;
+		if (options.TryGetValue("build_property.ResXFileCodeGenerator_UseVocaDbResManager", out var genCodeSwitch) &&
+		    genCodeSwitch is { Length: > 0 } &&
+		    genCodeSwitch.Equals("true", StringComparison.OrdinalIgnoreCase))
+		{
+			UseVocaDbResManager = true;
 		}
 	}
 

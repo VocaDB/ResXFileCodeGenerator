@@ -86,37 +86,35 @@ public class GeneratorTests
 // </auto-generated>
 // ------------------------------------------------------------------------------
 #nullable enable
-namespace Resources
+namespace Resources;
+using System.Globalization;
+using System.Resources;
+
+{(publicClass ? "public" : "internal")}{(partial ? " partial" : "")}{(staticClass ? " static" : "")} class ActivityEntrySortRuleNames
 {{
-    using System.Globalization;
-    using System.Resources;
+    private static ResourceManager? s_resourceManager;
+    public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager(""VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames"", typeof(ActivityEntrySortRuleNames).Assembly);
+    public{(staticMembers ? " static" : "")} CultureInfo? CultureInfo {{ get; set; }}
 
-    {(publicClass ? "public" : "internal")}{(partial ? " partial" : "")}{(staticClass ? " static" : "")} class ActivityEntrySortRuleNames
-    {{
-        private static ResourceManager? s_resourceManager;
-        public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager(""VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames"", typeof(ActivityEntrySortRuleNames).Assembly);
-        public{(staticMembers ? " static" : "")} CultureInfo? CultureInfo {{ get; set; }}
+    /// <summary>
+    /// Looks up a localized string similar to Oldest.
+    /// </summary>
+    public{(staticMembers ? " static" : "")} string{(nullForgivingOperators ? "" : "?")} CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo){(nullForgivingOperators ? "!" : "")};
 
-        /// <summary>
-        /// Looks up a localized string similar to Oldest.
-        /// </summary>
-        public{(staticMembers ? " static" : "")} string{(nullForgivingOperators ? "" : "?")} CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo){(nullForgivingOperators ? "!" : "")};
-
-        /// <summary>
-        /// Looks up a localized string similar to Newest.
-        /// </summary>
-        public{(staticMembers ? " static" : "")} string{(nullForgivingOperators ? "" : "?")} CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo){(nullForgivingOperators ? "!" : "")};
-    }}
-}}";
-		using var resxStream = new StringReader(Text);
+    /// <summary>
+    /// Looks up a localized string similar to Newest.
+    /// </summary>
+    public{(staticMembers ? " static" : "")} string{(nullForgivingOperators ? "" : "?")} CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo){(nullForgivingOperators ? "!" : "")};
+}}
+";
 		var source = generator.Generate(
-			resxStream,
 			new()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames",
 				CustomToolNamespace = "Resources",
 				ClassName = "ActivityEntrySortRuleNames",
+				File = new AdditionalTextStub("", Text),
 				PublicClass = publicClass,
 				NullForgivingOperators = nullForgivingOperators,
 				StaticClass = staticClass,
@@ -142,34 +140,31 @@ namespace Resources
 // </auto-generated>
 // ------------------------------------------------------------------------------
 #nullable enable
-namespace Resources
-{{
-    using System.Globalization;
-    using System.Resources;
+namespace Resources;
+using System.Globalization;
+using System.Resources;
 
-    {(publicClass ? "public" : "internal")}{(partial ? " partial" : "")}{(staticClass ? " static" : "")} class ActivityEntrySortRuleNames
-    {{{(string.IsNullOrEmpty(innerClassInstanceName) ? "" : $"\n        public {innerClassName} {innerClassInstanceName} {{ get; }} = new();\n")}
-        {(publicClass ? "public" : "internal")}{(partial ? " partial" : "")}{(staticClass ? " static" : "")} class {innerClassName}
-        {{
-            private static ResourceManager? s_resourceManager;
-            public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager(""VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames"", typeof({innerClassName}).Assembly);
-            public{(staticMembers ? " static" : "")} CultureInfo? CultureInfo {{ get; set; }}
+{(publicClass ? "public" : "internal")}{(partial ? " partial" : "")}{(staticClass ? " static" : "")} class ActivityEntrySortRuleNames
+{{{(string.IsNullOrEmpty(innerClassInstanceName) ? "" : $"\n    public {innerClassName} {innerClassInstanceName} {{ get; }} = new();\n")}
+    {(publicClass ? "public" : "internal")}{(partial ? " partial" : "")}{(staticClass ? " static" : "")} class {innerClassName}
+    {{
+        private static ResourceManager? s_resourceManager;
+        public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager(""VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames"", typeof({innerClassName}).Assembly);
+        public{(staticMembers ? " static" : "")} CultureInfo? CultureInfo {{ get; set; }}
 
-            /// <summary>
-            /// Looks up a localized string similar to Oldest.
-            /// </summary>
-            public{(staticMembers ? " static" : "")} string{(nullForgivingOperators ? "" : "?")} CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo){(nullForgivingOperators ? "!" : "")};
+        /// <summary>
+        /// Looks up a localized string similar to Oldest.
+        /// </summary>
+        public{(staticMembers ? " static" : "")} string{(nullForgivingOperators ? "" : "?")} CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo){(nullForgivingOperators ? "!" : "")};
 
-            /// <summary>
-            /// Looks up a localized string similar to Newest.
-            /// </summary>
-            public{(staticMembers ? " static" : "")} string{(nullForgivingOperators ? "" : "?")} CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo){(nullForgivingOperators ? "!" : "")};
-        }}
+        /// <summary>
+        /// Looks up a localized string similar to Newest.
+        /// </summary>
+        public{(staticMembers ? " static" : "")} string{(nullForgivingOperators ? "" : "?")} CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo){(nullForgivingOperators ? "!" : "")};
     }}
-}}";
-		using var resxStream = new StringReader(Text);
+}}
+";
 		var source = generator.Generate(
-			resxStream,
 			new()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
@@ -178,6 +173,7 @@ namespace Resources
 				ClassName = "ActivityEntrySortRuleNames",
 				PublicClass = publicClass,
 				NullForgivingOperators = nullForgivingOperators,
+				File = new AdditionalTextStub("", Text),
 				StaticClass = staticClass,
 				PartialClass = partial,
 				StaticMembers = staticMembers,
@@ -396,60 +392,58 @@ Approved = The entry has been inspected and approved by a trusted user. Approved
 // </auto-generated>
 // ------------------------------------------------------------------------------
 #nullable enable
-namespace VocaDb.Web.App_GlobalResources
+namespace VocaDb.Web.App_GlobalResources;
+using System.Globalization;
+using System.Resources;
+
+public static class CommonMessages
 {
-    using System.Globalization;
-    using System.Resources;
+    private static ResourceManager? s_resourceManager;
+    public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager(""VocaDb.Web.App_GlobalResources.CommonMessages"", typeof(CommonMessages).Assembly);
+    public static CultureInfo? CultureInfo { get; set; }
 
-    public static class CommonMessages
-    {
-        private static ResourceManager? s_resourceManager;
-        public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager(""VocaDb.Web.App_GlobalResources.CommonMessages"", typeof(CommonMessages).Assembly);
-        public static CultureInfo? CultureInfo { get; set; }
+    /// <summary>
+    /// Looks up a localized string similar to This entry has been deleted. It is still temporarily accessible, but won&#39;t show up in any of the listings..
+    /// </summary>
+    public static string? EntryDeleted => ResourceManager.GetString(nameof(EntryDeleted), CultureInfo);
 
-        /// <summary>
-        /// Looks up a localized string similar to This entry has been deleted. It is still temporarily accessible, but won&#39;t show up in any of the listings..
-        /// </summary>
-        public static string? EntryDeleted => ResourceManager.GetString(nameof(EntryDeleted), CultureInfo);
+    /// <summary>
+    /// Looks up a localized string similar to This entry was merged to.
+    /// </summary>
+    public static string? EntryMergedTo => ResourceManager.GetString(nameof(EntryMergedTo), CultureInfo);
 
-        /// <summary>
-        /// Looks up a localized string similar to This entry was merged to.
-        /// </summary>
-        public static string? EntryMergedTo => ResourceManager.GetString(nameof(EntryMergedTo), CultureInfo);
+    /// <summary>
+    /// Looks up a localized string similar to Draft = entry is missing crucial information. This status indicates that you&#39;re requesting additional information to be added or corrected.&lt;br /&gt;
+    /// Finished = The entry has all the necessary information, but it hasn&#39;t been inspected by a trusted user yet.&lt;br /&gt;
+    /// Approved = The entry has been inspected and approved by a trusted user. Approved entries can only be edited by trusted users..
+    /// </summary>
+    public static string? EntryStatusExplanation => ResourceManager.GetString(nameof(EntryStatusExplanation), CultureInfo);
 
-        /// <summary>
-        /// Looks up a localized string similar to Draft = entry is missing crucial information. This status indicates that you&#39;re requesting additional information to be added or corrected.&lt;br /&gt;
-        /// Finished = The entry has all the necessary information, but it hasn&#39;t been inspected by a trusted user yet.&lt;br /&gt;
-        /// Approved = The entry has been inspected and approved by a trusted user. Approved entries can only be edited by trusted users..
-        /// </summary>
-        public static string? EntryStatusExplanation => ResourceManager.GetString(nameof(EntryStatusExplanation), CultureInfo);
+    /// <summary>
+    /// Looks up a localized string similar to This entry is locked, meaning that only moderators are allowed to edit it..
+    /// </summary>
+    public static string? Locked => ResourceManager.GetString(nameof(Locked), CultureInfo);
 
-        /// <summary>
-        /// Looks up a localized string similar to This entry is locked, meaning that only moderators are allowed to edit it..
-        /// </summary>
-        public static string? Locked => ResourceManager.GetString(nameof(Locked), CultureInfo);
+    /// <summary>
+    /// Looks up a localized string similar to Choose the language for this name. &quot;Original&quot; is the name in original language that isn&#39;t English, for example Japanese. If the original language is English, do not input a name in the &quot;Original&quot; language..
+    /// </summary>
+    public static string? NameLanguageHelp => ResourceManager.GetString(nameof(NameLanguageHelp), CultureInfo);
 
-        /// <summary>
-        /// Looks up a localized string similar to Choose the language for this name. &quot;Original&quot; is the name in original language that isn&#39;t English, for example Japanese. If the original language is English, do not input a name in the &quot;Original&quot; language..
-        /// </summary>
-        public static string? NameLanguageHelp => ResourceManager.GetString(nameof(NameLanguageHelp), CultureInfo);
-
-        /// <summary>
-        /// Looks up a localized string similar to This page revision has been hidden..
-        /// </summary>
-        public static string? RevisionHidden => ResourceManager.GetString(nameof(RevisionHidden), CultureInfo);
-    }
-}";
+    /// <summary>
+    /// Looks up a localized string similar to This page revision has been hidden..
+    /// </summary>
+    public static string? RevisionHidden => ResourceManager.GetString(nameof(RevisionHidden), CultureInfo);
+}
+";
 		var generator = new StringBuilderGenerator();
-		using var resxStream = new StringReader(text);
 		var source = generator.Generate(
-			resxStream,
 			new()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
 				CustomToolNamespace = null,
 				ClassName = "CommonMessages",
+				File = new AdditionalTextStub("", text),
 				PublicClass = true,
 				NullForgivingOperators = false,
 				StaticClass = true
@@ -478,32 +472,30 @@ namespace VocaDb.Web.App_GlobalResources
 // </auto-generated>
 // ------------------------------------------------------------------------------
 #nullable enable
-namespace VocaDb.Web.App_GlobalResources
+namespace VocaDb.Web.App_GlobalResources;
+using System.Globalization;
+using System.Resources;
+
+public static class CommonMessages
 {
-    using System.Globalization;
-    using System.Resources;
+    private static ResourceManager? s_resourceManager;
+    public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager(""VocaDb.Web.App_GlobalResources.CommonMessages"", typeof(CommonMessages).Assembly);
+    public static CultureInfo? CultureInfo { get; set; }
 
-    public static class CommonMessages
-    {
-        private static ResourceManager? s_resourceManager;
-        public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager(""VocaDb.Web.App_GlobalResources.CommonMessages"", typeof(CommonMessages).Assembly);
-        public static CultureInfo? CultureInfo { get; set; }
-
-        /// <summary>
-        /// Looks up a localized string similar to Works..
-        /// </summary>
-        public static string? Works => ResourceManager.GetString(nameof(Works), CultureInfo);
-    }
-}";
+    /// <summary>
+    /// Looks up a localized string similar to Works..
+    /// </summary>
+    public static string? Works => ResourceManager.GetString(nameof(Works), CultureInfo);
+}
+";
 		var generator = new StringBuilderGenerator();
-		using var resxStream = new StringReader(text);
 		var source = generator.Generate(
-			resxStream,
 			new()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
 				CustomToolNamespace = null,
+				File = new AdditionalTextStub("", text),
 				ClassName = "CommonMessages",
 				PublicClass = true,
 				NullForgivingOperators = false,
@@ -528,13 +520,12 @@ namespace VocaDb.Web.App_GlobalResources
 </root>";
 
 		var generator = new StringBuilderGenerator();
-		using var resxStream = new StringReader(text);
 		var source = generator.Generate(
-			resxStream,
 			new()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
+				File = new AdditionalTextStub("", text),
 				CustomToolNamespace = null,
 				ClassName = "CommonMessages",
 				PublicClass = true,
@@ -562,13 +553,12 @@ namespace VocaDb.Web.App_GlobalResources
 </root>";
 
 		var generator = new StringBuilderGenerator();
-		using var resxStream = new StringReader(text);
 		var source = generator.Generate(
-			resxStream,
 			new()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
+				File = new AdditionalTextStub("", text),
 				CustomToolNamespace = null,
 				ClassName = "CommonMessages",
 				PublicClass = true,

@@ -17,6 +17,7 @@
     <CompilerVisibleProperty Include="ResXFileCodeGenerator_InnerClassVisibility" />
     <CompilerVisibleProperty Include="ResXFileCodeGenerator_InnerClassName" />
     <CompilerVisibleProperty Include="ResXFileCodeGenerator_InnerClassInstanceName" />
+    <CompilerVisibleProperty Include="ResXFileCodeGenerator_UseVocaDbResManager" />
     <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="Link" />
     <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="TargetPath" />
     <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="CustomToolNamespace" />
@@ -28,6 +29,7 @@
     <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="InnerClassVisibility" />
     <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="InnerClassName" />
     <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="InnerClassInstanceName" />
+    <CompilerVisibleItemMetadata Include="EmbeddedResource" MetadataName="UseVocaDbResManager" />
   </ItemGroup>
 
 </Project>

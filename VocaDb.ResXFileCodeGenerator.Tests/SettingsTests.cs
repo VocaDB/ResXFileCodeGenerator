@@ -2,7 +2,6 @@
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Text;
 using Xunit;
 #nullable enable
 namespace VocaDb.ResXFileCodeGenerator.Tests;
@@ -44,6 +43,7 @@ public class SettingsTests
 				ResXFileCodeGenerator_NullForgivingOperators = "true",
 				ResXFileCodeGenerator_StaticClass = "false",
 				ResXFileCodeGenerator_StaticMembers = "false",
+				ResXFileCodeGenerator_UseVocaDbResManager = "true",
 				ResXFileCodeGenerator_PublicClass = "true",
 				ResXFileCodeGenerator_PartialClass = "true",
 			}, null!), default);
@@ -55,6 +55,7 @@ public class SettingsTests
 		globalOptions.InnerClassVisibility.Should().Be(InnerClassVisibility.Public);
 		globalOptions.NullForgivingOperators.Should().Be(true);
 		globalOptions.StaticClass.Should().Be(false);
+		globalOptions.UseVocaDbResManager.Should().Be(true);
 		globalOptions.StaticMembers.Should().Be(false);
 		globalOptions.PublicClass.Should().Be(true);
 		globalOptions.PartialClass.Should().Be(true);
@@ -64,7 +65,7 @@ public class SettingsTests
 	[Fact]
 	public void FileDefaults()
 	{
-		var fileOptions = FileOptions.Select(new AdditionalTextStub("Path1.resx"), new AnalyzerConfigOptionsProviderStub(
+		var fileOptions = FileOptions.Select(new(new AdditionalTextStub("Path1.resx"), Array.Empty<AdditionalText>()), new AnalyzerConfigOptionsProviderStub(
 			null!, new AnalyzerConfigOptionsStub()), s_globalOptions, default);
 		fileOptions.InnerClassName.Should().BeNullOrEmpty();
 		fileOptions.InnerClassInstanceName.Should().BeNullOrEmpty();
@@ -74,9 +75,10 @@ public class SettingsTests
 		fileOptions.StaticMembers.Should().Be(true);
 		fileOptions.PublicClass.Should().Be(false);
 		fileOptions.PartialClass.Should().Be(false);
+		fileOptions.UseVocaDbResManager.Should().Be(false);
 		fileOptions.LocalNamespace.Should().Be("required1");
 		fileOptions.CustomToolNamespace.Should().BeNullOrEmpty();
-		fileOptions.FilePath.Should().Be("Path1.resx");
+		fileOptions.File.Path.Should().Be("Path1.resx");
 		fileOptions.ClassName.Should().Be("Path1");
 		fileOptions.Valid.Should().Be(true);
 	}
@@ -85,7 +87,7 @@ public class SettingsTests
 	[Fact]
 	public void File_PostFix()
 	{
-		var fileOptions = FileOptions.Select(new AdditionalTextStub("Path1.resx"), new AnalyzerConfigOptionsProviderStub(
+		var fileOptions = FileOptions.Select(new(new AdditionalTextStub("Path1.resx"), Array.Empty<AdditionalText>()), new AnalyzerConfigOptionsProviderStub(
 			null!, new AnalyzerConfigOptionsStub(){ClassNamePostfix = "test1"}), s_globalOptions, default);
 		fileOptions.ClassName.Should().Be("Path1test1");
 		fileOptions.Valid.Should().Be(true);
@@ -94,7 +96,7 @@ public class SettingsTests
 	[Fact]
 	public void FileSettings_CanReadAll()
 	{
-		var fileOptions = FileOptions.Select(new AdditionalTextStub("Path1.resx"), new AnalyzerConfigOptionsProviderStub(
+		var fileOptions = FileOptions.Select(new(new AdditionalTextStub("Path1.resx"), Array.Empty<AdditionalText>()), new AnalyzerConfigOptionsProviderStub(
 			null!, new AnalyzerConfigOptionsStub
 			{
 				RootNamespace = "required1", MSBuildProjectFullPath = "required2",
@@ -107,6 +109,7 @@ public class SettingsTests
 				StaticMembers = "false",
 				PublicClass = "true",
 				PartialClass = "true",
+				UseVocaDbResManager = "true",
 				
 			}), s_globalOptions, default);
 		fileOptions.InnerClassName.Should().Be("test1");
@@ -118,9 +121,10 @@ public class SettingsTests
 		fileOptions.PublicClass.Should().Be(true);
 		fileOptions.PartialClass.Should().Be(true);
 		fileOptions.Valid.Should().Be(true);
+		fileOptions.UseVocaDbResManager.Should().Be(true);
 		fileOptions.LocalNamespace.Should().Be("required1");
 		fileOptions.CustomToolNamespace.Should().Be("ns1");
-		fileOptions.FilePath.Should().Be("Path1.resx");
+		fileOptions.File.Path.Should().Be("Path1.resx");
 		fileOptions.ClassName.Should().Be("Path1");
 	}
 
@@ -141,7 +145,7 @@ public class SettingsTests
 				ResXFileCodeGenerator_PublicClass = "true",
 				ResXFileCodeGenerator_PartialClass = "true",
 			}, null!), default);
-		var fileOptions = FileOptions.Select(new AdditionalTextStub("Path1.resx"), new AnalyzerConfigOptionsProviderStub(
+		var fileOptions = FileOptions.Select(new(new AdditionalTextStub("Path1.resx"), Array.Empty<AdditionalText>()), new AnalyzerConfigOptionsProviderStub(
 			null!, new AnalyzerConfigOptionsStub()), globalOptions, default);
 		fileOptions.InnerClassName.Should().Be("test1");
 		fileOptions.InnerClassInstanceName.Should().Be("test2");
@@ -152,19 +156,14 @@ public class SettingsTests
 		fileOptions.PublicClass.Should().Be(true);
 		fileOptions.PartialClass.Should().Be(true);
 		fileOptions.Valid.Should().Be(true);
+		fileOptions.UseVocaDbResManager.Should().Be(false);
 		fileOptions.LocalNamespace.Should().Be("required1");
 		fileOptions.CustomToolNamespace.Should().BeNullOrEmpty();
-		fileOptions.FilePath.Should().Be("Path1.resx");
+		fileOptions.File.Path.Should().Be("Path1.resx");
 		fileOptions.ClassName.Should().Be("Path1test3");
 		fileOptions.Valid.Should().Be(true);
 	}
 
-	private class AdditionalTextStub : AdditionalText
-	{
-		public override SourceText? GetText(CancellationToken cancellationToken = new()) => throw new NotImplementedException();
-		public AdditionalTextStub(string path) => Path = path;
-		public override string Path { get; }
-	}
 	private class AnalyzerConfigOptionsStub : AnalyzerConfigOptions
 	{
 		// ReSharper disable InconsistentNaming
@@ -179,6 +178,7 @@ public class SettingsTests
 		public string? ResXFileCodeGenerator_InnerClassVisibility { get; init; }
 		public string? ResXFileCodeGenerator_InnerClassName { get; init; }
 		public string? ResXFileCodeGenerator_InnerClassInstanceName { get; init; }
+		public string? ResXFileCodeGenerator_UseVocaDbResManager { get; init; }
 		public string? CustomToolNamespace { get; init; }
 		public string? TargetPath { get; init; }
 		public string? ClassNamePostfix { get; init; }
@@ -190,15 +190,18 @@ public class SettingsTests
 		public string? InnerClassVisibility { get; init; }
 		public string? InnerClassName { get; init; }
 		public string? InnerClassInstanceName { get; init; }
+		public string? UseVocaDbResManager { get; init; }
+
 		// ReSharper restore InconsistentNaming
 
 		public override bool TryGetValue(string key, [NotNullWhen(true)] out string? value)
 		{
-			string? GetVal(string k) =>
+			string? GetVal() =>
 				key switch
 				{
 					"build_property.MSBuildProjectFullPath" => MSBuildProjectFullPath,
 					"build_property.RootNamespace" => RootNamespace,
+					"build_property.ResXFileCodeGenerator_UseVocaDbResManager" => ResXFileCodeGenerator_UseVocaDbResManager,
 					"build_property.ResXFileCodeGenerator_ClassNamePostfix" => ResXFileCodeGenerator_ClassNamePostfix,
 					"build_property.ResXFileCodeGenerator_PublicClass" => ResXFileCodeGenerator_PublicClass,
 					"build_property.ResXFileCodeGenerator_NullForgivingOperators" => ResXFileCodeGenerator_NullForgivingOperators,
@@ -219,10 +222,11 @@ public class SettingsTests
 					"build_metadata.EmbeddedResource.InnerClassVisibility" => InnerClassVisibility,
 					"build_metadata.EmbeddedResource.InnerClassName" => InnerClassName,
 					"build_metadata.EmbeddedResource.InnerClassInstanceName" => InnerClassInstanceName,
+					"build_metadata.EmbeddedResource.UseVocaDbResManager" => UseVocaDbResManager,
 					_ => null
 				};
 
-			value = GetVal(key);
+			value = GetVal();
 			return value is not null;
 		}
 	}

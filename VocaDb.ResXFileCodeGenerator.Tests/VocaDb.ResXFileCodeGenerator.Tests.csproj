@@ -1,12 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <IsPackable>false</IsPackable>
-    <LangVersion>preview</LangVersion>
+    <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+
+  <Import Project="../VocaDb.ResXFileCodeGenerator/build/VocaDb.ResXFileCodeGenerator.props"/>
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
@@ -26,9 +28,16 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\VocaDb.ResXFileCodeGenerator\VocaDb.ResXFileCodeGenerator.csproj" />
+	  <EmbeddedResource Update="**/*.??.resx;**/*.??-??.resx">
+		  <DependentUpon>$([System.IO.Path]::GetFileNameWithoutExtension('%(FileName)')).resx</DependentUpon>
+	  </EmbeddedResource>
+    <EmbeddedResource Update="IntegrationTests\Test2.resx">
+	    <UseVocaDbResManager>true</UseVocaDbResManager>
+    </EmbeddedResource>
   </ItemGroup>
 
+	<ItemGroup>
+		<ProjectReference Include="..\VocaDb.ResXFileCodeGenerator\VocaDb.ResXFileCodeGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
+	</ItemGroup>
 </Project>
