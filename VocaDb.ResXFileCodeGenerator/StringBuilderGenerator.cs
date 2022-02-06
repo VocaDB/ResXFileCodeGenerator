@@ -58,8 +58,8 @@ public sealed partial class StringBuilderGenerator : IGenerator
 			AppendResourceManagerUsings(builder);
 
 		builder.Append(options.PublicClass ? "public" : "internal");
-		builder.Append(options.PartialClass ? " partial" : "");
-		builder.Append(options.StaticClass ? " static class " : " class ");
+		builder.Append(options.StaticClass ? " static" : "");
+		builder.Append(options.PartialClass ? " partial class " : " class ");
 		builder.AppendLine(options.ClassName);
 		builder.AppendLine("{");
 
@@ -90,8 +90,8 @@ public sealed partial class StringBuilderGenerator : IGenerator
 			builder.Append(options.InnerClassVisibility == InnerClassVisibility.SameAsOuter
 				? options.PublicClass ? "public" : "internal"
 				: options.InnerClassVisibility.ToString().ToLowerInvariant());
-			builder.Append(options.PartialClass ? " partial" : "");
-			builder.Append(options.StaticClass ? " static class " : " class ");
+			builder.Append(options.StaticClass ? " static" : "");
+			builder.Append(options.PartialClass ? " partial class " : " class ");
 
 			builder.AppendLine(containerClassName);
 			builder.Append(indent);
