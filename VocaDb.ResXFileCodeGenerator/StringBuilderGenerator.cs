@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-using System.Resources;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml;
@@ -12,36 +10,51 @@ namespace VocaDb.ResXFileCodeGenerator;
 
 public sealed partial class StringBuilderGenerator : IGenerator
 {
-	private static readonly Regex s_validMemberNamePattern =
-		new(@"^[\p{L}\p{Nl}_][\p{Cf}\p{L}\p{Mc}\p{Mn}\p{Nd}\p{Nl}\p{Pc}]*$",
-			RegexOptions.Compiled | RegexOptions.CultureInvariant);
+	private static readonly Regex s_validMemberNamePattern = new(
+		pattern: @"^[\p{L}\p{Nl}_][\p{Cf}\p{L}\p{Mc}\p{Mn}\p{Nd}\p{Nl}\p{Pc}]*$",
+		options: RegexOptions.Compiled | RegexOptions.CultureInvariant
+	);
 
-	private static readonly Regex s_invalidMemberNameSymbols = new(@"[^\p{Cf}\p{L}\p{Mc}\p{Mn}\p{Nd}\p{Nl}\p{Pc}]",
-		RegexOptions.Compiled | RegexOptions.CultureInvariant);
+	private static readonly Regex s_invalidMemberNameSymbols = new(
+		pattern: @"[^\p{Cf}\p{L}\p{Mc}\p{Mn}\p{Nd}\p{Nl}\p{Pc}]",
+		options: RegexOptions.Compiled | RegexOptions.CultureInvariant
+	);
 
-	private static readonly DiagnosticDescriptor s_duplicateWarning = new("VocaDbResXFileCodeGenerator001",
-		"Duplicate member",
-		"Ignored added member '{0}'",
-		"ResXFileCodeGenerator",
-		DiagnosticSeverity.Warning,
-		true);
+	private static readonly DiagnosticDescriptor s_duplicateWarning = new(
+		id: "VocaDbResXFileCodeGenerator001",
+		title: "Duplicate member",
+		messageFormat: "Ignored added member '{0}'",
+		category: "ResXFileCodeGenerator",
+		defaultSeverity: DiagnosticSeverity.Warning,
+		isEnabledByDefault: true
+	);
 
-	private static readonly DiagnosticDescriptor s_memberSameAsClassWarning = new("VocaDbResXFileCodeGenerator002",
-		"Member same name as class",
-		"Ignored member '{0}' has same name as class",
-		"ResXFileCodeGenerator",
-		DiagnosticSeverity.Warning,
-		true);
+	private static readonly DiagnosticDescriptor s_memberSameAsClassWarning = new(
+		id: "VocaDbResXFileCodeGenerator002",
+		title: "Member same name as class",
+		messageFormat: "Ignored member '{0}' has same name as class",
+		category: "ResXFileCodeGenerator",
+		defaultSeverity: DiagnosticSeverity.Warning,
+		isEnabledByDefault: true
+	);
 
-	private static readonly DiagnosticDescriptor s_memberWithStaticError = new("VocaDbResXFileCodeGenerator003",
-		"Incompatible settings",
-		"Cannot have static members/class with an class instance",
-		"ResXFileCodeGenerator",
-		DiagnosticSeverity.Error,
-		true);
+	private static readonly DiagnosticDescriptor s_memberWithStaticError = new(
+		id: "VocaDbResXFileCodeGenerator003",
+		title: "Incompatible settings",
+		messageFormat: "Cannot have static members/class with an class instance",
+		category: "ResXFileCodeGenerator",
+		defaultSeverity: DiagnosticSeverity.Error,
+		isEnabledByDefault: true
+	);
 
-	public (string generatedFileName, string SourceCode, IEnumerable<Diagnostic> ErrorsAndWarnings) Generate(
-		FileOptions options, CancellationToken cancellationToken = default)
+	public (
+		string GeneratedFileName,
+		string SourceCode,
+		IEnumerable<Diagnostic> ErrorsAndWarnings
+	) Generate(
+		FileOptions options,
+		CancellationToken cancellationToken = default
+	)
 	{
 		var errorsAndWarnings = new List<Diagnostic>();
 		var generatedFileName = $"{options.LocalNamespace}.{options.ClassName}.g.cs";
@@ -58,7 +71,7 @@ public sealed partial class StringBuilderGenerator : IGenerator
 			AppendResourceManagerUsings(builder);
 
 		builder.Append(options.PublicClass ? "public" : "internal");
-		builder.Append(options.StaticClass ? " static" : "");
+		builder.Append(options.StaticClass ? " static" : string.Empty);
 		builder.Append(options.PartialClass ? " partial class " : " class ");
 		builder.AppendLine(options.ClassName);
 		builder.AppendLine("{");
@@ -90,7 +103,7 @@ public sealed partial class StringBuilderGenerator : IGenerator
 			builder.Append(options.InnerClassVisibility == InnerClassVisibility.SameAsOuter
 				? options.PublicClass ? "public" : "internal"
 				: options.InnerClassVisibility.ToString().ToLowerInvariant());
-			builder.Append(options.StaticClass ? " static" : "");
+			builder.Append(options.StaticClass ? " static" : string.Empty);
 			builder.Append(options.PartialClass ? " partial class " : " class ");
 
 			builder.AppendLine(containerClassName);
@@ -113,7 +126,11 @@ public sealed partial class StringBuilderGenerator : IGenerator
 
 		builder.AppendLine("}");
 
-		return (generatedFileName, builder.ToString(), errorsAndWarnings);
+		return (
+			GeneratedFileName: generatedFileName,
+			SourceCode: builder.ToString(),
+			ErrorsAndWarnings: errorsAndWarnings
+		);
 	}
 
 	private static IEnumerable<(string key, string value, IXmlLineInfo line)>? ReadResxFile(SourceText content)
@@ -130,9 +147,18 @@ public sealed partial class StringBuilderGenerator : IGenerator
 		return null;
 	}
 
-	private static bool GenerateMember(string indent, StringBuilder builder, FileOptions options, string name, string neutralValue,
-		IXmlLineInfo line, HashSet<string> alreadyAddedMembers, List<Diagnostic> errorsAndWarnings, string containerclassname,
-		out bool resourceAccessByName)
+	private static bool GenerateMember(
+		string indent,
+		StringBuilder builder,
+		FileOptions options,
+		string name,
+		string neutralValue,
+		IXmlLineInfo line,
+		HashSet<string> alreadyAddedMembers,
+		List<Diagnostic> errorsAndWarnings,
+		string containerclassname,
+		out bool resourceAccessByName
+	)
 	{
 		string memberName;
 
@@ -182,7 +208,7 @@ public sealed partial class StringBuilderGenerator : IGenerator
 
 		builder.Append(indent);
 		builder.Append("public ");
-		builder.Append(options.StaticMembers ? "static " : "");
+		builder.Append(options.StaticMembers ? "static " : string.Empty);
 		builder.Append("string");
 		builder.Append(options.NullForgivingOperators ? null : "?");
 		builder.Append(" ");

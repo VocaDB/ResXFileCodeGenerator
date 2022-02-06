@@ -22,7 +22,8 @@ public class HelperGeneratorTests
 namespace VocaDb.ResXFileCodeGenerator;
 internal static partial class Helpers
 {
-    public static string GetString_1030_6(string fallback, string da_DK, string da) => System.Globalization.CultureInfo.CurrentUICulture.LCID switch {
+    public static string GetString_1030_6(string fallback, string da_DK, string da) => System.Globalization.CultureInfo.CurrentUICulture.LCID switch
+    {
         1030 => da_DK,
         6 => da,
         _ => fallback
@@ -49,7 +50,8 @@ internal static partial class Helpers
 namespace VocaDb.ResXFileCodeGenerator;
 internal static partial class Helpers
 {
-    public static string GetString_(string fallback) => System.Globalization.CultureInfo.CurrentUICulture.LCID switch {
+    public static string GetString_(string fallback) => System.Globalization.CultureInfo.CurrentUICulture.LCID switch
+    {
         _ => fallback
     };
 }

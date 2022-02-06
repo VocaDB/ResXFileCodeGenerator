@@ -64,7 +64,7 @@ public class GroupResxFilesTests
 	[Fact]
 	public void FileGrouping()
 	{
-		var result = GroupResxFiles.Group(s_data.Select(x=>new AdditionalTextStub(x)).OrderBy(x=>Guid.NewGuid()).ToArray());
+		var result = GroupResxFiles.Group(s_data.Select(x => new AdditionalTextStub(x)).OrderBy(x => Guid.NewGuid()).ToArray());
 		var testData = new List<GroupedAdditionalFile>
 		{
 			new(new AdditionalTextStub(
@@ -132,12 +132,12 @@ public class GroupResxFilesTests
 	[Fact]
 	public void ResxGrouping()
 	{
-		var result = GroupResxFiles.DetectChildComboes(GroupResxFiles.Group(s_data.Select(x=>new AdditionalTextStub(x)).OrderBy(x=>Guid.NewGuid()).ToArray()).ToArray()).ToList();
+		var result = GroupResxFiles.DetectChildComboes(GroupResxFiles.Group(s_data.Select(x => new AdditionalTextStub(x)).OrderBy(x => Guid.NewGuid()).ToArray()).ToArray()).ToList();
 		var expected = new List<CultureInfoCombo>
 		{
 			new(new []{new AdditionalTextStub("test.da.resx"), new AdditionalTextStub("test.vi.resx")}),
 			new(new []{new AdditionalTextStub("test.da.resx")}),
-			new(new AdditionalTextStub[]{}),
+			new(Array.Empty<AdditionalTextStub>()),
 			new(new []
 			{
 				new AdditionalTextStub("test.cs-cz.resx"),

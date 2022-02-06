@@ -74,9 +74,10 @@ public static class Utilities
 
 			if (!string.IsNullOrWhiteSpace(targetPath))
 			{
-				var ns = Path.GetDirectoryName(targetPath).Replace(Path.DirectorySeparatorChar, '.')
+				var ns = Path.GetDirectoryName(targetPath)
+					.Replace(Path.DirectorySeparatorChar, '.')
 					.Replace(Path.AltDirectorySeparatorChar, '.')
-					.Replace(" ", "");
+					.Replace(" ", string.Empty);
 				if (!string.IsNullOrEmpty(ns))
 				{
 					localNamespace += ".";
@@ -88,7 +89,7 @@ public static class Utilities
 				localNamespace += resxFolder.Substring(projectFolder.Length)
 					.Replace(Path.DirectorySeparatorChar, '.')
 					.Replace(Path.AltDirectorySeparatorChar, '.')
-					.Replace(" ", "");
+					.Replace(" ", string.Empty);
 			}
 
 			return localNamespace;
@@ -101,7 +102,7 @@ public static class Utilities
 
 	public static string GetClassNameFromPath(string resxFilePath)
 	{
-		//Fix issues with files that have names like xxx.aspx.resx
+		// Fix issues with files that have names like xxx.aspx.resx
 		var className = resxFilePath;
 		while (className.Contains("."))
 		{

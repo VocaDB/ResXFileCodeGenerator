@@ -27,18 +27,18 @@ public static class GroupResxFiles
 			var baseName = Utilities.GetBaseName(path);
 			if (fileNameWithoutExtension == baseName)
 				continue;
-			//this might happen if a nn.resx file exists without a .resx file
+			// this might happen if a nn.resx file exists without a .resx file
 			if (!lookup.TryGetValue(pathName + "\\" + baseName, out var additionalText))
 				continue;
 			res[additionalText].Add(file);
 		}
-		//dont care at all HOW it is sorted, just that end result is the same
+		// dont care at all HOW it is sorted, just that end result is the same
 		foreach (var file in res)
 			yield return new (file.Key, file.Value);
 	}
 
 	public static IEnumerable<CultureInfoCombo> DetectChildComboes(IReadOnlyList<GroupedAdditionalFile> groupedAdditionalFiles) =>
 		groupedAdditionalFiles
-			.Select(x => new CultureInfoCombo(x.Subfiles))
+			.Select(x => new CultureInfoCombo(x.SubFiles))
 			.Distinct();
 }

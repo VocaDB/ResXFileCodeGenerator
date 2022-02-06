@@ -193,7 +193,7 @@ public static class CommonMessages
 			LocalNamespace = "VocaDb.Web.App_GlobalResources",
 			CustomToolNamespace = "Resources",
 			ClassName = "ActivityEntrySortRuleNames",
-			File = new AdditionalTextStub("", text),
+			File = new AdditionalTextStub(string.Empty, text),
 			PublicClass = true,
 			NullForgivingOperators = false,
 			StaticClass = true

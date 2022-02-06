@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace VocaDb.ResXFileCodeGenerator;
 
-public sealed record FileOptions //this must be a record or implement IEquatable<T>
+public sealed record FileOptions // this must be a record or implement IEquatable<T>
 {
 	public string InnerClassInstanceName { get; init; }
 	public string InnerClassName { get; init; }
@@ -20,7 +20,7 @@ public sealed record FileOptions //this must be a record or implement IEquatable
 	public bool UseVocaDbResManager { get; init; }
 	public string EmbeddedFilename { get; init; }
 	public IReadOnlyList<AdditionalText> SubFiles { get; init; }
-	public bool Valid { get; init; }
+	public bool IsValid { get; init; }
 
 	/// <summary>
 	/// Unit test ctor
@@ -37,8 +37,12 @@ public sealed record FileOptions //this must be a record or implement IEquatable
 		SubFiles = new List<AdditionalText>();
 	}
 
-	private FileOptions(AdditionalText file, AnalyzerConfigOptions options, GlobalOptions globalOptions,
-		IReadOnlyList<AdditionalText>? additionalTexts = null)
+	private FileOptions(
+		AdditionalText file,
+		AnalyzerConfigOptions options,
+		GlobalOptions globalOptions,
+		IReadOnlyList<AdditionalText>? additionalTexts = null
+	)
 	{
 		File = file;
 		SubFiles = additionalTexts ?? Array.Empty<AdditionalText>();
@@ -56,17 +60,18 @@ public sealed record FileOptions //this must be a record or implement IEquatable
 			globalOptions.RootNamespace);
 		EmbeddedFilename = detectedNamespace + "." + classNameFromFileName;
 
-		LocalNamespace = options.TryGetValue("build_metadata.EmbeddedResource.TargetPath", out var targetPath) &&
-		                 targetPath is { Length: > 0 }
-			? Utilities.GetLocalNamespace(
-				resxFilePath, targetPath,
-				globalOptions.ProjectFullPath,
-				globalOptions.RootNamespace)
-			: detectedNamespace;
+		LocalNamespace =
+			options.TryGetValue("build_metadata.EmbeddedResource.TargetPath", out var targetPath) &&
+			targetPath is { Length: > 0 }
+				? Utilities.GetLocalNamespace(
+					resxFilePath, targetPath,
+					globalOptions.ProjectFullPath,
+					globalOptions.RootNamespace)
+				: detectedNamespace;
 
 		CustomToolNamespace =
-			options.TryGetValue("build_metadata.EmbeddedResource.CustomToolNamespace",
-				out var customToolNamespace) && customToolNamespace is { Length: > 0 }
+			options.TryGetValue("build_metadata.EmbeddedResource.CustomToolNamespace", out var customToolNamespace) &&
+			customToolNamespace is { Length: > 0 }
 				? customToolNamespace
 				: null;
 
@@ -103,42 +108,58 @@ public sealed record FileOptions //this must be a record or implement IEquatable
 				: globalOptions.PartialClass;
 
 		InnerClassVisibility = globalOptions.InnerClassVisibility;
-		if (options.TryGetValue("build_metadata.EmbeddedResource.InnerClassVisibility",
-			    out var innerClassVisibilitySwitch) &&
-		    Enum.TryParse(innerClassVisibilitySwitch, true, out InnerClassVisibility v) &&
-		    v != InnerClassVisibility.SameAsOuter)
+		if (
+			options.TryGetValue("build_metadata.EmbeddedResource.InnerClassVisibility", out var innerClassVisibilitySwitch) &&
+			Enum.TryParse(innerClassVisibilitySwitch, true, out InnerClassVisibility v) &&
+			v != InnerClassVisibility.SameAsOuter
+		)
 		{
 			InnerClassVisibility = v;
 		}
 
 		InnerClassName = globalOptions.InnerClassName;
-		if (options.TryGetValue("build_metadata.EmbeddedResource.InnerClassName", out var innerClassNameSwitch) &&
-		    innerClassNameSwitch is { Length: > 0 })
+		if (
+			options.TryGetValue("build_metadata.EmbeddedResource.InnerClassName", out var innerClassNameSwitch) &&
+			innerClassNameSwitch is { Length: > 0 }
+		)
 		{
 			InnerClassName = innerClassNameSwitch;
 		}
 
 		InnerClassInstanceName = globalOptions.InnerClassInstanceName;
-		if (options.TryGetValue("build_metadata.EmbeddedResource.InnerClassInstanceName", out var innerClassInstanceNameSwitch)&&
-		    innerClassInstanceNameSwitch is { Length: > 0 })
+		if (
+			options.TryGetValue("build_metadata.EmbeddedResource.InnerClassInstanceName", out var innerClassInstanceNameSwitch) &&
+			innerClassInstanceNameSwitch is { Length: > 0 }
+		)
 		{
 			InnerClassInstanceName = innerClassInstanceNameSwitch;
 		}
 
 		UseVocaDbResManager = globalOptions.UseVocaDbResManager;
-		if (options.TryGetValue("build_metadata.EmbeddedResource.UseVocaDbResManager", out var genCodeSwitch)&&
-		    genCodeSwitch is { Length: > 0 })
+		if (
+			options.TryGetValue("build_metadata.EmbeddedResource.UseVocaDbResManager", out var genCodeSwitch) &&
+			genCodeSwitch is { Length: > 0 }
+		)
 		{
 			UseVocaDbResManager = genCodeSwitch.Equals("true", StringComparison.OrdinalIgnoreCase);
 		}
 
-		Valid = globalOptions.Valid;
+		IsValid = globalOptions.IsValid;
 	}
 
-	public static FileOptions Select(GroupedAdditionalFile file, AnalyzerConfigOptionsProvider options,
-		GlobalOptions globalOptions, CancellationToken token)
+	public static FileOptions Select(
+		GroupedAdditionalFile file,
+		AnalyzerConfigOptionsProvider options,
+		GlobalOptions globalOptions,
+		CancellationToken token
+	)
 	{
 		token.ThrowIfCancellationRequested();
-		return new(file.Mainfile, options.GetOptions(file.Mainfile), globalOptions, file.Subfiles);
+		return new(
+			file: file.MainFile,
+			options: options.GetOptions(file.MainFile),
+			globalOptions: globalOptions,
+			additionalTexts: file.SubFiles
+		);
 	}
 }

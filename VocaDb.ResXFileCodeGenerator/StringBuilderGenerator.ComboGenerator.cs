@@ -21,8 +21,10 @@ namespace VocaDb.ResXFileCodeGenerator
 
 			foreach (var cultureInfo in all)
 			{
-				if (cultureInfo.LCID == 4096 || cultureInfo.IsNeutralCulture ||
-				    cultureInfo.Name.IsNullOrEmpty()) continue;
+				if (cultureInfo.LCID == 4096 || cultureInfo.IsNeutralCulture || cultureInfo.Name.IsNullOrEmpty())
+				{
+					continue;
+				}
 				var parent = cultureInfo.Parent;
 				if (!s_allChildren.TryGetValue(parent.LCID, out var v))
 					s_allChildren[parent.LCID] = v = new();
@@ -30,9 +32,14 @@ namespace VocaDb.ResXFileCodeGenerator
 			}
 		}
 
-		public (string generatedFileName, string SourceCode, IEnumerable<Diagnostic> ErrorsAndWarnings) Generate(
+		public (
+			string GeneratedFileName,
+			string SourceCode,
+			IEnumerable<Diagnostic> ErrorsAndWarnings
+		) Generate(
 			CultureInfoCombo combo,
-			CancellationToken cancellationToken)
+			CancellationToken cancellationToken
+		)
 		{
 			var definedLanguages = combo.GetDefinedLanguages();
 			var builder = GetBuilder("VocaDb.ResXFileCodeGenerator");
@@ -53,7 +60,8 @@ namespace VocaDb.ResXFileCodeGenerator
 
 			builder.Append(") => ");
 			builder.Append(Constants.SystemGlobalization);
-			builder.AppendLine(".CultureInfo.CurrentUICulture.LCID switch {");
+			builder.AppendLine(".CultureInfo.CurrentUICulture.LCID switch");
+			builder.AppendLine("    {");
 			HashSet<int> already = new();
 			foreach (var (name, lcid, _) in definedLanguages)
 			{
@@ -87,13 +95,16 @@ namespace VocaDb.ResXFileCodeGenerator
 			builder.AppendLine("    };");
 			builder.AppendLine("}");
 
-			return ("VocaDb.ResXFileCodeGenerator." + functionNamePostFix + ".g.cs", builder.ToString(),
-				Array.Empty<Diagnostic>());
+			return (
+				GeneratedFileName: "VocaDb.ResXFileCodeGenerator." + functionNamePostFix + ".g.cs",
+				SourceCode: builder.ToString(),
+				ErrorsAndWarnings: Array.Empty<Diagnostic>()
+			);
 		}
 
 		private static string FunctionNamePostFix(
-			IReadOnlyList<(string Name, int LCID, AdditionalText File)> definedLanguages) =>
-			string.Join("_", definedLanguages.Select(x => x.LCID));
+			IReadOnlyList<(string Name, int LCID, AdditionalText File)> definedLanguages
+		) => string.Join("_", definedLanguages.Select(x => x.LCID));
 
 		private static void AppendCodeUsings(StringBuilder builder)
 		{
@@ -101,9 +112,15 @@ namespace VocaDb.ResXFileCodeGenerator
 			builder.AppendLine();
 		}
 
-		private void GenerateCode(FileOptions options, SourceText content, string indent, string containerClassName,
+		private void GenerateCode(
+			FileOptions options,
+			SourceText content,
+			string indent,
+			string containerClassName,
 			StringBuilder builder,
-			List<Diagnostic> errorsAndWarnings, CancellationToken cancellationToken)
+			List<Diagnostic> errorsAndWarnings,
+			CancellationToken cancellationToken
+		)
 		{
 			var combo = new CultureInfoCombo(options.SubFiles);
 			var definedLanguages = combo.GetDefinedLanguages();
@@ -114,7 +131,8 @@ namespace VocaDb.ResXFileCodeGenerator
 				var subcontent = lang.File.GetText(cancellationToken);
 				return subcontent is null
 					? null
-					: ReadResxFile(subcontent)?.GroupBy(x => x.key)
+					: ReadResxFile(subcontent)?
+						.GroupBy(x => x.key)
 						.ToImmutableDictionary(x => x.Key, x => x.First().value);
 			}).ToList();
 			if (fallback is null || subfiles.Any(x => x is null))
@@ -127,8 +145,23 @@ namespace VocaDb.ResXFileCodeGenerator
 			foreach (var (key, value, line) in fallback)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				if (!GenerateMember(indent, builder, options, key, value, line, alreadyAddedMembers, errorsAndWarnings,
-					    containerClassName, out _)) continue;
+				if (
+					!GenerateMember(
+						indent,
+						builder,
+						options,
+						key,
+						value,
+						line,
+						alreadyAddedMembers,
+						errorsAndWarnings,
+						containerClassName,
+						out _
+					)
+				)
+				{
+					continue;
+				}
 
 				builder.Append(" => GetString_");
 				builder.Append(FunctionNamePostFix(definedLanguages));

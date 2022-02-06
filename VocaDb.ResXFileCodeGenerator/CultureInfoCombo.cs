@@ -5,10 +5,13 @@ namespace VocaDb.ResXFileCodeGenerator;
 
 public class CultureInfoCombo : IEquatable<CultureInfoCombo>
 {
-	//order by length desc, so that da-DK comes before da, meaning that it HashSet<int> already doesn't contain da-DK when we process it
+	// order by length desc, so that da-DK comes before da, meaning that it HashSet<int> already doesn't contain da-DK when we process it
 	public CultureInfoCombo(IReadOnlyList<AdditionalText> subfiles) =>
-		CultureInfos = subfiles.Select(x => (Path.GetExtension(Path.GetFileNameWithoutExtension(x.Path)).TrimStart('.'), y: x))
-			.OrderByDescending(x => x.Item1.Length).ThenBy(y => y.Item1).ToList();
+		CultureInfos = subfiles
+			.Select(x => (Path.GetExtension(Path.GetFileNameWithoutExtension(x.Path)).TrimStart('.'), y: x))
+			.OrderByDescending(x => x.Item1.Length)
+			.ThenBy(y => y.Item1)
+			.ToList();
 
 	public CultureInfoCombo() => CultureInfos = Array.Empty<(string, AdditionalText)>();
 
@@ -16,7 +19,8 @@ public class CultureInfoCombo : IEquatable<CultureInfoCombo>
 
 	public IReadOnlyList<(string Name, int LCID, AdditionalText File)> GetDefinedLanguages() => CultureInfos
 		.Select(x => (x.File, new CultureInfo(x.Iso)))
-		.Select(x => (Name: x.Item2.Name.Replace('-', '_'), x.Item2.LCID, x.File)).ToList();
+		.Select(x => (Name: x.Item2.Name.Replace('-', '_'), x.Item2.LCID, x.File))
+		.ToList();
 
 	public bool Equals(CultureInfoCombo? other)
 	{
@@ -30,7 +34,7 @@ public class CultureInfoCombo : IEquatable<CultureInfoCombo>
 			return true;
 		}
 
-		return CultureInfos.Select(x=>x.Iso).SequenceEqual(other.CultureInfos.Select(x=>x.Iso));
+		return CultureInfos.Select(x => x.Iso).SequenceEqual(other.CultureInfos.Select(x => x.Iso));
 	}
 
 	public override bool Equals(object? obj)

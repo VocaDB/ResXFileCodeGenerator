@@ -3,13 +3,22 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Xunit;
-#nullable enable
+
 namespace VocaDb.ResXFileCodeGenerator.Tests;
 
 public class SettingsTests
 {
-	private static readonly  GlobalOptions s_globalOptions = GlobalOptions.Select(new AnalyzerConfigOptionsProviderStub(
-		new AnalyzerConfigOptionsStub { RootNamespace = "required1", MSBuildProjectFullPath = "required2" }, null!), default);
+	private static readonly GlobalOptions s_globalOptions = GlobalOptions.Select(
+		provider: new AnalyzerConfigOptionsProviderStub(
+			globalOptions: new AnalyzerConfigOptionsStub
+			{
+				RootNamespace = "required1",
+				MSBuildProjectFullPath = "required2"
+			},
+			fileOptions: null!
+		),
+		token: default
+	);
 
 	[Fact]
 	public void GlobalDefaults()
@@ -26,27 +35,32 @@ public class SettingsTests
 		globalOptions.StaticMembers.Should().Be(true);
 		globalOptions.PublicClass.Should().Be(false);
 		globalOptions.PartialClass.Should().Be(false);
-		globalOptions.Valid.Should().Be(true);
+		globalOptions.IsValid.Should().Be(true);
 	}
 
 	[Fact]
 	public void GlobalSettings_CanReadAll()
 	{
-		var globalOptions = GlobalOptions.Select(new AnalyzerConfigOptionsProviderStub(
-			new AnalyzerConfigOptionsStub
-			{
-				RootNamespace = "required1", MSBuildProjectFullPath = "required2",
-				ResXFileCodeGenerator_InnerClassName = "test1",
-				ResXFileCodeGenerator_InnerClassInstanceName = "test2",
-				ResXFileCodeGenerator_ClassNamePostfix= "test3",
-				ResXFileCodeGenerator_InnerClassVisibility = "public",
-				ResXFileCodeGenerator_NullForgivingOperators = "true",
-				ResXFileCodeGenerator_StaticClass = "false",
-				ResXFileCodeGenerator_StaticMembers = "false",
-				ResXFileCodeGenerator_UseVocaDbResManager = "true",
-				ResXFileCodeGenerator_PublicClass = "true",
-				ResXFileCodeGenerator_PartialClass = "true",
-			}, null!), default);
+		var globalOptions = GlobalOptions.Select(
+			provider: new AnalyzerConfigOptionsProviderStub(
+				globalOptions: new AnalyzerConfigOptionsStub
+				{
+					RootNamespace = "required1", MSBuildProjectFullPath = "required2",
+					ResXFileCodeGenerator_InnerClassName = "test1",
+					ResXFileCodeGenerator_InnerClassInstanceName = "test2",
+					ResXFileCodeGenerator_ClassNamePostfix= "test3",
+					ResXFileCodeGenerator_InnerClassVisibility = "public",
+					ResXFileCodeGenerator_NullForgivingOperators = "true",
+					ResXFileCodeGenerator_StaticClass = "false",
+					ResXFileCodeGenerator_StaticMembers = "false",
+					ResXFileCodeGenerator_UseVocaDbResManager = "true",
+					ResXFileCodeGenerator_PublicClass = "true",
+					ResXFileCodeGenerator_PartialClass = "true",
+				},
+				fileOptions: null!
+			),
+			token: default
+		);
 		globalOptions.RootNamespace.Should().Be("required1");
 		globalOptions.ProjectFullPath.Should().Be("required2");
 		globalOptions.InnerClassName.Should().Be("test1");
@@ -59,14 +73,24 @@ public class SettingsTests
 		globalOptions.StaticMembers.Should().Be(false);
 		globalOptions.PublicClass.Should().Be(true);
 		globalOptions.PartialClass.Should().Be(true);
-		globalOptions.Valid.Should().Be(true);
+		globalOptions.IsValid.Should().Be(true);
 	}
 
 	[Fact]
 	public void FileDefaults()
 	{
-		var fileOptions = FileOptions.Select(new(new AdditionalTextStub("Path1.resx"), Array.Empty<AdditionalText>()), new AnalyzerConfigOptionsProviderStub(
-			null!, new AnalyzerConfigOptionsStub()), s_globalOptions, default);
+		var fileOptions = FileOptions.Select(
+			file: new(
+				mainFile: new AdditionalTextStub("Path1.resx"),
+				subFiles: Array.Empty<AdditionalText>()
+			),
+			options: new AnalyzerConfigOptionsProviderStub(
+				globalOptions: null!,
+				fileOptions: new AnalyzerConfigOptionsStub()
+			),
+			globalOptions: s_globalOptions,
+			token: default
+		);
 		fileOptions.InnerClassName.Should().BeNullOrEmpty();
 		fileOptions.InnerClassInstanceName.Should().BeNullOrEmpty();
 		fileOptions.InnerClassVisibility.Should().Be(InnerClassVisibility.NotGenerated);
@@ -80,38 +104,56 @@ public class SettingsTests
 		fileOptions.CustomToolNamespace.Should().BeNullOrEmpty();
 		fileOptions.File.Path.Should().Be("Path1.resx");
 		fileOptions.ClassName.Should().Be("Path1");
-		fileOptions.Valid.Should().Be(true);
+		fileOptions.IsValid.Should().Be(true);
 	}
 
-	
 	[Fact]
 	public void File_PostFix()
 	{
-		var fileOptions = FileOptions.Select(new(new AdditionalTextStub("Path1.resx"), Array.Empty<AdditionalText>()), new AnalyzerConfigOptionsProviderStub(
-			null!, new AnalyzerConfigOptionsStub(){ClassNamePostfix = "test1"}), s_globalOptions, default);
+		var fileOptions = FileOptions.Select(
+			file: new(
+				mainFile: new AdditionalTextStub("Path1.resx"),
+				subFiles: Array.Empty<AdditionalText>()
+			),
+			options: new AnalyzerConfigOptionsProviderStub(
+				globalOptions: null!,
+				fileOptions: new AnalyzerConfigOptionsStub { ClassNamePostfix = "test1" }
+			),
+			globalOptions: s_globalOptions,
+			token: default
+		);
 		fileOptions.ClassName.Should().Be("Path1test1");
-		fileOptions.Valid.Should().Be(true);
+		fileOptions.IsValid.Should().Be(true);
 	}
 
 	[Fact]
 	public void FileSettings_CanReadAll()
 	{
-		var fileOptions = FileOptions.Select(new(new AdditionalTextStub("Path1.resx"), Array.Empty<AdditionalText>()), new AnalyzerConfigOptionsProviderStub(
-			null!, new AnalyzerConfigOptionsStub
-			{
-				RootNamespace = "required1", MSBuildProjectFullPath = "required2",
-				CustomToolNamespace = "ns1",
-				InnerClassName = "test1",
-				InnerClassInstanceName = "test2",
-				InnerClassVisibility = "public",
-				NullForgivingOperators = "true",
-				StaticClass = "false",
-				StaticMembers = "false",
-				PublicClass = "true",
-				PartialClass = "true",
-				UseVocaDbResManager = "true",
-				
-			}), s_globalOptions, default);
+		var fileOptions = FileOptions.Select(
+			file: new(
+				mainFile: new AdditionalTextStub("Path1.resx"),
+				subFiles: Array.Empty<AdditionalText>()
+			),
+			options: new AnalyzerConfigOptionsProviderStub(
+				globalOptions: null!,
+				fileOptions: new AnalyzerConfigOptionsStub
+				{
+					RootNamespace = "required1", MSBuildProjectFullPath = "required2",
+					CustomToolNamespace = "ns1",
+					InnerClassName = "test1",
+					InnerClassInstanceName = "test2",
+					InnerClassVisibility = "public",
+					NullForgivingOperators = "true",
+					StaticClass = "false",
+					StaticMembers = "false",
+					PublicClass = "true",
+					PartialClass = "true",
+					UseVocaDbResManager = "true",
+				}
+			),
+			globalOptions: s_globalOptions,
+			token: default
+		);
 		fileOptions.InnerClassName.Should().Be("test1");
 		fileOptions.InnerClassInstanceName.Should().Be("test2");
 		fileOptions.InnerClassVisibility.Should().Be(InnerClassVisibility.Public);
@@ -120,7 +162,7 @@ public class SettingsTests
 		fileOptions.StaticMembers.Should().Be(false);
 		fileOptions.PublicClass.Should().Be(true);
 		fileOptions.PartialClass.Should().Be(true);
-		fileOptions.Valid.Should().Be(true);
+		fileOptions.IsValid.Should().Be(true);
 		fileOptions.UseVocaDbResManager.Should().Be(true);
 		fileOptions.LocalNamespace.Should().Be("required1");
 		fileOptions.CustomToolNamespace.Should().Be("ns1");
@@ -131,22 +173,38 @@ public class SettingsTests
 	[Fact]
 	public void FileSettings_RespectsGlobalDefaults()
 	{
-		var globalOptions = GlobalOptions.Select(new AnalyzerConfigOptionsProviderStub(
-			new AnalyzerConfigOptionsStub
-			{
-				RootNamespace = "required1", MSBuildProjectFullPath = "required2",
-				ResXFileCodeGenerator_InnerClassName = "test1",
-				ResXFileCodeGenerator_InnerClassInstanceName = "test2",
-				ResXFileCodeGenerator_ClassNamePostfix= "test3",
-				ResXFileCodeGenerator_InnerClassVisibility = "public",
-				ResXFileCodeGenerator_NullForgivingOperators = "true",
-				ResXFileCodeGenerator_StaticClass = "false",
-				ResXFileCodeGenerator_StaticMembers = "false",
-				ResXFileCodeGenerator_PublicClass = "true",
-				ResXFileCodeGenerator_PartialClass = "true",
-			}, null!), default);
-		var fileOptions = FileOptions.Select(new(new AdditionalTextStub("Path1.resx"), Array.Empty<AdditionalText>()), new AnalyzerConfigOptionsProviderStub(
-			null!, new AnalyzerConfigOptionsStub()), globalOptions, default);
+		var globalOptions = GlobalOptions.Select(
+			provider: new AnalyzerConfigOptionsProviderStub(
+				globalOptions: new AnalyzerConfigOptionsStub
+				{
+					RootNamespace = "required1",
+					MSBuildProjectFullPath = "required2",
+					ResXFileCodeGenerator_InnerClassName = "test1",
+					ResXFileCodeGenerator_InnerClassInstanceName = "test2",
+					ResXFileCodeGenerator_ClassNamePostfix= "test3",
+					ResXFileCodeGenerator_InnerClassVisibility = "public",
+					ResXFileCodeGenerator_NullForgivingOperators = "true",
+					ResXFileCodeGenerator_StaticClass = "false",
+					ResXFileCodeGenerator_StaticMembers = "false",
+					ResXFileCodeGenerator_PublicClass = "true",
+					ResXFileCodeGenerator_PartialClass = "true",
+				},
+				fileOptions: null!
+			),
+			token: default
+		);
+		var fileOptions = FileOptions.Select(
+			file: new(
+				mainFile: new AdditionalTextStub("Path1.resx"),
+				subFiles: Array.Empty<AdditionalText>()
+			),
+			options: new AnalyzerConfigOptionsProviderStub(
+				globalOptions: null!,
+				fileOptions: new AnalyzerConfigOptionsStub()
+			),
+			globalOptions: globalOptions,
+			token: default
+		);
 		fileOptions.InnerClassName.Should().Be("test1");
 		fileOptions.InnerClassInstanceName.Should().Be("test2");
 		fileOptions.InnerClassVisibility.Should().Be(InnerClassVisibility.Public);
@@ -155,13 +213,13 @@ public class SettingsTests
 		fileOptions.StaticMembers.Should().Be(false);
 		fileOptions.PublicClass.Should().Be(true);
 		fileOptions.PartialClass.Should().Be(true);
-		fileOptions.Valid.Should().Be(true);
+		fileOptions.IsValid.Should().Be(true);
 		fileOptions.UseVocaDbResManager.Should().Be(false);
 		fileOptions.LocalNamespace.Should().Be("required1");
 		fileOptions.CustomToolNamespace.Should().BeNullOrEmpty();
 		fileOptions.File.Path.Should().Be("Path1.resx");
 		fileOptions.ClassName.Should().Be("Path1test3");
-		fileOptions.Valid.Should().Be(true);
+		fileOptions.IsValid.Should().Be(true);
 	}
 
 	private class AnalyzerConfigOptionsStub : AnalyzerConfigOptions
@@ -230,19 +288,22 @@ public class SettingsTests
 			return value is not null;
 		}
 	}
+
 	private class AnalyzerConfigOptionsProviderStub : AnalyzerConfigOptionsProvider
 	{
-		private readonly AnalyzerConfigOptions _fileoptions;
-		public override AnalyzerConfigOptions GetOptions(SyntaxTree tree) => throw new NotImplementedException();
+		private readonly AnalyzerConfigOptions _fileOptions;
 
-		public AnalyzerConfigOptionsProviderStub(AnalyzerConfigOptions globalOptions, AnalyzerConfigOptions fileoptions)
+		public override AnalyzerConfigOptions GlobalOptions { get; }
+
+		public AnalyzerConfigOptionsProviderStub(AnalyzerConfigOptions globalOptions, AnalyzerConfigOptions fileOptions)
 		{
-			_fileoptions = fileoptions;
+			_fileOptions = fileOptions;
 			GlobalOptions = globalOptions;
 		}
 
-		public override AnalyzerConfigOptions GetOptions(AdditionalText textFile) => _fileoptions;
+		public override AnalyzerConfigOptions GetOptions(SyntaxTree tree) => throw new NotImplementedException();
 
-		public override AnalyzerConfigOptions GlobalOptions { get; }
+		public override AnalyzerConfigOptions GetOptions(AdditionalText textFile) => _fileOptions;
+
 	}
 }

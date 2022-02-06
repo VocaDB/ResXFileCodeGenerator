@@ -12,15 +12,20 @@ public class SourceGenerator : IIncrementalGenerator
 		var globalOptions = context.AnalyzerConfigOptionsProvider.Select(GlobalOptions.Select);
 
 		var allResxFiles = context.AdditionalTextsProvider.Where(static af => af.Path.EndsWith(".resx"));
-		var monitor = allResxFiles.Collect().SelectMany((x,_)=>GroupResxFiles.Group(x));
+		var monitor = allResxFiles.Collect().SelectMany((x,_) => GroupResxFiles.Group(x));
 
-		//It is unclear from documentation at which stage one should stop the pipeline and do what in the RegisterSourceOutput
-		//we stop after the USER cannot alter anything, assuming that AdditionalText has some fancy internal comparrison to make sure it is same if content is same
+		// It is unclear from documentation at which stage one should stop the pipeline and do what in the RegisterSourceOutput
+		// we stop after the USER cannot alter anything, assuming that AdditionalText has some fancy internal comparrison to make sure it is same if content is same
 		var inputs = monitor
 			.Combine(globalOptions)
 			.Combine(context.AnalyzerConfigOptionsProvider)
-			.Select(static (x, t) => FileOptions.Select(x.Left.Left, x.Right, x.Left.Right, t))
-			.Where(static x => x.Valid);
+			.Select(static (x, t) => FileOptions.Select(
+				file: x.Left.Left,
+				options: x.Right,
+				globalOptions: x.Left.Right,
+				token: t
+			))
+			.Where(static x => x.IsValid);
 		//.Select(static (file, token) => (file,
 		//	content: file.File.GetText(token) is { } str ? new StringReader(str.ToString()) : null))
 		//.Where(static x => x.content is not null)

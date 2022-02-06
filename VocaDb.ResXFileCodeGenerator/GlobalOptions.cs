@@ -2,7 +2,7 @@
 
 namespace VocaDb.ResXFileCodeGenerator;
 
-public sealed record GlobalOptions //this must be a record or implement IEquatable<T>
+public sealed record GlobalOptions // this must be a record or implement IEquatable<T>
 {
 	public string InnerClassInstanceName { get; }
 	public bool StaticMembers { get; }
@@ -16,22 +16,21 @@ public sealed record GlobalOptions //this must be a record or implement IEquatab
 	public bool PublicClass { get; }
 	public string ClassNamePostfix { get; }
 	public bool UseVocaDbResManager { get; }
-	public bool Valid { get; }
-
+	public bool IsValid { get; }
 
 	private GlobalOptions(AnalyzerConfigOptions options)
 	{
-		Valid = true;
+		IsValid = true;
 
 		if (!options.TryGetValue("build_property.MSBuildProjectFullPath", out var projectFullPath))
 		{
-			Valid = false;
+			IsValid = false;
 		}
 
 		ProjectFullPath = projectFullPath!;
 		if (!options.TryGetValue("build_property.RootNamespace", out var rootNamespace))
 		{
-			Valid = false;
+			IsValid = false;
 		}
 
 		RootNamespace = rootNamespace!;
@@ -42,57 +41,62 @@ public sealed record GlobalOptions //this must be a record or implement IEquatab
 			publicClassSwitch.Equals("true", StringComparison.OrdinalIgnoreCase);
 
 		NullForgivingOperators =
-			options.TryGetValue("build_property.ResXFileCodeGenerator_NullForgivingOperators",
-				out var nullForgivingOperatorsSwitch) &&
+			options.TryGetValue("build_property.ResXFileCodeGenerator_NullForgivingOperators", out var nullForgivingOperatorsSwitch) &&
 			nullForgivingOperatorsSwitch is { Length: > 0 } &&
 			nullForgivingOperatorsSwitch.Equals("true", StringComparison.OrdinalIgnoreCase);
 
 		StaticClass =
-			!(options.TryGetValue("build_property.ResXFileCodeGenerator_StaticClass", out var staticClassSwitch) &&
-			  staticClassSwitch is { Length: > 0 } &&
-			  staticClassSwitch.Equals("false", StringComparison.OrdinalIgnoreCase));
+			!(
+				options.TryGetValue("build_property.ResXFileCodeGenerator_StaticClass", out var staticClassSwitch) &&
+				staticClassSwitch is { Length: > 0 } &&
+				staticClassSwitch.Equals("false", StringComparison.OrdinalIgnoreCase)
+			);
 
 		StaticMembers =
-			!(options.TryGetValue("build_property.ResXFileCodeGenerator_StaticMembers", out var staticMembersSwitch) &&
-			  staticMembersSwitch is { Length: > 0 } &&
-			  staticMembersSwitch.Equals("false", StringComparison.OrdinalIgnoreCase));
+			!(
+				options.TryGetValue("build_property.ResXFileCodeGenerator_StaticMembers", out var staticMembersSwitch) &&
+				staticMembersSwitch is { Length: > 0 } &&
+				staticMembersSwitch.Equals("false", StringComparison.OrdinalIgnoreCase)
+			);
 
 		PartialClass =
 			options.TryGetValue("build_property.ResXFileCodeGenerator_PartialClass", out var partialClassSwitch) &&
 			partialClassSwitch is { Length: > 0 } &&
 			partialClassSwitch.Equals("true", StringComparison.OrdinalIgnoreCase);
 
-		ClassNamePostfix = "";
+		ClassNamePostfix = string.Empty;
 		if (options.TryGetValue("build_property.ResXFileCodeGenerator_ClassNamePostfix", out var classNamePostfixSwitch))
 		{
 			ClassNamePostfix = classNamePostfixSwitch;
 		}
 
 		InnerClassVisibility = InnerClassVisibility.NotGenerated;
-		if (options.TryGetValue("build_property.ResXFileCodeGenerator_InnerClassVisibility",
-			    out var innerClassVisibilitySwitch) &&
-		    Enum.TryParse(innerClassVisibilitySwitch, true, out InnerClassVisibility v))
+		if (
+			options.TryGetValue("build_property.ResXFileCodeGenerator_InnerClassVisibility", out var innerClassVisibilitySwitch) &&
+			Enum.TryParse(innerClassVisibilitySwitch, true, out InnerClassVisibility v)
+		)
 		{
 			InnerClassVisibility = v;
 		}
 
-		InnerClassName = "";
+		InnerClassName = string.Empty;
 		if (options.TryGetValue("build_property.ResXFileCodeGenerator_InnerClassName", out var innerClassNameSwitch))
 		{
 			InnerClassName = innerClassNameSwitch;
 		}
 
-		InnerClassInstanceName = "";
-		if (options.TryGetValue("build_property.ResXFileCodeGenerator_InnerClassInstanceName",
-			    out var innerClassInstanceNameSwitch))
+		InnerClassInstanceName = string.Empty;
+		if (options.TryGetValue("build_property.ResXFileCodeGenerator_InnerClassInstanceName", out var innerClassInstanceNameSwitch))
 		{
 			InnerClassInstanceName = innerClassInstanceNameSwitch;
 		}
 
 		UseVocaDbResManager = false;
-		if (options.TryGetValue("build_property.ResXFileCodeGenerator_UseVocaDbResManager", out var genCodeSwitch) &&
-		    genCodeSwitch is { Length: > 0 } &&
-		    genCodeSwitch.Equals("true", StringComparison.OrdinalIgnoreCase))
+		if (
+			options.TryGetValue("build_property.ResXFileCodeGenerator_UseVocaDbResManager", out var genCodeSwitch) &&
+			genCodeSwitch is { Length: > 0 } &&
+			genCodeSwitch.Equals("true", StringComparison.OrdinalIgnoreCase)
+		)
 		{
 			UseVocaDbResManager = true;
 		}

@@ -4,13 +4,13 @@ namespace VocaDb.ResXFileCodeGenerator;
 
 public class GroupedAdditionalFile : IEquatable<GroupedAdditionalFile>
 {
-	public AdditionalText Mainfile { get; }
-	public IReadOnlyList<AdditionalText> Subfiles { get; init; }
+	public AdditionalText MainFile { get; }
+	public IReadOnlyList<AdditionalText> SubFiles { get; init; }
 
-	public GroupedAdditionalFile(AdditionalText mainfile, IReadOnlyList<AdditionalText> subfiles)
+	public GroupedAdditionalFile(AdditionalText mainFile, IReadOnlyList<AdditionalText> subFiles)
 	{
-		Mainfile = mainfile;
-		Subfiles = subfiles.OrderBy(x=>x.Path, StringComparer.Ordinal).ToArray();
+		MainFile = mainFile;
+		SubFiles = subFiles.OrderBy(x => x.Path, StringComparer.Ordinal).ToArray();
 	}
 
 	public bool Equals(GroupedAdditionalFile? other)
@@ -25,7 +25,7 @@ public class GroupedAdditionalFile : IEquatable<GroupedAdditionalFile>
 			return true;
 		}
 
-		return Mainfile.Path.Equals(other.Mainfile.Path) && Subfiles.Select(x=>x.Path).SequenceEqual(other.Subfiles.Select(x=>x.Path));
+		return MainFile.Path.Equals(other.MainFile.Path) && SubFiles.Select(x => x.Path).SequenceEqual(other.SubFiles.Select(x => x.Path));
 	}
 
 	public override bool Equals(object? obj)
@@ -52,8 +52,8 @@ public class GroupedAdditionalFile : IEquatable<GroupedAdditionalFile>
 	{
 		unchecked
 		{
-			var hashCode = Mainfile.Path.GetHashCode();
-			foreach (var additionalText in Subfiles)
+			var hashCode = MainFile.Path.GetHashCode();
+			foreach (var additionalText in SubFiles)
 			{
 				hashCode = (hashCode * 397) ^ additionalText.Path.GetHashCode();
 			}
