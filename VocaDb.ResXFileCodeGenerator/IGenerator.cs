@@ -1,15 +1,18 @@
-namespace VocaDb.ResXFileCodeGenerator;
+﻿using Microsoft.CodeAnalysis;
 
-public sealed record GeneratorOptions(
-	string LocalNamespace,
-	string? CustomToolNamespace,
-	string ClassName,
-	bool PublicClass,
-	bool NullForgivingOperators,
-	bool StaticClass
-);
+namespace VocaDb.ResXFileCodeGenerator;
 
 public interface IGenerator
 {
-	string Generate(Stream resxStream, GeneratorOptions options);
+	/// <summary>
+	/// Generate source file with properties for each translated resource
+	/// </summary>
+	(string generatedFileName, string SourceCode, IEnumerable<Diagnostic> ErrorsAndWarnings)
+		Generate(FileOptions options, CancellationToken cancellationToken = default);
+
+	/// <summary>
+	/// Generate helper functions to determine which translated resource to use in the current moment
+	/// </summary>
+	(string generatedFileName, string SourceCode, IEnumerable<Diagnostic> ErrorsAndWarnings)
+		Generate(CultureInfoCombo combo, CancellationToken cancellationToken);
 }

@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>preview</LangVersion>
+    <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>VocaDB</Authors>
@@ -15,8 +15,9 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <NoWarn>$(NoWarn);NU5128</NoWarn>
     <DevelopmentDependency>true</DevelopmentDependency>
-    <Version>2.0.2</Version>
+    <Version>3.1.0</Version>
     <ImplicitUsings>enable</ImplicitUsings>
+	 <IsRoslynComponent>true</IsRoslynComponent>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,8 +34,9 @@
   </ItemDefinitionGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0-3.final" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.0.1" />
   </ItemGroup>
 
   <Import Project="$(MSBuildProjectName).targets" />
