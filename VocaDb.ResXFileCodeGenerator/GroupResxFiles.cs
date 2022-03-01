@@ -15,7 +15,10 @@ public static class GroupResxFiles
 			var baseName = Utilities.GetBaseName(path);
 			if (Path.GetFileNameWithoutExtension(path) == baseName)
 			{
-				lookup.Add(pathName + "\\" + baseName, file);
+				var key = pathName + "\\" + baseName;
+				//it should be impossible to exist already, but VS sometimes throws error about duplicate key added. Keep the original entry, not the new one
+				if (!lookup.ContainsKey(key))
+					lookup.Add(key, file);
 				res.Add(file, new());
 			}
 		}
@@ -27,7 +30,7 @@ public static class GroupResxFiles
 			var baseName = Utilities.GetBaseName(path);
 			if (fileNameWithoutExtension == baseName)
 				continue;
-			// this might happen if a nn.resx file exists without a .resx file
+			// this might happen if a .nn.resx file exists without a .resx file
 			if (!lookup.TryGetValue(pathName + "\\" + baseName, out var additionalText))
 				continue;
 			res[additionalText].Add(file);
