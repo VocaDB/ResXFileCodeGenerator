@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <CompilerVisibleProperty Include="MSBuildProjectFullPath" />
+    <CompilerVisibleProperty Include="MSBuildProjectName" />
     <CompilerVisibleProperty Include="RootNamespace" />
     <CompilerVisibleProperty Include="CustomToolNamespace" />
     <CompilerVisibleProperty Include="ResXFileCodeGenerator_PublicClass" />
