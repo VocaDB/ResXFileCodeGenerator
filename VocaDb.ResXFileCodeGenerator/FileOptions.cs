@@ -58,7 +58,8 @@ public sealed record FileOptions // this must be a record or implement IEquatabl
 				: null,
 			globalOptions.ProjectFullPath,
 			globalOptions.RootNamespace);
-		EmbeddedFilename = detectedNamespace + "." + classNameFromFileName;
+		 
+		EmbeddedFilename = string.IsNullOrEmpty(detectedNamespace) ? classNameFromFileName : $"{detectedNamespace}.{classNameFromFileName}";
 
 		LocalNamespace =
 			options.TryGetValue("build_metadata.EmbeddedResource.TargetPath", out var targetPath) &&
@@ -67,7 +68,9 @@ public sealed record FileOptions // this must be a record or implement IEquatabl
 					resxFilePath, targetPath,
 					globalOptions.ProjectFullPath,
 					globalOptions.RootNamespace)
-				: detectedNamespace;
+				: string.IsNullOrEmpty(detectedNamespace)
+					? Utilities.SanitizeNamespace(globalOptions.ProjectName)
+					: detectedNamespace;
 
 		CustomToolNamespace =
 			options.TryGetValue("build_metadata.EmbeddedResource.CustomToolNamespace", out var customToolNamespace) &&

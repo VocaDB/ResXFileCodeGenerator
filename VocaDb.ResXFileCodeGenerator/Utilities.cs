@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace VocaDb.ResXFileCodeGenerator;
 
@@ -70,29 +71,32 @@ public static class Utilities
 				return string.Empty;
 			}
 
-			var localNamespace = rootNamespace;
+			var localNamespace = string.Empty;
 
 			if (!string.IsNullOrWhiteSpace(targetPath))
 			{
-				var ns = Path.GetDirectoryName(targetPath)
+				localNamespace = Path.GetDirectoryName(targetPath)
+					.Trim(Path.DirectorySeparatorChar)
+					.Trim(Path.AltDirectorySeparatorChar)
 					.Replace(Path.DirectorySeparatorChar, '.')
-					.Replace(Path.AltDirectorySeparatorChar, '.')
-					.Replace(" ", string.Empty);
-				if (!string.IsNullOrEmpty(ns))
-				{
-					localNamespace += ".";
-					localNamespace += ns;
-				}
+					.Replace(Path.AltDirectorySeparatorChar, '.'); 
 			}
 			else if (resxFolder.StartsWith(projectFolder, StringComparison.OrdinalIgnoreCase))
 			{
-				localNamespace += resxFolder.Substring(projectFolder.Length)
+				localNamespace = resxFolder
+					.Substring(projectFolder.Length)
+					.Trim(Path.DirectorySeparatorChar)
+					.Trim(Path.AltDirectorySeparatorChar)
 					.Replace(Path.DirectorySeparatorChar, '.')
-					.Replace(Path.AltDirectorySeparatorChar, '.')
-					.Replace(" ", string.Empty);
+					.Replace(Path.AltDirectorySeparatorChar, '.');
 			}
 
-			return localNamespace;
+			return (string.IsNullOrEmpty(rootNamespace)
+				? SanitizeNamespace(localNamespace)
+				// If we have a root namespace, namespace first char rules do not apply
+				: $"{rootNamespace}.{SanitizeNamespace(localNamespace, sanitizeFirstChar: false)}")
+				// It's possible we do not have either a root namespace or a local namespace
+				.Trim('.'); 
 		}
 		catch (Exception)
 		{
@@ -110,5 +114,29 @@ public static class Utilities
 		}
 
 		return className;
+	}
+
+	public static string SanitizeNamespace(string ns, bool sanitizeFirstChar = true)
+	{
+		if(string.IsNullOrEmpty(ns))
+			return ns;
+
+		// A namespace must contain only alphabetic characters, decimal digits, dots and underscores, and must begin with an alphabetic character or underscore (_)
+		// In case there are invalid chars we'll use same logic as Visual Studio and replace them with underscore (_) and append underscore (_) if project does not start with alphabetic or underscore (_)
+
+		var sanitizedNs = Regex
+			.Replace(ns, @"[^a-zA-Z0-9_\.]", "_");
+
+		// Handle folder containing multiple dots, e.g. 'test..test2' or starting, ending with dots
+		sanitizedNs = Regex
+			.Replace(sanitizedNs, @"\.+", ".");
+
+		if (sanitizeFirstChar)
+			sanitizedNs = sanitizedNs.Trim('.');
+
+		return sanitizeFirstChar
+			// Handle namespace starting with digit
+			? char.IsDigit(sanitizedNs[0]) ? $"_{sanitizedNs}" : sanitizedNs
+			: sanitizedNs;
 	}
 }
