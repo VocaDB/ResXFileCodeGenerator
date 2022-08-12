@@ -113,14 +113,16 @@ public class SettingsTests
 	}
 
 	[Theory]
-	[InlineData("project1.csproj", "Path1.resx", null, "project1", "Path1")]
-	[InlineData("project1.csproj", "Path1.resx", "", "project1", "Path1")]
+	[InlineData("project1.csproj", "Path1.resx", null, "project1", "project1.Path1")]
+	[InlineData("project1.csproj", "Path1.resx", "", "project1", "project1.Path1")]
 	[InlineData("project1.csproj", "Path1.resx", "rootNamespace","rootNamespace", "rootNamespace.Path1")]
 	[InlineData(@"ProjectFolder\project1.csproj", @"ProjectFolder\SubFolder\Path1.resx", "rootNamespace", "rootNamespace.SubFolder", "rootNamespace.SubFolder.Path1")]
 	[InlineData(@"ProjectFolder\project1.csproj", @"ProjectFolder\SubFolder With Space\Path1.resx", "rootNamespace", "rootNamespace.SubFolder_With_Space", "rootNamespace.SubFolder_With_Space.Path1")]
 	[InlineData(@"ProjectFolder\project1.csproj", @"ProjectFolder\SubFolder\Path1.resx", null, "SubFolder", "SubFolder.Path1")]
-	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\Path1.resx", null, "_8_project", "Path1")]
+	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\Path1.resx", null, "_8_project", "_8_project.Path1")]
+	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\Path1.resx", "", "_8_project", "_8_project.Path1")]
 	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\SubFolder\Path1.resx", null, "SubFolder", "SubFolder.Path1")]
+	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\SubFolder\Path1.resx", "", "SubFolder", "SubFolder.Path1")]
 	public void FileSettings_RespectsEmptyRootNamespace(string msBuildProjectFullPath,
 		string mainFile,
 		string rootNamespace,

@@ -57,6 +57,7 @@ public sealed record FileOptions // this must be a record or implement IEquatabl
 				? link
 				: null,
 			globalOptions.ProjectFullPath,
+			globalOptions.ProjectName,
 			globalOptions.RootNamespace);
 		 
 		EmbeddedFilename = string.IsNullOrEmpty(detectedNamespace) ? classNameFromFileName : $"{detectedNamespace}.{classNameFromFileName}";
@@ -67,6 +68,7 @@ public sealed record FileOptions // this must be a record or implement IEquatabl
 				? Utilities.GetLocalNamespace(
 					resxFilePath, targetPath,
 					globalOptions.ProjectFullPath,
+					globalOptions.ProjectName,
 					globalOptions.RootNamespace)
 				: string.IsNullOrEmpty(detectedNamespace)
 					? Utilities.SanitizeNamespace(globalOptions.ProjectName)
