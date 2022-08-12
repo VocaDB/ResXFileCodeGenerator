@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace VocaDb.ResXFileCodeGenerator;
 
@@ -22,7 +23,10 @@ public static class Utilities
 			}
 
 			var dash = languageName.IndexOf('-');
-			if (dash >= 4 || (dash == -1 && languageName.Length >= 4)) return false;
+			if (dash >= 4 || (dash == -1 && languageName.Length >= 4))
+			{
+				return false;
+			}
 
 			var culture = new CultureInfo(languageName);
 
@@ -52,7 +56,7 @@ public static class Utilities
 
 	// Code from: https://github.com/dotnet/ResXResourceManager/blob/c8b5798d760f202a1842a74191e6010c6e8bbbc0/src/ResXManager.VSIX/Visuals/MoveToResourceViewModel.cs#L120
 
-	public static string GetLocalNamespace(string? resxPath, string? targetPath, string? projectPath,
+	public static string GetLocalNamespace(string? resxPath, string? targetPath, string projectPath, string projectName,
 		string? rootNamespace)
 	{
 		try
@@ -79,7 +83,7 @@ public static class Utilities
 					.Trim(Path.DirectorySeparatorChar)
 					.Trim(Path.AltDirectorySeparatorChar)
 					.Replace(Path.DirectorySeparatorChar, '.')
-					.Replace(Path.AltDirectorySeparatorChar, '.'); 
+					.Replace(Path.AltDirectorySeparatorChar, '.');
 			}
 			else if (resxFolder.StartsWith(projectFolder, StringComparison.OrdinalIgnoreCase))
 			{
@@ -91,12 +95,21 @@ public static class Utilities
 					.Replace(Path.AltDirectorySeparatorChar, '.');
 			}
 
-			return (string.IsNullOrEmpty(rootNamespace)
-				? SanitizeNamespace(localNamespace)
-				// If we have a root namespace, namespace first char rules do not apply
-				: $"{rootNamespace}.{SanitizeNamespace(localNamespace, sanitizeFirstChar: false)}")
-				// It's possible we do not have either a root namespace or a local namespace
-				.Trim('.'); 
+			if (string.IsNullOrEmpty(rootNamespace) && string.IsNullOrEmpty(localNamespace))
+			{
+				// If local namespace is empty, e.g file is in root project folder, root namespace set to empty
+				// fallback to project name as a namespace
+				localNamespace = SanitizeNamespace(projectName);
+			}
+			else
+			{
+				localNamespace = (string.IsNullOrEmpty(localNamespace)
+						? rootNamespace
+						: $"{rootNamespace}.{SanitizeNamespace(localNamespace, false)}")
+					.Trim('.');
+			}
+
+			return localNamespace;
 		}
 		catch (Exception)
 		{
@@ -118,8 +131,10 @@ public static class Utilities
 
 	public static string SanitizeNamespace(string ns, bool sanitizeFirstChar = true)
 	{
-		if(string.IsNullOrEmpty(ns))
+		if (string.IsNullOrEmpty(ns))
+		{
 			return ns;
+		}
 
 		// A namespace must contain only alphabetic characters, decimal digits, dots and underscores, and must begin with an alphabetic character or underscore (_)
 		// In case there are invalid chars we'll use same logic as Visual Studio and replace them with underscore (_) and append underscore (_) if project does not start with alphabetic or underscore (_)
@@ -132,7 +147,9 @@ public static class Utilities
 			.Replace(sanitizedNs, @"\.+", ".");
 
 		if (sanitizeFirstChar)
+		{
 			sanitizedNs = sanitizedNs.Trim('.');
+		}
 
 		return sanitizeFirstChar
 			// Handle namespace starting with digit
