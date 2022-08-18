@@ -213,18 +213,18 @@ If your resx files are organized along with code files, it can be quite useful t
 
 ```xml
 <ItemGroup>
-	<EmbeddedResource Update="**/*.resx">
-		<DependentUpon>$([System.String]::Copy('%(FileName).cs'))</DependentUpon>
-		<InnerClassName>MyResources</InnerClassName>
-		<InnerClassVisibility>private</InnerClassVisibility>
-		<InnerClassInstanceName>EveryoneLikeMyNaming</InnerClassInstanceName>
-	    <StaticMembers>false</StaticMembers>
-		<StaticClass>false</StaticClass>
-		<PartialClass>true</PartialClass>
-	</EmbeddedResource>
-	<EmbeddedResource Update="**/*.??.resx;**/*.??-??.resx">
-		<DependentUpon>$([System.IO.Path]::GetFileNameWithoutExtension('%(FileName)')).resx</DependentUpon>
-	</EmbeddedResource>
+    <EmbeddedResource Update="**/*.resx">
+        <DependentUpon>$([System.String]::Copy('%(FileName).cs'))</DependentUpon>
+        <InnerClassName>MyResources</InnerClassName>
+        <InnerClassVisibility>private</InnerClassVisibility>
+        <InnerClassInstanceName>EveryoneLikeMyNaming</InnerClassInstanceName>
+        <StaticMembers>false</StaticMembers>
+        <StaticClass>false</StaticClass>
+        <PartialClass>true</PartialClass>
+    </EmbeddedResource>
+    <EmbeddedResource Update="**/*.??.resx;**/*.??-??.resx">
+        <DependentUpon>$([System.IO.Path]::GetFileNameWithoutExtension('%(FileName)')).resx</DependentUpon>
+    </EmbeddedResource>
 </ItemGroup>
 ```
 
@@ -260,24 +260,24 @@ namespace Resources
 
     public partial class ActivityEntryModel
     {
-		public MyResources EveryoneLikeMyNaming { get; } = new();
+        public MyResources EveryoneLikeMyNaming { get; } = new();
 
-		private class MyResources
-		{
-			private static ResourceManager? s_resourceManager;
-			public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager("VocaDb.Web.App_GlobalResources.ActivityEntryModel", typeof(ActivityEntryModel).Assembly);
-			public CultureInfo? CultureInfo { get; set; }
+        private class MyResources
+        {
+            private static ResourceManager? s_resourceManager;
+            public static ResourceManager ResourceManager => s_resourceManager ??= new ResourceManager("VocaDb.Web.App_GlobalResources.ActivityEntryModel", typeof(ActivityEntryModel).Assembly);
+            public CultureInfo? CultureInfo { get; set; }
 
-			/// <summary>
-			/// Looks up a localized string similar to Oldest.
-			/// </summary>
-			public string? CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo);
+            /// <summary>
+            /// Looks up a localized string similar to Oldest.
+            /// </summary>
+            public string? CreateDate => ResourceManager.GetString(nameof(CreateDate), CultureInfo);
 
-			/// <summary>
-			/// Looks up a localized string similar to Newest.
-			/// </summary>
-			public string? CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo);
-		}
+            /// <summary>
+            /// Looks up a localized string similar to Newest.
+            /// </summary>
+            public string? CreateDateDescending => ResourceManager.GetString(nameof(CreateDateDescending), CultureInfo);
+        }
     }
 }
 ```
@@ -298,9 +298,9 @@ It is also possible to use "NotGenerated" to override on a file if the global se
 
 ```xml
 <ItemGroup>
-	<EmbeddedResource Update="**/*.resx">
-		<InnerClassVisibility>private</InnerClassVisibility>
-	</EmbeddedResource>
+    <EmbeddedResource Update="**/*.resx">
+        <InnerClassVisibility>private</InnerClassVisibility>
+    </EmbeddedResource>
 </ItemGroup>
 ```
 
@@ -318,9 +318,9 @@ By default the inner class is named "Resources", which can be overriden with thi
 
 ```xml
 <ItemGroup>
-	<EmbeddedResource Update="**/*.resx">
-		<InnerClassName>MyResources</InnerClassName>
-	</EmbeddedResource>
+    <EmbeddedResource Update="**/*.resx">
+        <InnerClassName>MyResources</InnerClassName>
+    </EmbeddedResource>
 </ItemGroup>
 ```
 
@@ -339,9 +339,9 @@ By default no instance is available of the class, but that can be made available
 
 ```xml
 <ItemGroup>
-	<EmbeddedResource Update="**/*.resx">
-		<InnerClassInstanceName>EveryoneLikeMyNaming</InnerClassInstanceName>
-	</EmbeddedResource>
+    <EmbeddedResource Update="**/*.resx">
+        <InnerClassInstanceName>EveryoneLikeMyNaming</InnerClassInstanceName>
+    </EmbeddedResource>
 </ItemGroup>
 ```
 
@@ -395,10 +395,10 @@ Notice, it is required to set `GenerateResource` to false for all resx files to 
 
 ```xml
 <ItemGroup>
-	<EmbeddedResource Update="**/*.resx">
-		<UseVocaDbResManager>true</UseVocaDbResManager>
-		<GenerateResource>false</GenerateResource>
-	</EmbeddedResource>
+    <EmbeddedResource Update="**/*.resx">
+        <UseVocaDbResManager>true</UseVocaDbResManager>
+        <GenerateResource>false</GenerateResource>
+    </EmbeddedResource>
 </ItemGroup>
 ```
 
@@ -409,9 +409,9 @@ or globally
   <ResXFileCodeGenerator_UseVocaDbResManager>true</ResXFileCodeGenerator_UseVocaDbResManager>
 </PropertyGroup>
 <ItemGroup>
-	<EmbeddedResource Update="@(EmbeddedResource)">
-		<GenerateResource>false</GenerateResource>
-	</EmbeddedResource>
+    <EmbeddedResource Update="@(EmbeddedResource)">
+        <GenerateResource>false</GenerateResource>
+    </EmbeddedResource>
 </ItemGroup>
 ```
 
