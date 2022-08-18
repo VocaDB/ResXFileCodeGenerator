@@ -12,8 +12,9 @@ public class SettingsTests
 		provider: new AnalyzerConfigOptionsProviderStub(
 			globalOptions: new AnalyzerConfigOptionsStub
 			{
-				RootNamespace = "required1",
-				MSBuildProjectFullPath = "required2"
+				RootNamespace = "namespace1",
+				MSBuildProjectFullPath = "project1.csproj",
+				MSBuildProjectName = "project1",
 			},
 			fileOptions: null!
 		),
@@ -24,8 +25,9 @@ public class SettingsTests
 	public void GlobalDefaults()
 	{
 		var globalOptions = s_globalOptions;
-		globalOptions.RootNamespace.Should().Be("required1");
-		globalOptions.ProjectFullPath.Should().Be("required2");
+		globalOptions.ProjectName.Should().Be("project1");
+		globalOptions.RootNamespace.Should().Be("namespace1");
+		globalOptions.ProjectFullPath.Should().Be("project1.csproj");
 		globalOptions.InnerClassName.Should().BeNullOrEmpty();
 		globalOptions.ClassNamePostfix.Should().BeNullOrEmpty();
 		globalOptions.InnerClassInstanceName.Should().BeNullOrEmpty();
@@ -45,7 +47,9 @@ public class SettingsTests
 			provider: new AnalyzerConfigOptionsProviderStub(
 				globalOptions: new AnalyzerConfigOptionsStub
 				{
-					RootNamespace = "required1", MSBuildProjectFullPath = "required2",
+					RootNamespace = "namespace1",
+					MSBuildProjectFullPath = "project1.csproj",
+					MSBuildProjectName = "project1",
 					ResXFileCodeGenerator_InnerClassName = "test1",
 					ResXFileCodeGenerator_InnerClassInstanceName = "test2",
 					ResXFileCodeGenerator_ClassNamePostfix= "test3",
@@ -61,8 +65,9 @@ public class SettingsTests
 			),
 			token: default
 		);
-		globalOptions.RootNamespace.Should().Be("required1");
-		globalOptions.ProjectFullPath.Should().Be("required2");
+		globalOptions.RootNamespace.Should().Be("namespace1");
+		globalOptions.ProjectFullPath.Should().Be("project1.csproj");
+		globalOptions.ProjectName.Should().Be("project1");
 		globalOptions.InnerClassName.Should().Be("test1");
 		globalOptions.InnerClassInstanceName.Should().Be("test2");
 		globalOptions.ClassNamePostfix.Should().Be("test3");
@@ -100,9 +105,66 @@ public class SettingsTests
 		fileOptions.PublicClass.Should().Be(false);
 		fileOptions.PartialClass.Should().Be(false);
 		fileOptions.UseVocaDbResManager.Should().Be(false);
-		fileOptions.LocalNamespace.Should().Be("required1");
+		fileOptions.LocalNamespace.Should().Be("namespace1");
 		fileOptions.CustomToolNamespace.Should().BeNullOrEmpty();
 		fileOptions.File.Path.Should().Be("Path1.resx");
+		fileOptions.ClassName.Should().Be("Path1");
+		fileOptions.IsValid.Should().Be(true);
+	}
+
+	[Theory]
+	[InlineData("project1.csproj", "Path1.resx", null, "project1", "project1.Path1")]
+	[InlineData("project1.csproj", "Path1.resx", "", "project1", "project1.Path1")]
+	[InlineData("project1.csproj", "Path1.resx", "rootNamespace","rootNamespace", "rootNamespace.Path1")]
+	[InlineData(@"ProjectFolder\project1.csproj", @"ProjectFolder\SubFolder\Path1.resx", "rootNamespace", "rootNamespace.SubFolder", "rootNamespace.SubFolder.Path1")]
+	[InlineData(@"ProjectFolder\project1.csproj", @"ProjectFolder\SubFolder With Space\Path1.resx", "rootNamespace", "rootNamespace.SubFolder_With_Space", "rootNamespace.SubFolder_With_Space.Path1")]
+	[InlineData(@"ProjectFolder\project1.csproj", @"ProjectFolder\SubFolder\Path1.resx", null, "SubFolder", "SubFolder.Path1")]
+	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\Path1.resx", null, "_8_project", "_8_project.Path1")]
+	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\Path1.resx", "", "_8_project", "_8_project.Path1")]
+	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\SubFolder\Path1.resx", null, "SubFolder", "SubFolder.Path1")]
+	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\SubFolder\Path1.resx", "", "SubFolder", "SubFolder.Path1")]
+	public void FileSettings_RespectsEmptyRootNamespace(string msBuildProjectFullPath,
+		string mainFile,
+		string rootNamespace,
+		string expectedLocalNamespace,
+		string expectedEmbeddedFilename)
+	{
+		var fileOptions = FileOptions.Select(
+			file: new(
+				mainFile: new AdditionalTextStub(mainFile),
+				subFiles: Array.Empty<AdditionalText>()
+			),
+			options: new AnalyzerConfigOptionsProviderStub(
+				globalOptions: null!,
+				fileOptions: new AnalyzerConfigOptionsStub()
+			),
+			globalOptions: GlobalOptions.Select(
+				provider: new AnalyzerConfigOptionsProviderStub(
+					globalOptions: new AnalyzerConfigOptionsStub
+					{
+						MSBuildProjectName = Path.GetFileNameWithoutExtension(msBuildProjectFullPath),
+						RootNamespace = rootNamespace,
+						MSBuildProjectFullPath = msBuildProjectFullPath
+					},
+					fileOptions: null!
+				),
+				token: default
+			),
+			token: default
+		);
+		fileOptions.InnerClassName.Should().BeNullOrEmpty();
+		fileOptions.InnerClassInstanceName.Should().BeNullOrEmpty();
+		fileOptions.InnerClassVisibility.Should().Be(InnerClassVisibility.NotGenerated);
+		fileOptions.NullForgivingOperators.Should().Be(false);
+		fileOptions.StaticClass.Should().Be(true);
+		fileOptions.StaticMembers.Should().Be(true);
+		fileOptions.PublicClass.Should().Be(false);
+		fileOptions.PartialClass.Should().Be(false);
+		fileOptions.UseVocaDbResManager.Should().Be(false);
+		fileOptions.LocalNamespace.Should().Be(expectedLocalNamespace);
+		fileOptions.CustomToolNamespace.Should().BeNullOrEmpty();
+		fileOptions.File.Path.Should().Be(mainFile);
+		fileOptions.EmbeddedFilename.Should().Be(expectedEmbeddedFilename);
 		fileOptions.ClassName.Should().Be("Path1");
 		fileOptions.IsValid.Should().Be(true);
 	}
@@ -138,7 +200,7 @@ public class SettingsTests
 				globalOptions: null!,
 				fileOptions: new AnalyzerConfigOptionsStub
 				{
-					RootNamespace = "required1", MSBuildProjectFullPath = "required2",
+					RootNamespace = "namespace1", MSBuildProjectFullPath = "project1.csproj",
 					CustomToolNamespace = "ns1",
 					InnerClassName = "test1",
 					InnerClassInstanceName = "test2",
@@ -164,7 +226,7 @@ public class SettingsTests
 		fileOptions.PartialClass.Should().Be(true);
 		fileOptions.IsValid.Should().Be(true);
 		fileOptions.UseVocaDbResManager.Should().Be(true);
-		fileOptions.LocalNamespace.Should().Be("required1");
+		fileOptions.LocalNamespace.Should().Be("namespace1");
 		fileOptions.CustomToolNamespace.Should().Be("ns1");
 		fileOptions.File.Path.Should().Be("Path1.resx");
 		fileOptions.ClassName.Should().Be("Path1");
@@ -177,8 +239,9 @@ public class SettingsTests
 			provider: new AnalyzerConfigOptionsProviderStub(
 				globalOptions: new AnalyzerConfigOptionsStub
 				{
-					RootNamespace = "required1",
-					MSBuildProjectFullPath = "required2",
+					RootNamespace = "namespace1",
+					MSBuildProjectFullPath = "project1.csproj",
+					MSBuildProjectName = "project1",
 					ResXFileCodeGenerator_InnerClassName = "test1",
 					ResXFileCodeGenerator_InnerClassInstanceName = "test2",
 					ResXFileCodeGenerator_ClassNamePostfix= "test3",
@@ -215,7 +278,7 @@ public class SettingsTests
 		fileOptions.PartialClass.Should().Be(true);
 		fileOptions.IsValid.Should().Be(true);
 		fileOptions.UseVocaDbResManager.Should().Be(false);
-		fileOptions.LocalNamespace.Should().Be("required1");
+		fileOptions.LocalNamespace.Should().Be("namespace1");
 		fileOptions.CustomToolNamespace.Should().BeNullOrEmpty();
 		fileOptions.File.Path.Should().Be("Path1.resx");
 		fileOptions.ClassName.Should().Be("Path1test3");
@@ -226,6 +289,8 @@ public class SettingsTests
 	{
 		// ReSharper disable InconsistentNaming
 		public string? MSBuildProjectFullPath { get; init; }
+		// ReSharper disable InconsistentNaming
+		public string? MSBuildProjectName { get; init; }
 		public string? RootNamespace { get; init; }
 		public string? ResXFileCodeGenerator_ClassNamePostfix { get; init; }
 		public string? ResXFileCodeGenerator_PublicClass { get; init; }
@@ -258,6 +323,7 @@ public class SettingsTests
 				key switch
 				{
 					"build_property.MSBuildProjectFullPath" => MSBuildProjectFullPath,
+					"build_property.MSBuildProjectName" => MSBuildProjectName,
 					"build_property.RootNamespace" => RootNamespace,
 					"build_property.ResXFileCodeGenerator_UseVocaDbResManager" => ResXFileCodeGenerator_UseVocaDbResManager,
 					"build_property.ResXFileCodeGenerator_ClassNamePostfix" => ResXFileCodeGenerator_ClassNamePostfix,

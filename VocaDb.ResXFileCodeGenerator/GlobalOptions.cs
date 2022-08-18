@@ -11,6 +11,7 @@ public sealed record GlobalOptions // this must be a record or implement IEquata
 	public bool PartialClass { get; }
 	public string RootNamespace { get; }
 	public string ProjectFullPath { get; }
+	public string ProjectName { get; }
 	public bool StaticClass { get; }
 	public bool NullForgivingOperators { get; }
 	public bool PublicClass { get; }
@@ -26,14 +27,19 @@ public sealed record GlobalOptions // this must be a record or implement IEquata
 		{
 			IsValid = false;
 		}
-
 		ProjectFullPath = projectFullPath!;
-		if (!options.TryGetValue("build_property.RootNamespace", out var rootNamespace))
+
+		if (options.TryGetValue("build_property.RootNamespace", out var rootNamespace))
+		{
+			RootNamespace = rootNamespace;
+		}
+		
+		if (!options.TryGetValue("build_property.MSBuildProjectName", out var projectName))
 		{
 			IsValid = false;
 		}
+		ProjectName = projectName!;
 
-		RootNamespace = rootNamespace!;
 		// Code from: https://github.com/dotnet/roslyn/blob/main/docs/features/source-generators.cookbook.md#consume-msbuild-properties-and-metadata
 		PublicClass =
 			options.TryGetValue("build_property.ResXFileCodeGenerator_PublicClass", out var publicClassSwitch) &&

@@ -1,4 +1,6 @@
 ﻿using System.Globalization;
+using System.Text.RegularExpressions;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace VocaDb.ResXFileCodeGenerator;
 
@@ -21,7 +23,10 @@ public static class Utilities
 			}
 
 			var dash = languageName.IndexOf('-');
-			if (dash >= 4 || (dash == -1 && languageName.Length >= 4)) return false;
+			if (dash >= 4 || (dash == -1 && languageName.Length >= 4))
+			{
+				return false;
+			}
 
 			var culture = new CultureInfo(languageName);
 
@@ -51,7 +56,7 @@ public static class Utilities
 
 	// Code from: https://github.com/dotnet/ResXResourceManager/blob/c8b5798d760f202a1842a74191e6010c6e8bbbc0/src/ResXManager.VSIX/Visuals/MoveToResourceViewModel.cs#L120
 
-	public static string GetLocalNamespace(string? resxPath, string? targetPath, string? projectPath,
+	public static string GetLocalNamespace(string? resxPath, string? targetPath, string projectPath, string projectName,
 		string? rootNamespace)
 	{
 		try
@@ -70,26 +75,38 @@ public static class Utilities
 				return string.Empty;
 			}
 
-			var localNamespace = rootNamespace;
+			var localNamespace = string.Empty;
 
 			if (!string.IsNullOrWhiteSpace(targetPath))
 			{
-				var ns = Path.GetDirectoryName(targetPath)
+				localNamespace = Path.GetDirectoryName(targetPath)
+					.Trim(Path.DirectorySeparatorChar)
+					.Trim(Path.AltDirectorySeparatorChar)
 					.Replace(Path.DirectorySeparatorChar, '.')
-					.Replace(Path.AltDirectorySeparatorChar, '.')
-					.Replace(" ", string.Empty);
-				if (!string.IsNullOrEmpty(ns))
-				{
-					localNamespace += ".";
-					localNamespace += ns;
-				}
+					.Replace(Path.AltDirectorySeparatorChar, '.');
 			}
 			else if (resxFolder.StartsWith(projectFolder, StringComparison.OrdinalIgnoreCase))
 			{
-				localNamespace += resxFolder.Substring(projectFolder.Length)
+				localNamespace = resxFolder
+					.Substring(projectFolder.Length)
+					.Trim(Path.DirectorySeparatorChar)
+					.Trim(Path.AltDirectorySeparatorChar)
 					.Replace(Path.DirectorySeparatorChar, '.')
-					.Replace(Path.AltDirectorySeparatorChar, '.')
-					.Replace(" ", string.Empty);
+					.Replace(Path.AltDirectorySeparatorChar, '.');
+			}
+
+			if (string.IsNullOrEmpty(rootNamespace) && string.IsNullOrEmpty(localNamespace))
+			{
+				// If local namespace is empty, e.g file is in root project folder, root namespace set to empty
+				// fallback to project name as a namespace
+				localNamespace = SanitizeNamespace(projectName);
+			}
+			else
+			{
+				localNamespace = (string.IsNullOrEmpty(localNamespace)
+						? rootNamespace
+						: $"{rootNamespace}.{SanitizeNamespace(localNamespace, false)}")
+					.Trim('.');
 			}
 
 			return localNamespace;
@@ -110,5 +127,33 @@ public static class Utilities
 		}
 
 		return className;
+	}
+
+	public static string SanitizeNamespace(string ns, bool sanitizeFirstChar = true)
+	{
+		if (string.IsNullOrEmpty(ns))
+		{
+			return ns;
+		}
+
+		// A namespace must contain only alphabetic characters, decimal digits, dots and underscores, and must begin with an alphabetic character or underscore (_)
+		// In case there are invalid chars we'll use same logic as Visual Studio and replace them with underscore (_) and append underscore (_) if project does not start with alphabetic or underscore (_)
+
+		var sanitizedNs = Regex
+			.Replace(ns, @"[^a-zA-Z0-9_\.]", "_");
+
+		// Handle folder containing multiple dots, e.g. 'test..test2' or starting, ending with dots
+		sanitizedNs = Regex
+			.Replace(sanitizedNs, @"\.+", ".");
+
+		if (sanitizeFirstChar)
+		{
+			sanitizedNs = sanitizedNs.Trim('.');
+		}
+
+		return sanitizeFirstChar
+			// Handle namespace starting with digit
+			? char.IsDigit(sanitizedNs[0]) ? $"_{sanitizedNs}" : sanitizedNs
+			: sanitizedNs;
 	}
 }

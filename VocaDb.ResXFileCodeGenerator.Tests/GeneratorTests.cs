@@ -584,7 +584,7 @@ public static class CommonMessages
 	[Fact]
 	public void GetLocalNamespace_ShouldNotGenerateIllegalNamespace()
 	{
-		var ns = Utilities.GetLocalNamespace("resx", "asd.asd", "path", "root");
+		var ns = Utilities.GetLocalNamespace("resx", "asd.asd", "path", "name", "root");
 		ns.Should().Be("root");
 	}
 
