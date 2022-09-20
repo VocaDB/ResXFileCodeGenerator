@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Xunit;
+using static System.Guid;
 
 namespace VocaDb.ResXFileCodeGenerator.Tests;
 
@@ -120,7 +121,7 @@ using System.Resources;
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames",
 				CustomToolNamespace = "Resources",
 				ClassName = "ActivityEntrySortRuleNames",
-				File = new AdditionalTextStub("", Text),
+				GroupedFile = new(new(new AdditionalTextStub("", Text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
 				PublicClass = publicClass,
 				NullForgivingOperators = nullForgivingOperators,
 				StaticClass = staticClass,
@@ -179,7 +180,7 @@ using System.Resources;
 				ClassName = "ActivityEntrySortRuleNames",
 				PublicClass = publicClass,
 				NullForgivingOperators = nullForgivingOperators,
-				File = new AdditionalTextStub("", Text),
+				GroupedFile = new(new(new AdditionalTextStub("", Text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
 				StaticClass = staticClass,
 				PartialClass = partial,
 				StaticMembers = staticMembers,
@@ -449,10 +450,11 @@ public static class CommonMessages
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
 				CustomToolNamespace = null,
 				ClassName = "CommonMessages",
-				File = new AdditionalTextStub("", text),
+				GroupedFile = new(new(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
 				PublicClass = true,
 				NullForgivingOperators = false,
-				StaticClass = true
+				StaticClass = true,
+				StaticMembers = true
 			}
 		);
 		ErrorsAndWarnings.Should().BeNullOrEmpty();
@@ -501,11 +503,12 @@ public static class CommonMessages
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
 				CustomToolNamespace = null,
-				File = new AdditionalTextStub("", text),
+				GroupedFile = new(new(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
 				ClassName = "CommonMessages",
 				PublicClass = true,
 				NullForgivingOperators = false,
-				StaticClass = true
+				StaticClass = true,
+				StaticMembers = true
 			}
 		);
 		ErrorsAndWarnings.Should().BeNullOrEmpty();
@@ -531,7 +534,7 @@ public static class CommonMessages
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
-				File = new AdditionalTextStub("", text),
+				GroupedFile = new(new(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
 				CustomToolNamespace = null,
 				ClassName = "CommonMessages",
 				PublicClass = true,
@@ -564,7 +567,7 @@ public static class CommonMessages
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
-				File = new AdditionalTextStub(string.Empty, text),
+				GroupedFile = new(new(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
 				CustomToolNamespace = null,
 				ClassName = "CommonMessages",
 				PublicClass = true,

@@ -1,65 +1,43 @@
 ﻿using System.Globalization;
-using Microsoft.CodeAnalysis;
 
 namespace VocaDb.ResXFileCodeGenerator;
 
-public class CultureInfoCombo : IEquatable<CultureInfoCombo>
+/// <summary>
+/// Note: Equality takes into consideration Iso property only
+/// </summary>
+public readonly record struct CultureInfoCombo
 {
 	// order by length desc, so that da-DK comes before da, meaning that it HashSet<int> already doesn't contain da-DK when we process it
-	public CultureInfoCombo(IReadOnlyList<AdditionalText> subfiles) =>
-		CultureInfos = subfiles
-			.Select(x => (Path.GetExtension(Path.GetFileNameWithoutExtension(x.Path)).TrimStart('.'), y: x))
+	public CultureInfoCombo(IReadOnlyList<AdditionalTextWithHash>? files)
+	{
+		CultureInfos = files?
+			.Select(x => (Path.GetExtension(Path.GetFileNameWithoutExtension(x.File.Path)).TrimStart('.'), y: x))
 			.OrderByDescending(x => x.Item1.Length)
 			.ThenBy(y => y.Item1)
-			.ToList();
+			.ToList() ?? new List<(string, AdditionalTextWithHash)>();
+	}
 
-	public CultureInfoCombo() => CultureInfos = Array.Empty<(string, AdditionalText)>();
+	public IReadOnlyList<(string Iso, AdditionalTextWithHash File)> CultureInfos { get;}
 
-	public IReadOnlyList<(string Iso, AdditionalText File)> CultureInfos { get; init; }
-
-	public IReadOnlyList<(string Name, int LCID, AdditionalText File)> GetDefinedLanguages() => CultureInfos
+	public IReadOnlyList<(string Name, int LCID, AdditionalTextWithHash FileWithHash)> GetDefinedLanguages() => CultureInfos?
 		.Select(x => (x.File, new CultureInfo(x.Iso)))
 		.Select(x => (Name: x.Item2.Name.Replace('-', '_'), x.Item2.LCID, x.File))
-		.ToList();
+		.ToList() ?? new List<(string Name, int LCID, AdditionalTextWithHash FileWithHash)>();
 
-	public bool Equals(CultureInfoCombo? other)
+	public bool Equals(CultureInfoCombo other)
 	{
-		if (ReferenceEquals(null, other))
-		{
-			return false;
-		}
-
-		if (ReferenceEquals(this, other))
-		{
-			return true;
-		}
-
-		return CultureInfos.Select(x => x.Iso).SequenceEqual(other.CultureInfos.Select(x => x.Iso));
+		return (CultureInfos ?? Array.Empty<(string Iso, AdditionalTextWithHash File)>()).Select(x => x.Iso)
+			.SequenceEqual(other.CultureInfos?.Select(x => x.Iso) ?? Array.Empty<string>());
 	}
 
-	public override bool Equals(object? obj)
+	public override int GetHashCode()
 	{
-		if (ReferenceEquals(null, obj))
+		unchecked
 		{
-			return false;
-		}
-
-		if (ReferenceEquals(this, obj))
-		{
-			return true;
-		}
-
-		if (obj.GetType() != this.GetType())
-		{
-			return false;
-		}
-
-		return Equals((CultureInfoCombo)obj);
+			if (CultureInfos == null) return 0;
+			const int seedValue = 0x2D2816FE;
+			const int primeNumber = 397;
+			return CultureInfos.Aggregate(seedValue, (current, item) => (current * primeNumber) + (Equals(item.Iso, null) ? 0 : item.Iso.GetHashCode()));
+		} 
 	}
-
-	public override int GetHashCode() => CultureInfos.Count.GetHashCode();
-
-	public static bool operator ==(CultureInfoCombo? left, CultureInfoCombo? right) => Equals(left, right);
-
-	public static bool operator !=(CultureInfoCombo? left, CultureInfoCombo? right) => !Equals(left, right);
 }

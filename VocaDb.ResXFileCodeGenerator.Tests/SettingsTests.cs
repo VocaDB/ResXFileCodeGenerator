@@ -86,15 +86,14 @@ public class SettingsTests
 	{
 		var fileOptions = FileOptions.Select(
 			file: new(
-				mainFile: new AdditionalTextStub("Path1.resx"),
-				subFiles: Array.Empty<AdditionalText>()
+				mainFile: new AdditionalTextWithHash(new AdditionalTextStub("Path1.resx"), Guid.NewGuid()),
+				subFiles: Array.Empty<AdditionalTextWithHash>()
 			),
 			options: new AnalyzerConfigOptionsProviderStub(
 				globalOptions: null!,
 				fileOptions: new AnalyzerConfigOptionsStub()
 			),
-			globalOptions: s_globalOptions,
-			token: default
+			globalOptions: s_globalOptions
 		);
 		fileOptions.InnerClassName.Should().BeNullOrEmpty();
 		fileOptions.InnerClassInstanceName.Should().BeNullOrEmpty();
@@ -107,7 +106,7 @@ public class SettingsTests
 		fileOptions.UseVocaDbResManager.Should().Be(false);
 		fileOptions.LocalNamespace.Should().Be("namespace1");
 		fileOptions.CustomToolNamespace.Should().BeNullOrEmpty();
-		fileOptions.File.Path.Should().Be("Path1.resx");
+		fileOptions.GroupedFile.MainFile.File.Path.Should().Be("Path1.resx");
 		fileOptions.ClassName.Should().Be("Path1");
 		fileOptions.IsValid.Should().Be(true);
 	}
@@ -131,8 +130,8 @@ public class SettingsTests
 	{
 		var fileOptions = FileOptions.Select(
 			file: new(
-				mainFile: new AdditionalTextStub(mainFile),
-				subFiles: Array.Empty<AdditionalText>()
+				mainFile: new AdditionalTextWithHash(new AdditionalTextStub(mainFile), Guid.NewGuid()),
+				subFiles: Array.Empty<AdditionalTextWithHash>()
 			),
 			options: new AnalyzerConfigOptionsProviderStub(
 				globalOptions: null!,
@@ -149,8 +148,7 @@ public class SettingsTests
 					fileOptions: null!
 				),
 				token: default
-			),
-			token: default
+			)
 		);
 		fileOptions.InnerClassName.Should().BeNullOrEmpty();
 		fileOptions.InnerClassInstanceName.Should().BeNullOrEmpty();
@@ -163,7 +161,7 @@ public class SettingsTests
 		fileOptions.UseVocaDbResManager.Should().Be(false);
 		fileOptions.LocalNamespace.Should().Be(expectedLocalNamespace);
 		fileOptions.CustomToolNamespace.Should().BeNullOrEmpty();
-		fileOptions.File.Path.Should().Be(mainFile);
+		fileOptions.GroupedFile.MainFile.File.Path.Should().Be(mainFile);
 		fileOptions.EmbeddedFilename.Should().Be(expectedEmbeddedFilename);
 		fileOptions.ClassName.Should().Be("Path1");
 		fileOptions.IsValid.Should().Be(true);
@@ -174,15 +172,14 @@ public class SettingsTests
 	{
 		var fileOptions = FileOptions.Select(
 			file: new(
-				mainFile: new AdditionalTextStub("Path1.resx"),
-				subFiles: Array.Empty<AdditionalText>()
+				mainFile: new AdditionalTextWithHash(new AdditionalTextStub("Path1.resx"), Guid.NewGuid()),
+				subFiles: Array.Empty<AdditionalTextWithHash>()
 			),
 			options: new AnalyzerConfigOptionsProviderStub(
 				globalOptions: null!,
 				fileOptions: new AnalyzerConfigOptionsStub { ClassNamePostfix = "test1" }
 			),
-			globalOptions: s_globalOptions,
-			token: default
+			globalOptions: s_globalOptions
 		);
 		fileOptions.ClassName.Should().Be("Path1test1");
 		fileOptions.IsValid.Should().Be(true);
@@ -193,8 +190,8 @@ public class SettingsTests
 	{
 		var fileOptions = FileOptions.Select(
 			file: new(
-				mainFile: new AdditionalTextStub("Path1.resx"),
-				subFiles: Array.Empty<AdditionalText>()
+				mainFile: new AdditionalTextWithHash(new AdditionalTextStub("Path1.resx"), Guid.NewGuid()),
+				subFiles: Array.Empty<AdditionalTextWithHash>()
 			),
 			options: new AnalyzerConfigOptionsProviderStub(
 				globalOptions: null!,
@@ -213,8 +210,7 @@ public class SettingsTests
 					UseVocaDbResManager = "true",
 				}
 			),
-			globalOptions: s_globalOptions,
-			token: default
+			globalOptions: s_globalOptions
 		);
 		fileOptions.InnerClassName.Should().Be("test1");
 		fileOptions.InnerClassInstanceName.Should().Be("test2");
@@ -228,7 +224,7 @@ public class SettingsTests
 		fileOptions.UseVocaDbResManager.Should().Be(true);
 		fileOptions.LocalNamespace.Should().Be("namespace1");
 		fileOptions.CustomToolNamespace.Should().Be("ns1");
-		fileOptions.File.Path.Should().Be("Path1.resx");
+		fileOptions.GroupedFile.MainFile.File.Path.Should().Be("Path1.resx");
 		fileOptions.ClassName.Should().Be("Path1");
 	}
 
@@ -258,15 +254,14 @@ public class SettingsTests
 		);
 		var fileOptions = FileOptions.Select(
 			file: new(
-				mainFile: new AdditionalTextStub("Path1.resx"),
-				subFiles: Array.Empty<AdditionalText>()
+				mainFile: new AdditionalTextWithHash(new AdditionalTextStub("Path1.resx"), Guid.NewGuid()),
+				subFiles: Array.Empty<AdditionalTextWithHash>()
 			),
 			options: new AnalyzerConfigOptionsProviderStub(
 				globalOptions: null!,
 				fileOptions: new AnalyzerConfigOptionsStub()
 			),
-			globalOptions: globalOptions,
-			token: default
+			globalOptions: globalOptions
 		);
 		fileOptions.InnerClassName.Should().Be("test1");
 		fileOptions.InnerClassInstanceName.Should().Be("test2");
@@ -280,7 +275,7 @@ public class SettingsTests
 		fileOptions.UseVocaDbResManager.Should().Be(false);
 		fileOptions.LocalNamespace.Should().Be("namespace1");
 		fileOptions.CustomToolNamespace.Should().BeNullOrEmpty();
-		fileOptions.File.Path.Should().Be("Path1.resx");
+		fileOptions.GroupedFile.MainFile.File.Path.Should().Be("Path1.resx");
 		fileOptions.ClassName.Should().Be("Path1test3");
 		fileOptions.IsValid.Should().Be(true);
 	}

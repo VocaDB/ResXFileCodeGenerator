@@ -1,67 +1,34 @@
 ﻿using Microsoft.CodeAnalysis;
-
 namespace VocaDb.ResXFileCodeGenerator;
 
-public class GroupedAdditionalFile : IEquatable<GroupedAdditionalFile>
+public readonly record struct GroupedAdditionalFile
 {
-	public AdditionalText MainFile { get; }
-	public IReadOnlyList<AdditionalText> SubFiles { get; init; }
+	public AdditionalTextWithHash MainFile { get; }
+	public IReadOnlyList<AdditionalTextWithHash> SubFiles { get; }
 
-	public GroupedAdditionalFile(AdditionalText mainFile, IReadOnlyList<AdditionalText> subFiles)
+	public GroupedAdditionalFile(AdditionalTextWithHash mainFile, IReadOnlyList<AdditionalTextWithHash> subFiles)
 	{
 		MainFile = mainFile;
-		SubFiles = subFiles.OrderBy(x => x.Path, StringComparer.Ordinal).ToArray();
+		SubFiles = subFiles.OrderBy(x => x.File.Path, StringComparer.Ordinal).ToArray();
 	}
 
-	public bool Equals(GroupedAdditionalFile? other)
+	public bool Equals(GroupedAdditionalFile other)
 	{
-		if (ReferenceEquals(null, other))
-		{
-			return false;
-		}
-
-		if (ReferenceEquals(this, other))
-		{
-			return true;
-		}
-
-		return MainFile.Path.Equals(other.MainFile.Path) && SubFiles.Select(x => x.Path).SequenceEqual(other.SubFiles.Select(x => x.Path));
-	}
-
-	public override bool Equals(object? obj)
-	{
-		if (ReferenceEquals(null, obj))
-		{
-			return false;
-		}
-
-		if (ReferenceEquals(this, obj))
-		{
-			return true;
-		}
-
-		if (obj.GetType() != this.GetType())
-		{
-			return false;
-		}
-
-		return Equals((GroupedAdditionalFile)obj);
+		return MainFile.Equals(other.MainFile) && SubFiles.SequenceEqual(other.SubFiles);
 	}
 
 	public override int GetHashCode()
 	{
 		unchecked
 		{
-			var hashCode = MainFile.Path.GetHashCode();
+			var hashCode = MainFile.GetHashCode();
+
 			foreach (var additionalText in SubFiles)
 			{
-				hashCode = (hashCode * 397) ^ additionalText.Path.GetHashCode();
+				hashCode = (hashCode * 397) ^ additionalText.GetHashCode();
 			}
+
 			return hashCode;
 		}
 	}
-
-	public static bool operator ==(GroupedAdditionalFile? left, GroupedAdditionalFile? right) => Equals(left, right);
-
-	public static bool operator !=(GroupedAdditionalFile? left, GroupedAdditionalFile? right) => !Equals(left, right);
 }

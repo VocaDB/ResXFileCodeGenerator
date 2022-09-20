@@ -59,8 +59,8 @@ public sealed partial class StringBuilderGenerator : IGenerator
 		var errorsAndWarnings = new List<Diagnostic>();
 		var generatedFileName = $"{options.LocalNamespace}.{options.ClassName}.g.cs";
 
-		var content = options.File.GetText(cancellationToken);
-		if (content is null) return (generatedFileName, "//ERROR reading file:" + options.File.Path, errorsAndWarnings);
+		var content = options.GroupedFile.MainFile.File.GetText(cancellationToken);
+		if (content is null) return (generatedFileName, "//ERROR reading file:" + options.GroupedFile.MainFile.File.Path, errorsAndWarnings);
 
 		// HACK: netstandard2.0 doesn't support improved interpolated strings?
 		var builder = GetBuilder(options.CustomToolNamespace ?? options.LocalNamespace);
@@ -87,7 +87,7 @@ public sealed partial class StringBuilderGenerator : IGenerator
 				if (options.StaticClass || options.StaticMembers)
 				{
 					errorsAndWarnings.Add(Diagnostic.Create(s_memberWithStaticError,
-						Location.Create(options.File.Path, new(), new())));
+						Location.Create(options.GroupedFile.MainFile.File.Path, new(), new())));
 				}
 
 				builder.Append(indent);
@@ -174,7 +174,7 @@ public sealed partial class StringBuilderGenerator : IGenerator
 		}
 
 		static Location GetMemberLocation(FileOptions fileOptions, IXmlLineInfo line, string memberName) =>
-			Location.Create(fileOptions.File.Path, new(),
+			Location.Create(fileOptions.GroupedFile.MainFile.File.Path, new(),
 				new(new(line.LineNumber - 1, line.LinePosition - 1),
 					new(line.LineNumber - 1, line.LinePosition - 1 + memberName.Length)));
 

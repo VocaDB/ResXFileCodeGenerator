@@ -1,6 +1,7 @@
 ﻿using System.Xml;
 using FluentAssertions;
 using Xunit;
+using static System.Guid;
 
 namespace VocaDb.ResXFileCodeGenerator.Tests.GithubIssues.Issue3;
 
@@ -106,11 +107,12 @@ public static class CommonMessages
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
 				CustomToolNamespace = null,
-				File = new AdditionalTextStub("", text),
+				GroupedFile = new(new(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
 				ClassName = "CommonMessages",
 				PublicClass = true,
 				NullForgivingOperators = false,
-				StaticClass = true
+				StaticClass = true,
+				StaticMembers = true
 			}
 		);
 		source.ErrorsAndWarnings.Should().BeNullOrEmpty();
@@ -193,7 +195,7 @@ public static class CommonMessages
 			LocalNamespace = "VocaDb.Web.App_GlobalResources",
 			CustomToolNamespace = "Resources",
 			ClassName = "ActivityEntrySortRuleNames",
-			File = new AdditionalTextStub(string.Empty, text),
+			GroupedFile = new(new(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
 			PublicClass = true,
 			NullForgivingOperators = false,
 			StaticClass = true
