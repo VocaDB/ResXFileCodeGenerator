@@ -11,9 +11,11 @@ public class SourceGenerator : IIncrementalGenerator
 	{
 		var globalOptions = context.AnalyzerConfigOptionsProvider.Select(GlobalOptions.Select);
 
-		var allResxFiles = context.AdditionalTextsProvider.Where(static af => af.Path.EndsWith(".resx"));
 		// Note: Each Resx file will get a hash (random guid) so we can easily differentiate in the pipeline when the file changed or just some options
-		var monitor = allResxFiles.Collect().SelectMany((x, token) => GroupResxFiles.Group(x.Select(f => new AdditionalTextWithHash(f, Guid.NewGuid())).ToList(), token));
+		var allResxFiles = context.AdditionalTextsProvider.Where(static af => af.Path.EndsWith(".resx"))
+			.Select(static (f, _) => new AdditionalTextWithHash(f, Guid.NewGuid()));
+		
+		var monitor = allResxFiles.Collect().SelectMany(static (x, _) => GroupResxFiles.Group(x));
 		
 		var inputs = monitor
 			.Combine(globalOptions)

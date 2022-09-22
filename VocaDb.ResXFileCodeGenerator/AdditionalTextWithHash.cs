@@ -16,4 +16,9 @@ public readonly record struct AdditionalTextWithHash(AdditionalText File, Guid H
 			return (File.GetHashCode() * 397) ^ Hash.GetHashCode();
 		}
 	}
+
+	public override string ToString()
+	{
+		return $"{nameof(File)}: {File?.Path}, {nameof(Hash)}: {Hash}";
+	}
 }

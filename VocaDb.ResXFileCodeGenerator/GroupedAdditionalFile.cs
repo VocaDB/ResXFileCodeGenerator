@@ -31,4 +31,9 @@ public readonly record struct GroupedAdditionalFile
 			return hashCode;
 		}
 	}
+
+	public override string ToString()
+	{
+		return $"{nameof(MainFile)}: {MainFile}, {nameof(SubFiles)}: {string.Join("; ", SubFiles ?? Array.Empty<AdditionalTextWithHash>())}";
+	}
 }
