@@ -121,7 +121,10 @@ using System.Resources;
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames",
 				CustomToolNamespace = "Resources",
 				ClassName = "ActivityEntrySortRuleNames",
-				GroupedFile = new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub("", Text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
+				GroupedFile = new GroupedAdditionalFile(
+					mainFile: new AdditionalTextWithHash(new AdditionalTextStub("", Text), NewGuid()),
+					subFiles: Array.Empty<AdditionalTextWithHash>()
+				),
 				PublicClass = publicClass,
 				NullForgivingOperators = nullForgivingOperators,
 				StaticClass = staticClass,
@@ -180,7 +183,10 @@ using System.Resources;
 				ClassName = "ActivityEntrySortRuleNames",
 				PublicClass = publicClass,
 				NullForgivingOperators = nullForgivingOperators,
-				GroupedFile = new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub("", Text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
+				GroupedFile = new GroupedAdditionalFile(
+					mainFile: new AdditionalTextWithHash(new AdditionalTextStub("", Text), NewGuid()),
+					subFiles: Array.Empty<AdditionalTextWithHash>()
+				),
 				StaticClass = staticClass,
 				PartialClass = partial,
 				StaticMembers = staticMembers,
@@ -450,7 +456,10 @@ public static class CommonMessages
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
 				CustomToolNamespace = null,
 				ClassName = "CommonMessages",
-				GroupedFile = new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
+				GroupedFile = new GroupedAdditionalFile(
+					mainFile: new AdditionalTextWithHash(new AdditionalTextStub("", text), NewGuid()),
+					subFiles: Array.Empty<AdditionalTextWithHash>()
+				),
 				PublicClass = true,
 				NullForgivingOperators = false,
 				StaticClass = true,
@@ -503,7 +512,10 @@ public static class CommonMessages
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
 				CustomToolNamespace = null,
-				GroupedFile = new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
+				GroupedFile = new GroupedAdditionalFile(
+					mainFile: new AdditionalTextWithHash(new AdditionalTextStub("", text), NewGuid()),
+					subFiles: Array.Empty<AdditionalTextWithHash>()
+				),
 				ClassName = "CommonMessages",
 				PublicClass = true,
 				NullForgivingOperators = false,
@@ -534,7 +546,10 @@ public static class CommonMessages
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
-				GroupedFile = new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
+				GroupedFile = new GroupedAdditionalFile(
+					mainFile: new AdditionalTextWithHash(new AdditionalTextStub("", text), NewGuid()),
+					subFiles: Array.Empty<AdditionalTextWithHash>()
+				),
 				CustomToolNamespace = null,
 				ClassName = "CommonMessages",
 				PublicClass = true,
@@ -567,7 +582,10 @@ public static class CommonMessages
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
-				GroupedFile = new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
+				GroupedFile = new GroupedAdditionalFile(
+					mainFile: new AdditionalTextWithHash(new AdditionalTextStub("", text), NewGuid()),
+					subFiles: Array.Empty<AdditionalTextWithHash>()
+				),
 				CustomToolNamespace = null,
 				ClassName = "CommonMessages",
 				PublicClass = true,

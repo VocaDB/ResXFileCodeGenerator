@@ -86,8 +86,14 @@ public sealed partial class StringBuilderGenerator : IGenerator
 			{
 				if (options.StaticClass || options.StaticMembers)
 				{
-					errorsAndWarnings.Add(Diagnostic.Create(s_memberWithStaticError,
-						Location.Create(options.GroupedFile.MainFile.File.Path, new TextSpan(), new LinePositionSpan())));
+					errorsAndWarnings.Add(Diagnostic.Create(
+						descriptor: s_memberWithStaticError,
+						location: Location.Create(
+							filePath: options.GroupedFile.MainFile.File.Path,
+							textSpan: new TextSpan(),
+							lineSpan: new LinePositionSpan()
+						)
+					));
 				}
 
 				builder.Append(indent);
@@ -174,9 +180,14 @@ public sealed partial class StringBuilderGenerator : IGenerator
 		}
 
 		static Location GetMemberLocation(FileOptions fileOptions, IXmlLineInfo line, string memberName) =>
-			Location.Create(fileOptions.GroupedFile.MainFile.File.Path, new TextSpan(),
-				new LinePositionSpan(new LinePosition(line.LineNumber - 1, line.LinePosition - 1),
-					new LinePosition(line.LineNumber - 1, line.LinePosition - 1 + memberName.Length)));
+			Location.Create(
+				filePath: fileOptions.GroupedFile.MainFile.File.Path,
+				textSpan: new TextSpan(),
+				lineSpan: new LinePositionSpan(
+					start: new LinePosition(line.LineNumber - 1, line.LinePosition - 1),
+					end: new LinePosition(line.LineNumber - 1, line.LinePosition - 1 + memberName.Length)
+				)
+			);
 
 		if (!alreadyAddedMembers.Add(memberName))
 		{

@@ -143,41 +143,41 @@ public class GroupResxFilesTests
 
 		var testData = new List<GroupedAdditionalFile>
 		{
-			new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub(
-					@"D:\src\xhg\y\Areas\CaModule\Pages\IdfgControlCenter.resx"), Parse("00000000-0000-0000-0000-000000000002")),
-				new[]
+			new GroupedAdditionalFile(
+				mainFile: new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\Areas\CaModule\Pages\IdfgControlCenter.resx"), Parse("00000000-0000-0000-0000-000000000002")),
+				subFiles: new[]
 				{
 					new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\Areas\CaModule\Pages\IdfgControlCenter.da.resx"), Parse("00000000-0000-0000-0000-000000000001")),
 					new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\Areas\CaModule\Pages\IdfgControlCenter.vi.resx"), Parse("00000000-0000-0000-0000-000000000003")),
 				}
 			),
-			new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub(
-					@"D:\src\xhg\y\Areas\CaModule\Pages\IdfgLive.resx"), Parse("00000000-0000-0000-0000-000000000005")),
-				new[]
+			new GroupedAdditionalFile(
+				mainFile: new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\Areas\CaModule\Pages\IdfgLive.resx"), Parse("00000000-0000-0000-0000-000000000005")),
+				subFiles: new[]
 				{
 					new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\Areas\CaModule\Pages\IdfgLive.da.resx"), Parse("00000000-0000-0000-0000-000000000004")),
 					new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\Areas\CaModule\Pages\IdfgLive.vi.resx"), Parse("00000000-0000-0000-0000-000000000006")),
 				}
 			),
-			new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub(
-					@"D:\src\xhg\y\Areas\Identity\Pages\Login.resx"), Parse("00000000-0000-0000-0000-000000000008")),
-				new[]
+			new GroupedAdditionalFile(
+				mainFile: new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\Areas\Identity\Pages\Login.resx"), Parse("00000000-0000-0000-0000-000000000008")),
+				subFiles: new[]
 				{
 					new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\Areas\Identity\Pages\Login.da.resx"), Parse("00000000-0000-0000-0000-000000000007")),
 					new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\Areas\Identity\Pages\Login.vi.resx"), Parse("00000000-0000-0000-0000-000000000009")),
 				}
 			),
-			new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub(
-					@"D:\src\xhg\y\Areas\QxModule\Pages\QasdLogon.resx"), Parse("00000000-0000-0000-0000-000000000011")),
-				new[]
+			new GroupedAdditionalFile(
+				mainFile: new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\Areas\QxModule\Pages\QasdLogon.resx"), Parse("00000000-0000-0000-0000-000000000011")),
+				subFiles: new[]
 				{
 					new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\Areas\QxModule\Pages\QasdLogon.da.resx"), Parse("00000000-0000-0000-0000-000000000010")),
 					new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\Areas\QxModule\Pages\QasdLogon.vi.resx"), Parse("00000000-0000-0000-0000-000000000012")),
 				}
 			),
-			new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub(
-					@"D:\src\xhg\y\Areas\QxModule\QtrController.resx"), Parse("00000000-0000-0000-0000-000000000026")),
-				new[]
+			new GroupedAdditionalFile(
+				mainFile: new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\Areas\QxModule\QtrController.resx"), Parse("00000000-0000-0000-0000-000000000026")),
+				subFiles: new[]
 				{
 					new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\Areas\QxModule\QtrController.cs-cz.resx"), Parse("00000000-0000-0000-0000-000000000013")),
 					new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\Areas\QxModule\QtrController.da.resx"), Parse("00000000-0000-0000-0000-000000000014")),
@@ -198,16 +198,16 @@ public class GroupResxFilesTests
 					new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\Areas\QxModule\QtrController.vi.resx"), Parse("00000000-0000-0000-0000-000000000030")),
 					new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\Areas\QxModule\QtrController.zh-cn.resx"), Parse("00000000-0000-0000-0000-000000000031")),
 				}),
-			new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub(
-					@"D:\src\xhg\y\DataAnnotations\DataAnnotation.resx"), Parse("00000000-0000-0000-0000-000000000033")),
-				new[]
+			new GroupedAdditionalFile(
+				mainFile: new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\DataAnnotations\DataAnnotation.resx"), Parse("00000000-0000-0000-0000-000000000033")),
+				subFiles: new[]
 				{
 					new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\DataAnnotations\DataAnnotation.da.resx"), Parse("00000000-0000-0000-0000-000000000032"))
 				}
 			),
-			new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub(
-					@"D:\src\xhg\y\DataAnnotations\DataAnnotation2.resx"), Parse("00000000-0000-0000-0000-000000000034")),
-				Array.Empty<AdditionalTextWithHash>()
+			new GroupedAdditionalFile(
+				mainFile: new AdditionalTextWithHash(new AdditionalTextStub(@"D:\src\xhg\y\DataAnnotations\DataAnnotation2.resx"), Parse("00000000-0000-0000-0000-000000000034")),
+				subFiles: Array.Empty<AdditionalTextWithHash>()
 			)
 		};
 		var resAsList = result.ToList();

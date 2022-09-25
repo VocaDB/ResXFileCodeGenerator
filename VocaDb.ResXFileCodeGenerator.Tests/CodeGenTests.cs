@@ -251,12 +251,14 @@ using static VocaDb.ResXFileCodeGenerator.Helpers;
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames",
 				CustomToolNamespace = "Resources",
 				ClassName = "ActivityEntrySortRuleNames",
-				GroupedFile = new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub(string.Empty, Text), NewGuid()),
-					new AdditionalTextWithHash[]
-				{
-					new AdditionalTextWithHash(new AdditionalTextStub("test.da.rex", TextDa), NewGuid()),
-					new AdditionalTextWithHash(new AdditionalTextStub("test.da-dk.rex", TextDaDk), NewGuid()),
-				}),
+				GroupedFile = new GroupedAdditionalFile(
+					mainFile: new AdditionalTextWithHash(new AdditionalTextStub(string.Empty, Text), NewGuid()),
+					subFiles: new[]
+					{
+						new AdditionalTextWithHash(new AdditionalTextStub("test.da.rex", TextDa), NewGuid()),
+						new AdditionalTextWithHash(new AdditionalTextStub("test.da-dk.rex", TextDaDk), NewGuid()),
+					}
+				),
 				PublicClass = publicClass,
 				UseVocaDbResManager = true,
 				NullForgivingOperators = nullForgivingOperators,
