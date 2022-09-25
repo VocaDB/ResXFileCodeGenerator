@@ -139,7 +139,7 @@ public readonly record struct FileOptions
 		GlobalOptions globalOptions
 	)
 	{
-		return new(
+		return new FileOptions(
 			groupedFile: file,
 			options: options.GetOptions(file.MainFile.File),
 			globalOptions: globalOptions

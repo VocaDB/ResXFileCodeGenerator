@@ -27,7 +27,7 @@ namespace VocaDb.ResXFileCodeGenerator
 				}
 				var parent = cultureInfo.Parent;
 				if (!s_allChildren.TryGetValue(parent.LCID, out var v))
-					s_allChildren[parent.LCID] = v = new();
+					s_allChildren[parent.LCID] = v = new List<int>();
 				v.Add(cultureInfo.LCID);
 			}
 		}
@@ -62,7 +62,7 @@ namespace VocaDb.ResXFileCodeGenerator
 			builder.Append(Constants.SystemGlobalization);
 			builder.AppendLineLF(".CultureInfo.CurrentUICulture.LCID switch");
 			builder.AppendLineLF("    {");
-			HashSet<int> already = new();
+			HashSet<int> already = new HashSet<int>();
 			foreach (var (name, lcid, _) in definedLanguages)
 			{
 				static IEnumerable<int> FindParents(int toFind)
@@ -141,7 +141,7 @@ namespace VocaDb.ResXFileCodeGenerator
 				return;
 			}
 
-			HashSet<string> alreadyAddedMembers = new();
+			HashSet<string> alreadyAddedMembers = new HashSet<string>();
 			foreach (var (key, value, line) in fallback)
 			{
 				cancellationToken.ThrowIfCancellationRequested();

@@ -111,6 +111,6 @@ public sealed record GlobalOptions // this must be a record or implement IEquata
 	public static GlobalOptions Select(AnalyzerConfigOptionsProvider provider, CancellationToken token)
 	{
 		token.ThrowIfCancellationRequested();
-		return new(provider.GlobalOptions);
+		return new GlobalOptions(provider.GlobalOptions);
 	}
 }

@@ -102,12 +102,12 @@ public static class CommonMessages
 ";
 		var generator = new StringBuilderGenerator();
 		var source = generator.Generate(
-			new()
+			new FileOptions()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
 				CustomToolNamespace = null,
-				GroupedFile = new(new(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
+				GroupedFile = new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
 				ClassName = "CommonMessages",
 				PublicClass = true,
 				NullForgivingOperators = false,
@@ -195,7 +195,7 @@ public static class CommonMessages
 			LocalNamespace = "VocaDb.Web.App_GlobalResources",
 			CustomToolNamespace = "Resources",
 			ClassName = "ActivityEntrySortRuleNames",
-			GroupedFile = new(new(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
+			GroupedFile = new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
 			PublicClass = true,
 			NullForgivingOperators = false,
 			StaticClass = true

@@ -245,17 +245,17 @@ using static VocaDb.ResXFileCodeGenerator.Helpers;
 }}
 ";
 		var (_, SourceCode, ErrorsAndWarnings) = generator.Generate(
-			options: new()
+			options: new FileOptions()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames",
 				CustomToolNamespace = "Resources",
 				ClassName = "ActivityEntrySortRuleNames",
-				GroupedFile = new(new(new AdditionalTextStub(string.Empty, Text), NewGuid()),
+				GroupedFile = new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub(string.Empty, Text), NewGuid()),
 					new AdditionalTextWithHash[]
 				{
-					new(new AdditionalTextStub("test.da.rex", TextDa), NewGuid()),
-					new(new AdditionalTextStub("test.da-dk.rex", TextDaDk), NewGuid()),
+					new AdditionalTextWithHash(new AdditionalTextStub("test.da.rex", TextDa), NewGuid()),
+					new AdditionalTextWithHash(new AdditionalTextStub("test.da-dk.rex", TextDaDk), NewGuid()),
 				}),
 				PublicClass = publicClass,
 				UseVocaDbResManager = true,

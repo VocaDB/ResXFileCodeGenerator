@@ -27,7 +27,7 @@ public sealed partial class StringBuilderGenerator : IGenerator
 			return;
 		}
 
-		HashSet<string> alreadyAddedMembers = new() { Constants.CultureInfoVariable };
+		var alreadyAddedMembers = new HashSet<string>() { Constants.CultureInfoVariable };
 		foreach (var (key, value, line) in members)
 		{
 			cancellationToken.ThrowIfCancellationRequested();

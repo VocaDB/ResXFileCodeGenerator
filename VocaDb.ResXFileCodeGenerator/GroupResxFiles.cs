@@ -22,7 +22,7 @@ public static class GroupResxFiles
 				//it should be impossible to exist already, but VS sometimes throws error about duplicate key added. Keep the original entry, not the new one
 				if (!lookup.ContainsKey(key))
 					lookup.Add(key, file);
-				res.Add(file, new());
+				res.Add(file, new List<AdditionalTextWithHash>());
 			}
 		}
 		foreach (var fileWithHash in allFilesWithHash)
@@ -45,7 +45,7 @@ public static class GroupResxFiles
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 
-			yield return new(file.Key, file.Value);
+			yield return new GroupedAdditionalFile(file.Key, file.Value);
 		}
 	}
 

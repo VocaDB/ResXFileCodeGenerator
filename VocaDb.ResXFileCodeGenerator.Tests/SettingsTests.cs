@@ -85,7 +85,7 @@ public class SettingsTests
 	public void FileDefaults()
 	{
 		var fileOptions = FileOptions.Select(
-			file: new(
+			file: new GroupedAdditionalFile(
 				mainFile: new AdditionalTextWithHash(new AdditionalTextStub("Path1.resx"), Guid.NewGuid()),
 				subFiles: Array.Empty<AdditionalTextWithHash>()
 			),
@@ -129,7 +129,7 @@ public class SettingsTests
 		string expectedEmbeddedFilename)
 	{
 		var fileOptions = FileOptions.Select(
-			file: new(
+			file: new GroupedAdditionalFile(
 				mainFile: new AdditionalTextWithHash(new AdditionalTextStub(mainFile), Guid.NewGuid()),
 				subFiles: Array.Empty<AdditionalTextWithHash>()
 			),
@@ -171,7 +171,7 @@ public class SettingsTests
 	public void File_PostFix()
 	{
 		var fileOptions = FileOptions.Select(
-			file: new(
+			file: new GroupedAdditionalFile(
 				mainFile: new AdditionalTextWithHash(new AdditionalTextStub("Path1.resx"), Guid.NewGuid()),
 				subFiles: Array.Empty<AdditionalTextWithHash>()
 			),
@@ -189,7 +189,7 @@ public class SettingsTests
 	public void FileSettings_CanReadAll()
 	{
 		var fileOptions = FileOptions.Select(
-			file: new(
+			file: new GroupedAdditionalFile(
 				mainFile: new AdditionalTextWithHash(new AdditionalTextStub("Path1.resx"), Guid.NewGuid()),
 				subFiles: Array.Empty<AdditionalTextWithHash>()
 			),
@@ -253,7 +253,7 @@ public class SettingsTests
 			token: default
 		);
 		var fileOptions = FileOptions.Select(
-			file: new(
+			file: new GroupedAdditionalFile(
 				mainFile: new AdditionalTextWithHash(new AdditionalTextStub("Path1.resx"), Guid.NewGuid()),
 				subFiles: Array.Empty<AdditionalTextWithHash>()
 			),

@@ -115,13 +115,13 @@ using System.Resources;
 }}
 ";
 		var (_, SourceCode, ErrorsAndWarnings) = generator.Generate(
-			options: new()
+			options: new FileOptions()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames",
 				CustomToolNamespace = "Resources",
 				ClassName = "ActivityEntrySortRuleNames",
-				GroupedFile = new(new(new AdditionalTextStub("", Text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
+				GroupedFile = new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub("", Text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
 				PublicClass = publicClass,
 				NullForgivingOperators = nullForgivingOperators,
 				StaticClass = staticClass,
@@ -172,7 +172,7 @@ using System.Resources;
 }}
 ";
 		var (_, SourceCode, ErrorsAndWarnings) = generator.Generate(
-			options: new()
+			options: new FileOptions()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames",
@@ -180,7 +180,7 @@ using System.Resources;
 				ClassName = "ActivityEntrySortRuleNames",
 				PublicClass = publicClass,
 				NullForgivingOperators = nullForgivingOperators,
-				GroupedFile = new(new(new AdditionalTextStub("", Text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
+				GroupedFile = new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub("", Text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
 				StaticClass = staticClass,
 				PartialClass = partial,
 				StaticMembers = staticMembers,
@@ -444,13 +444,13 @@ public static class CommonMessages
 ";
 		var generator = new StringBuilderGenerator();
 		var (_, SourceCode, ErrorsAndWarnings) = generator.Generate(
-			options: new()
+			options: new FileOptions()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
 				CustomToolNamespace = null,
 				ClassName = "CommonMessages",
-				GroupedFile = new(new(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
+				GroupedFile = new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
 				PublicClass = true,
 				NullForgivingOperators = false,
 				StaticClass = true,
@@ -498,12 +498,12 @@ public static class CommonMessages
 ";
 		var generator = new StringBuilderGenerator();
 		var (_, SourceCode, ErrorsAndWarnings) = generator.Generate(
-			options: new()
+			options: new FileOptions()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
 				CustomToolNamespace = null,
-				GroupedFile = new(new(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
+				GroupedFile = new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
 				ClassName = "CommonMessages",
 				PublicClass = true,
 				NullForgivingOperators = false,
@@ -530,11 +530,11 @@ public static class CommonMessages
 
 		var generator = new StringBuilderGenerator();
 		var (_, _, ErrorsAndWarnings) = generator.Generate(
-			options: new()
+			options: new FileOptions()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
-				GroupedFile = new(new(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
+				GroupedFile = new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
 				CustomToolNamespace = null,
 				ClassName = "CommonMessages",
 				PublicClass = true,
@@ -563,11 +563,11 @@ public static class CommonMessages
 
 		var generator = new StringBuilderGenerator();
 		var (_, _, ErrorsAndWarnings) = generator.Generate(
-			options: new()
+			options: new FileOptions()
 			{
 				LocalNamespace = "VocaDb.Web.App_GlobalResources",
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.CommonMessages",
-				GroupedFile = new(new(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
+				GroupedFile = new GroupedAdditionalFile(new AdditionalTextWithHash(new AdditionalTextStub("", text), NewGuid()), Array.Empty<AdditionalTextWithHash>()),
 				CustomToolNamespace = null,
 				ClassName = "CommonMessages",
 				PublicClass = true,
