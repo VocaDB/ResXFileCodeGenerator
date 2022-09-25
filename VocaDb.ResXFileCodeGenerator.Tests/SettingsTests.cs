@@ -167,63 +167,6 @@ public class SettingsTests
 		fileOptions.IsValid.Should().Be(true);
 	}
 
-	[Theory]
-	[InlineData("project1.csproj", "Path1.resx", null, "project1", "project1.Path1")]
-	[InlineData("project1.csproj", "Path1.resx", "", "project1", "project1.Path1")]
-	[InlineData("project1.csproj", "Path1.resx", "rootNamespace","rootNamespace", "rootNamespace.Path1")]
-	[InlineData(@"ProjectFolder\project1.csproj", @"ProjectFolder\SubFolder\Path1.resx", "rootNamespace", "rootNamespace.SubFolder", "rootNamespace.SubFolder.Path1")]
-	[InlineData(@"ProjectFolder\project1.csproj", @"ProjectFolder\SubFolder With Space\Path1.resx", "rootNamespace", "rootNamespace.SubFolder_With_Space", "rootNamespace.SubFolder_With_Space.Path1")]
-	[InlineData(@"ProjectFolder\project1.csproj", @"ProjectFolder\SubFolder\Path1.resx", null, "SubFolder", "SubFolder.Path1")]
-	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\Path1.resx", null, "_8_project", "_8_project.Path1")]
-	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\Path1.resx", "", "_8_project", "_8_project.Path1")]
-	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\SubFolder\Path1.resx", null, "SubFolder", "SubFolder.Path1")]
-	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\SubFolder\Path1.resx", "", "SubFolder", "SubFolder.Path1")]
-	public void FileSettings_RespectsEmptyRootNamespace(string msBuildProjectFullPath,
-		string mainFile,
-		string rootNamespace,
-		string expectedLocalNamespace,
-		string expectedEmbeddedFilename)
-	{
-		var fileOptions = FileOptions.Select(
-			file: new(
-				mainFile: new AdditionalTextStub(mainFile),
-				subFiles: Array.Empty<AdditionalText>()
-			),
-			options: new AnalyzerConfigOptionsProviderStub(
-				globalOptions: null!,
-				fileOptions: new AnalyzerConfigOptionsStub()
-			),
-			globalOptions: GlobalOptions.Select(
-				provider: new AnalyzerConfigOptionsProviderStub(
-					globalOptions: new AnalyzerConfigOptionsStub
-					{
-						MSBuildProjectName = Path.GetFileNameWithoutExtension(msBuildProjectFullPath),
-						RootNamespace = rootNamespace,
-						MSBuildProjectFullPath = msBuildProjectFullPath
-					},
-					fileOptions: null!
-				),
-				token: default
-			),
-			token: default
-		);
-		fileOptions.InnerClassName.Should().BeNullOrEmpty();
-		fileOptions.InnerClassInstanceName.Should().BeNullOrEmpty();
-		fileOptions.InnerClassVisibility.Should().Be(InnerClassVisibility.NotGenerated);
-		fileOptions.NullForgivingOperators.Should().Be(false);
-		fileOptions.StaticClass.Should().Be(true);
-		fileOptions.StaticMembers.Should().Be(true);
-		fileOptions.PublicClass.Should().Be(false);
-		fileOptions.PartialClass.Should().Be(false);
-		fileOptions.UseVocaDbResManager.Should().Be(false);
-		fileOptions.LocalNamespace.Should().Be(expectedLocalNamespace);
-		fileOptions.CustomToolNamespace.Should().BeNullOrEmpty();
-		fileOptions.File.Path.Should().Be(mainFile);
-		fileOptions.EmbeddedFilename.Should().Be(expectedEmbeddedFilename);
-		fileOptions.ClassName.Should().Be("Path1");
-		fileOptions.IsValid.Should().Be(true);
-	}
-
 	[Fact]
 	public void File_PostFix()
 	{
