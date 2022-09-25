@@ -1,4 +1,4 @@
-namespace VocaDb.ResXFileCodeGenerator;
+﻿namespace VocaDb.ResXFileCodeGenerator;
 
 public enum InnerClassVisibility
 {
