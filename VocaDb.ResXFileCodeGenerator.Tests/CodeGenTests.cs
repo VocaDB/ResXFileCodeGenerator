@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Xunit;
+using static System.Guid;
 
 namespace VocaDb.ResXFileCodeGenerator.Tests;
 
@@ -250,12 +251,12 @@ using static VocaDb.ResXFileCodeGenerator.Helpers;
 				EmbeddedFilename = "VocaDb.Web.App_GlobalResources.ActivityEntrySortRuleNames",
 				CustomToolNamespace = "Resources",
 				ClassName = "ActivityEntrySortRuleNames",
-				File = new AdditionalTextStub(string.Empty, Text),
-				SubFiles = new []
+				GroupedFile = new(new(new AdditionalTextStub(string.Empty, Text), NewGuid()),
+					new AdditionalTextWithHash[]
 				{
-					new AdditionalTextStub("test.da.rex", TextDa),
-					new AdditionalTextStub("test.da-dk.rex", TextDaDk),
-				},
+					new(new AdditionalTextStub("test.da.rex", TextDa), NewGuid()),
+					new(new AdditionalTextStub("test.da-dk.rex", TextDaDk), NewGuid()),
+				}),
 				PublicClass = publicClass,
 				UseVocaDbResManager = true,
 				NullForgivingOperators = nullForgivingOperators,

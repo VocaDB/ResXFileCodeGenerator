@@ -1,16 +1,15 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
+﻿using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace VocaDb.ResXFileCodeGenerator;
 
-public sealed record FileOptions // this must be a record or implement IEquatable<T>
+public readonly record struct FileOptions 
 {
 	public string InnerClassInstanceName { get; init; }
 	public string InnerClassName { get; init; }
 	public InnerClassVisibility InnerClassVisibility { get; init; }
 	public bool PartialClass { get; init; }
 	public bool StaticMembers { get; init; } = true;
-	public AdditionalText File { get; init; }
+	public GroupedAdditionalFile GroupedFile { get; init; }
 	public bool StaticClass { get; init; }
 	public bool NullForgivingOperators { get; init; }
 	public bool PublicClass { get; init; }
@@ -19,34 +18,16 @@ public sealed record FileOptions // this must be a record or implement IEquatabl
 	public string LocalNamespace { get; init; }
 	public bool UseVocaDbResManager { get; init; }
 	public string EmbeddedFilename { get; init; }
-	public IReadOnlyList<AdditionalText> SubFiles { get; init; }
 	public bool IsValid { get; init; }
-
-	/// <summary>
-	/// Unit test ctor
-	/// </summary>
-	public FileOptions()
-	{
-		LocalNamespace = string.Empty;
-		CustomToolNamespace = string.Empty;
-		ClassName = string.Empty;
-		InnerClassInstanceName = string.Empty;
-		InnerClassName = string.Empty;
-		File = null!;
-		EmbeddedFilename = string.Empty;
-		SubFiles = new List<AdditionalText>();
-	}
-
-	private FileOptions(
-		AdditionalText file,
+	
+	public FileOptions(
+		GroupedAdditionalFile groupedFile,
 		AnalyzerConfigOptions options,
-		GlobalOptions globalOptions,
-		IReadOnlyList<AdditionalText>? additionalTexts = null
+		GlobalOptions globalOptions
 	)
 	{
-		File = file;
-		SubFiles = additionalTexts ?? Array.Empty<AdditionalText>();
-		var resxFilePath = file.Path;
+		GroupedFile = groupedFile;
+		var resxFilePath = groupedFile.MainFile.File.Path;
 
 		var classNameFromFileName = Utilities.GetClassNameFromPath(resxFilePath);
 
@@ -155,16 +136,13 @@ public sealed record FileOptions // this must be a record or implement IEquatabl
 	public static FileOptions Select(
 		GroupedAdditionalFile file,
 		AnalyzerConfigOptionsProvider options,
-		GlobalOptions globalOptions,
-		CancellationToken token
+		GlobalOptions globalOptions
 	)
 	{
-		token.ThrowIfCancellationRequested();
 		return new(
-			file: file.MainFile,
-			options: options.GetOptions(file.MainFile),
-			globalOptions: globalOptions,
-			additionalTexts: file.SubFiles
+			groupedFile: file,
+			options: options.GetOptions(file.MainFile.File),
+			globalOptions: globalOptions
 		);
 	}
 }

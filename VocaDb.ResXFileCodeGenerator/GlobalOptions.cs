@@ -9,7 +9,7 @@ public sealed record GlobalOptions // this must be a record or implement IEquata
 	public string InnerClassName { get; }
 	public InnerClassVisibility InnerClassVisibility { get; }
 	public bool PartialClass { get; }
-	public string RootNamespace { get; }
+	public string? RootNamespace { get; }
 	public string ProjectFullPath { get; }
 	public string ProjectName { get; }
 	public bool StaticClass { get; }
@@ -19,7 +19,7 @@ public sealed record GlobalOptions // this must be a record or implement IEquata
 	public bool UseVocaDbResManager { get; }
 	public bool IsValid { get; }
 
-	private GlobalOptions(AnalyzerConfigOptions options)
+	public GlobalOptions(AnalyzerConfigOptions options)
 	{
 		IsValid = true;
 
@@ -113,5 +113,4 @@ public sealed record GlobalOptions // this must be a record or implement IEquata
 		token.ThrowIfCancellationRequested();
 		return new(provider.GlobalOptions);
 	}
-
 }

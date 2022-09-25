@@ -86,15 +86,14 @@ public class SettingsTests
 	{
 		var fileOptions = FileOptions.Select(
 			file: new(
-				mainFile: new AdditionalTextStub("Path1.resx"),
-				subFiles: Array.Empty<AdditionalText>()
+				mainFile: new AdditionalTextWithHash(new AdditionalTextStub("Path1.resx"), Guid.NewGuid()),
+				subFiles: Array.Empty<AdditionalTextWithHash>()
 			),
 			options: new AnalyzerConfigOptionsProviderStub(
 				globalOptions: null!,
 				fileOptions: new AnalyzerConfigOptionsStub()
 			),
-			globalOptions: s_globalOptions,
-			token: default
+			globalOptions: s_globalOptions
 		);
 		fileOptions.InnerClassName.Should().BeNullOrEmpty();
 		fileOptions.InnerClassInstanceName.Should().BeNullOrEmpty();
@@ -107,7 +106,63 @@ public class SettingsTests
 		fileOptions.UseVocaDbResManager.Should().Be(false);
 		fileOptions.LocalNamespace.Should().Be("namespace1");
 		fileOptions.CustomToolNamespace.Should().BeNullOrEmpty();
-		fileOptions.File.Path.Should().Be("Path1.resx");
+		fileOptions.GroupedFile.MainFile.File.Path.Should().Be("Path1.resx");
+		fileOptions.ClassName.Should().Be("Path1");
+		fileOptions.IsValid.Should().Be(true);
+	}
+
+	[Theory]
+	[InlineData("project1.csproj", "Path1.resx", null, "project1", "project1.Path1")]
+	[InlineData("project1.csproj", "Path1.resx", "", "project1", "project1.Path1")]
+	[InlineData("project1.csproj", "Path1.resx", "rootNamespace","rootNamespace", "rootNamespace.Path1")]
+	[InlineData(@"ProjectFolder\project1.csproj", @"ProjectFolder\SubFolder\Path1.resx", "rootNamespace", "rootNamespace.SubFolder", "rootNamespace.SubFolder.Path1")]
+	[InlineData(@"ProjectFolder\project1.csproj", @"ProjectFolder\SubFolder With Space\Path1.resx", "rootNamespace", "rootNamespace.SubFolder_With_Space", "rootNamespace.SubFolder_With_Space.Path1")]
+	[InlineData(@"ProjectFolder\project1.csproj", @"ProjectFolder\SubFolder\Path1.resx", null, "SubFolder", "SubFolder.Path1")]
+	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\Path1.resx", null, "_8_project", "_8_project.Path1")]
+	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\Path1.resx", "", "_8_project", "_8_project.Path1")]
+	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\SubFolder\Path1.resx", null, "SubFolder", "SubFolder.Path1")]
+	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\SubFolder\Path1.resx", "", "SubFolder", "SubFolder.Path1")]
+	public void FileSettings_RespectsEmptyRootNamespace(string msBuildProjectFullPath,
+		string mainFile,
+		string rootNamespace,
+		string expectedLocalNamespace,
+		string expectedEmbeddedFilename)
+	{
+		var fileOptions = FileOptions.Select(
+			file: new(
+				mainFile: new AdditionalTextWithHash(new AdditionalTextStub(mainFile), Guid.NewGuid()),
+				subFiles: Array.Empty<AdditionalTextWithHash>()
+			),
+			options: new AnalyzerConfigOptionsProviderStub(
+				globalOptions: null!,
+				fileOptions: new AnalyzerConfigOptionsStub()
+			),
+			globalOptions: GlobalOptions.Select(
+				provider: new AnalyzerConfigOptionsProviderStub(
+					globalOptions: new AnalyzerConfigOptionsStub
+					{
+						MSBuildProjectName = Path.GetFileNameWithoutExtension(msBuildProjectFullPath),
+						RootNamespace = rootNamespace,
+						MSBuildProjectFullPath = msBuildProjectFullPath
+					},
+					fileOptions: null!
+				),
+				token: default
+			)
+		);
+		fileOptions.InnerClassName.Should().BeNullOrEmpty();
+		fileOptions.InnerClassInstanceName.Should().BeNullOrEmpty();
+		fileOptions.InnerClassVisibility.Should().Be(InnerClassVisibility.NotGenerated);
+		fileOptions.NullForgivingOperators.Should().Be(false);
+		fileOptions.StaticClass.Should().Be(true);
+		fileOptions.StaticMembers.Should().Be(true);
+		fileOptions.PublicClass.Should().Be(false);
+		fileOptions.PartialClass.Should().Be(false);
+		fileOptions.UseVocaDbResManager.Should().Be(false);
+		fileOptions.LocalNamespace.Should().Be(expectedLocalNamespace);
+		fileOptions.CustomToolNamespace.Should().BeNullOrEmpty();
+		fileOptions.GroupedFile.MainFile.File.Path.Should().Be(mainFile);
+		fileOptions.EmbeddedFilename.Should().Be(expectedEmbeddedFilename);
 		fileOptions.ClassName.Should().Be("Path1");
 		fileOptions.IsValid.Should().Be(true);
 	}
@@ -174,15 +229,14 @@ public class SettingsTests
 	{
 		var fileOptions = FileOptions.Select(
 			file: new(
-				mainFile: new AdditionalTextStub("Path1.resx"),
-				subFiles: Array.Empty<AdditionalText>()
+				mainFile: new AdditionalTextWithHash(new AdditionalTextStub("Path1.resx"), Guid.NewGuid()),
+				subFiles: Array.Empty<AdditionalTextWithHash>()
 			),
 			options: new AnalyzerConfigOptionsProviderStub(
 				globalOptions: null!,
 				fileOptions: new AnalyzerConfigOptionsStub { ClassNamePostfix = "test1" }
 			),
-			globalOptions: s_globalOptions,
-			token: default
+			globalOptions: s_globalOptions
 		);
 		fileOptions.ClassName.Should().Be("Path1test1");
 		fileOptions.IsValid.Should().Be(true);
@@ -193,8 +247,8 @@ public class SettingsTests
 	{
 		var fileOptions = FileOptions.Select(
 			file: new(
-				mainFile: new AdditionalTextStub("Path1.resx"),
-				subFiles: Array.Empty<AdditionalText>()
+				mainFile: new AdditionalTextWithHash(new AdditionalTextStub("Path1.resx"), Guid.NewGuid()),
+				subFiles: Array.Empty<AdditionalTextWithHash>()
 			),
 			options: new AnalyzerConfigOptionsProviderStub(
 				globalOptions: null!,
@@ -213,8 +267,7 @@ public class SettingsTests
 					UseVocaDbResManager = "true",
 				}
 			),
-			globalOptions: s_globalOptions,
-			token: default
+			globalOptions: s_globalOptions
 		);
 		fileOptions.InnerClassName.Should().Be("test1");
 		fileOptions.InnerClassInstanceName.Should().Be("test2");
@@ -228,7 +281,7 @@ public class SettingsTests
 		fileOptions.UseVocaDbResManager.Should().Be(true);
 		fileOptions.LocalNamespace.Should().Be("namespace1");
 		fileOptions.CustomToolNamespace.Should().Be("ns1");
-		fileOptions.File.Path.Should().Be("Path1.resx");
+		fileOptions.GroupedFile.MainFile.File.Path.Should().Be("Path1.resx");
 		fileOptions.ClassName.Should().Be("Path1");
 	}
 
@@ -258,15 +311,14 @@ public class SettingsTests
 		);
 		var fileOptions = FileOptions.Select(
 			file: new(
-				mainFile: new AdditionalTextStub("Path1.resx"),
-				subFiles: Array.Empty<AdditionalText>()
+				mainFile: new AdditionalTextWithHash(new AdditionalTextStub("Path1.resx"), Guid.NewGuid()),
+				subFiles: Array.Empty<AdditionalTextWithHash>()
 			),
 			options: new AnalyzerConfigOptionsProviderStub(
 				globalOptions: null!,
 				fileOptions: new AnalyzerConfigOptionsStub()
 			),
-			globalOptions: globalOptions,
-			token: default
+			globalOptions: globalOptions
 		);
 		fileOptions.InnerClassName.Should().Be("test1");
 		fileOptions.InnerClassInstanceName.Should().Be("test2");
@@ -280,7 +332,7 @@ public class SettingsTests
 		fileOptions.UseVocaDbResManager.Should().Be(false);
 		fileOptions.LocalNamespace.Should().Be("namespace1");
 		fileOptions.CustomToolNamespace.Should().BeNullOrEmpty();
-		fileOptions.File.Path.Should().Be("Path1.resx");
+		fileOptions.GroupedFile.MainFile.File.Path.Should().Be("Path1.resx");
 		fileOptions.ClassName.Should().Be("Path1test3");
 		fileOptions.IsValid.Should().Be(true);
 	}

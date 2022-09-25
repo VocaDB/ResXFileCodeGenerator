@@ -103,8 +103,8 @@ namespace VocaDb.ResXFileCodeGenerator
 		}
 
 		private static string FunctionNamePostFix(
-			IReadOnlyList<(string Name, int LCID, AdditionalText File)> definedLanguages
-		) => string.Join("_", definedLanguages.Select(x => x.LCID));
+			IReadOnlyList<(string Name, int LCID, AdditionalTextWithHash FileWithHash)>? definedLanguages
+		) => string.Join("_", definedLanguages?.Select(x => x.LCID) ?? Array.Empty<int>());
 
 		private static void AppendCodeUsings(StringBuilder builder)
 		{
@@ -122,13 +122,13 @@ namespace VocaDb.ResXFileCodeGenerator
 			CancellationToken cancellationToken
 		)
 		{
-			var combo = new CultureInfoCombo(options.SubFiles);
+			var combo = new CultureInfoCombo(options.GroupedFile.SubFiles);
 			var definedLanguages = combo.GetDefinedLanguages();
 
 			var fallback = ReadResxFile(content);
 			var subfiles = definedLanguages.Select(lang =>
 			{
-				var subcontent = lang.File.GetText(cancellationToken);
+				var subcontent = lang.FileWithHash.File.GetText(cancellationToken);
 				return subcontent is null
 					? null
 					: ReadResxFile(subcontent)?
@@ -137,7 +137,7 @@ namespace VocaDb.ResXFileCodeGenerator
 			}).ToList();
 			if (fallback is null || subfiles.Any(x => x is null))
 			{
-				builder.AppendFormat("//could not read {0} or one of its children", options.File.Path);
+				builder.AppendFormat("//could not read {0} or one of its children", options.GroupedFile.MainFile.File.Path);
 				return;
 			}
 
@@ -171,7 +171,7 @@ namespace VocaDb.ResXFileCodeGenerator
 				foreach (var xml in subfiles)
 				{
 					builder.Append(", ");
-					if (!xml.TryGetValue(key, out var langValue))
+					if (!xml!.TryGetValue(key, out var langValue))
 						langValue = value;
 					builder.Append(SymbolDisplay.FormatLiteral(langValue, true));
 				}
@@ -179,34 +179,5 @@ namespace VocaDb.ResXFileCodeGenerator
 				builder.AppendLine(");");
 			}
 		}
-	}
-}
-
-namespace Resources{
-	using static VocaDb.ResXFileCodeGenerator.Helpers;
-public static class ActivityEntrySortRuleNames
-{
-
-	/// <summary>
-	/// Looks up a localized string similar to Oldest.
-	/// </summary>
-	public static string? CreateDate => GetString_1030_6("Oldest", "OldestDaDK", "OldestDa");
-
-	/// <summary>
-	/// Looks up a localized string similar to Newest.
-	/// </summary>
-	public static string? CreateDateDescending => GetString_1030_6("Newest", "NewestDaDK", "NewestDa");
-}
-}
-
-namespace VocaDb.ResXFileCodeGenerator
-{
-	internal static class Helpers
-	{
-		public static string GetString_1030_6(params string[] p)
-		{
-			throw new NotImplementedException();
-		}
-
 	}
 }
