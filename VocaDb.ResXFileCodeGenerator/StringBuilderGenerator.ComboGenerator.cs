@@ -62,7 +62,7 @@ namespace VocaDb.ResXFileCodeGenerator
 			builder.Append(Constants.SystemGlobalization);
 			builder.AppendLineLF(".CultureInfo.CurrentUICulture.LCID switch");
 			builder.AppendLineLF("    {");
-			HashSet<int> already = new HashSet<int>();
+			var already = new HashSet<int>();
 			foreach (var (name, lcid, _) in definedLanguages)
 			{
 				static IEnumerable<int> FindParents(int toFind)
@@ -141,7 +141,7 @@ namespace VocaDb.ResXFileCodeGenerator
 				return;
 			}
 
-			HashSet<string> alreadyAddedMembers = new HashSet<string>();
+			var alreadyAddedMembers = new HashSet<string>();
 			foreach (var (key, value, line) in fallback)
 			{
 				cancellationToken.ThrowIfCancellationRequested();
