@@ -147,8 +147,11 @@ public sealed partial class StringBuilderGenerator : IGenerator
 			return element
 				.Descendants()
 				.Where(static data => data.Name == "data")
-				.Select(static data => (data.Attribute("name")!.Value, data.Descendants("value").First().Value,
-					(IXmlLineInfo)data.Attribute("name")!));
+				.Select(static data => (
+					key: data.Attribute("name")!.Value,
+					value: data.Descendants("value").First().Value,
+					line: (IXmlLineInfo)data.Attribute("name")!
+				));
 
 		return null;
 	}
@@ -191,15 +194,19 @@ public sealed partial class StringBuilderGenerator : IGenerator
 
 		if (!alreadyAddedMembers.Add(memberName))
 		{
-			errorsAndWarnings.Add(Diagnostic.Create(s_duplicateWarning, GetMemberLocation(options, line, memberName),
-				memberName));
+			errorsAndWarnings.Add(Diagnostic.Create(
+				descriptor: s_duplicateWarning,
+				location: GetMemberLocation(options, line, memberName), memberName
+			));
 			return false;
 		}
 
 		if (memberName == containerclassname)
 		{
-			errorsAndWarnings.Add(Diagnostic.Create(s_memberSameAsClassWarning,
-				GetMemberLocation(options, line, memberName), memberName));
+			errorsAndWarnings.Add(Diagnostic.Create(
+				descriptor: s_memberSameAsClassWarning,
+				location: GetMemberLocation(options, line, memberName), memberName
+			));
 			return false;
 		}
 

@@ -122,11 +122,13 @@ public class SettingsTests
 	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\Path1.resx", "", "_8_project", "_8_project.Path1")]
 	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\SubFolder\Path1.resx", null, "SubFolder", "SubFolder.Path1")]
 	[InlineData(@"ProjectFolder\8 project.csproj", @"ProjectFolder\SubFolder\Path1.resx", "", "SubFolder", "SubFolder.Path1")]
-	public void FileSettings_RespectsEmptyRootNamespace(string msBuildProjectFullPath,
+	public void FileSettings_RespectsEmptyRootNamespace(
+		string msBuildProjectFullPath,
 		string mainFile,
 		string rootNamespace,
 		string expectedLocalNamespace,
-		string expectedEmbeddedFilename)
+		string expectedEmbeddedFilename
+	)
 	{
 		var fileOptions = FileOptions.Select(
 			file: new GroupedAdditionalFile(

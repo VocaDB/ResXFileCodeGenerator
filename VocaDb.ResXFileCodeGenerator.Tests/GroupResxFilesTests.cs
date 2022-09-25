@@ -125,7 +125,7 @@ public class GroupResxFilesTests
 		(@"D:\src\xhg\y\Areas\QxModule\QtrController.nl.resx", Parse("00000000-0000-0000-0000-000000000023")),
 		(@"D:\src\xhg\y\Areas\QxModule\QtrController.nn-no.resx", Parse("00000000-0000-0000-0000-000000000024")),
 		(@"D:\src\xhg\y\Areas\QxModule\QtrController.pl.resx", Parse("00000000-0000-0000-0000-000000000025")),
-		( @"D:\src\xhg\y\Areas\QxModule\QtrController.resx", Parse("00000000-0000-0000-0000-000000000026")),
+		(@"D:\src\xhg\y\Areas\QxModule\QtrController.resx", Parse("00000000-0000-0000-0000-000000000026")),
 		(@"D:\src\xhg\y\Areas\QxModule\QtrController.ru.resx", Parse("00000000-0000-0000-0000-000000000027")),
 		(@"D:\src\xhg\y\Areas\QxModule\QtrController.sv.resx", Parse("00000000-0000-0000-0000-000000000028")),
 		(@"D:\src\xhg\y\Areas\QxModule\QtrController.tr.resx", Parse("00000000-0000-0000-0000-000000000029")),

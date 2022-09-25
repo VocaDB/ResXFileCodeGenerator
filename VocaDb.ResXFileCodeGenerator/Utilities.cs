@@ -56,8 +56,13 @@ public static class Utilities
 
 	// Code from: https://github.com/dotnet/ResXResourceManager/blob/c8b5798d760f202a1842a74191e6010c6e8bbbc0/src/ResXManager.VSIX/Visuals/MoveToResourceViewModel.cs#L120
 
-	public static string GetLocalNamespace(string? resxPath, string? targetPath, string projectPath, string projectName,
-		string? rootNamespace)
+	public static string GetLocalNamespace(
+		string? resxPath,
+		string? targetPath,
+		string projectPath,
+		string projectName,
+		string? rootNamespace
+	)
 	{
 		try
 		{
