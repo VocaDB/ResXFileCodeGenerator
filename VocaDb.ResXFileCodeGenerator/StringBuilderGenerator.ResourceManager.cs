@@ -78,20 +78,20 @@ public sealed partial class StringBuilderGenerator : IGenerator
 		builder.Append(Constants.CultureInfoVariable);
 		builder.Append(")");
 		builder.Append(options.NullForgivingOperators ? "!" : null);
-		builder.AppendLine(";");
+		builder.AppendLineLF(";");
 	}
 
 	private static void AppendResourceManagerUsings(StringBuilder builder)
 	{
 		builder.Append("using ");
 		builder.Append(Constants.SystemGlobalization);
-		builder.AppendLine(";");
+		builder.AppendLineLF(";");
 
 		builder.Append("using ");
 		builder.Append(Constants.SystemResources);
-		builder.AppendLine(";");
+		builder.AppendLineLF(";");
 
-		builder.AppendLine();
+		builder.AppendLineLF();
 	}
 
 	private static void GenerateResourceManagerMembers(
@@ -106,7 +106,7 @@ public sealed partial class StringBuilderGenerator : IGenerator
 		builder.Append(nameof(ResourceManager));
 		builder.Append("? ");
 		builder.Append(Constants.s_resourceManagerVariable);
-		builder.AppendLine(";");
+		builder.AppendLineLF(";");
 
 		builder.Append(indent);
 		builder.Append("public static ");
@@ -121,7 +121,7 @@ public sealed partial class StringBuilderGenerator : IGenerator
 		builder.Append(options.EmbeddedFilename);
 		builder.Append("\", typeof(");
 		builder.Append(containerClassName);
-		builder.AppendLine(").Assembly);");
+		builder.AppendLineLF(").Assembly);");
 
 		builder.Append(indent);
 		builder.Append("public ");
@@ -129,6 +129,6 @@ public sealed partial class StringBuilderGenerator : IGenerator
 		builder.Append(nameof(CultureInfo));
 		builder.Append("? ");
 		builder.Append(Constants.CultureInfoVariable);
-		builder.AppendLine(" { get; set; }");
+		builder.AppendLineLF(" { get; set; }");
 	}
 }

@@ -44,8 +44,8 @@ namespace VocaDb.ResXFileCodeGenerator
 			var definedLanguages = combo.GetDefinedLanguages();
 			var builder = GetBuilder("VocaDb.ResXFileCodeGenerator");
 
-			builder.AppendLine("internal static partial class Helpers");
-			builder.AppendLine("{");
+			builder.AppendLineLF("internal static partial class Helpers");
+			builder.AppendLineLF("{");
 
 			builder.Append("    public static string GetString_");
 			var functionNamePostFix = FunctionNamePostFix(definedLanguages);
@@ -60,8 +60,8 @@ namespace VocaDb.ResXFileCodeGenerator
 
 			builder.Append(") => ");
 			builder.Append(Constants.SystemGlobalization);
-			builder.AppendLine(".CultureInfo.CurrentUICulture.LCID switch");
-			builder.AppendLine("    {");
+			builder.AppendLineLF(".CultureInfo.CurrentUICulture.LCID switch");
+			builder.AppendLineLF("    {");
 			HashSet<int> already = new();
 			foreach (var (name, lcid, _) in definedLanguages)
 			{
@@ -87,13 +87,13 @@ namespace VocaDb.ResXFileCodeGenerator
 					builder.Append(parent);
 					builder.Append(" => ");
 					builder.Append(name.Replace('-', '_'));
-					builder.AppendLine(",");
+					builder.AppendLineLF(",");
 				}
 			}
 
-			builder.AppendLine("        _ => fallback");
-			builder.AppendLine("    };");
-			builder.AppendLine("}");
+			builder.AppendLineLF("        _ => fallback");
+			builder.AppendLineLF("    };");
+			builder.AppendLineLF("}");
 
 			return (
 				GeneratedFileName: "VocaDb.ResXFileCodeGenerator." + functionNamePostFix + ".g.cs",
@@ -108,8 +108,8 @@ namespace VocaDb.ResXFileCodeGenerator
 
 		private static void AppendCodeUsings(StringBuilder builder)
 		{
-			builder.AppendLine("using static VocaDb.ResXFileCodeGenerator.Helpers;");
-			builder.AppendLine();
+			builder.AppendLineLF("using static VocaDb.ResXFileCodeGenerator.Helpers;");
+			builder.AppendLineLF();
 		}
 
 		private void GenerateCode(
@@ -176,7 +176,7 @@ namespace VocaDb.ResXFileCodeGenerator
 					builder.Append(SymbolDisplay.FormatLiteral(langValue, true));
 				}
 
-				builder.AppendLine(");");
+				builder.AppendLineLF(");");
 			}
 		}
 	}
