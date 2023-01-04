@@ -62,23 +62,46 @@ public sealed partial class StringBuilderGenerator : IGenerator
 			return;
 		}
 
-		if (resourceAccessByName)
+		var numParams = value.Count(c => c == '{');
+
+		if (numParams == 0)
 		{
-			builder.Append(" => ResourceManager.GetString(nameof(");
-			builder.Append(name);
-			builder.Append("), ");
+			if (resourceAccessByName)
+			{
+				builder.Append(" => ResourceManager.GetString(nameof(");
+				builder.Append(name);
+				builder.Append("), ");
+			}
+			else
+			{
+				builder.Append(@" => ResourceManager.GetString(""");
+				builder.Append(name.Replace(@"""", @"\"""));
+				builder.Append(@""", ");
+			}
+
+			builder.Append(Constants.CultureInfoVariable);
+			builder.Append(")");
+			builder.Append(options.NullForgivingOperators ? "!" : null);
+			builder.AppendLineLF(";");
 		}
 		else
 		{
-			builder.Append(@" => ResourceManager.GetString(""");
-			builder.Append(name.Replace(@"""", @"\"""));
-			builder.Append(@""", ");
+			builder.Append($"=> String.Format(CultureInfo, ResourceManager.GetString(\"{name}\", CultureInfo), ");
+			for (int param = 0; param < numParams; param++)
+			{
+				if (param != numParams - 1)
+				{
+					builder.Append($"param{param}, ");
+				}
+				else
+				{
+					builder.Append($"param{param}");
+				}
+			}
+			builder.AppendLineLF(");");
 		}
 
-		builder.Append(Constants.CultureInfoVariable);
-		builder.Append(")");
-		builder.Append(options.NullForgivingOperators ? "!" : null);
-		builder.AppendLineLF(";");
+		
 	}
 
 	private static void AppendResourceManagerUsings(StringBuilder builder)

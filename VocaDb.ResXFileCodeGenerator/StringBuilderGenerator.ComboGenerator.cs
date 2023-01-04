@@ -163,20 +163,42 @@ namespace VocaDb.ResXFileCodeGenerator
 					continue;
 				}
 
-				builder.Append(" => GetString_");
-				builder.Append(FunctionNamePostFix(definedLanguages));
-				builder.Append("(");
-				builder.Append(SymbolDisplay.FormatLiteral(value, true));
+				var numParams = value.Count(c => c == '{');
 
-				foreach (var xml in subfiles)
+				if (numParams == 0)
 				{
-					builder.Append(", ");
-					if (!xml!.TryGetValue(key, out var langValue))
-						langValue = value;
-					builder.Append(SymbolDisplay.FormatLiteral(langValue, true));
-				}
+					builder.Append(" => GetString_");
+					builder.Append(FunctionNamePostFix(definedLanguages));
+					builder.Append("(");
+					builder.Append(SymbolDisplay.FormatLiteral(value, true));
 
-				builder.AppendLineLF(");");
+					foreach (var xml in subfiles)
+					{
+						builder.Append(", ");
+						if (!xml!.TryGetValue(key, out var langValue))
+							langValue = value;
+						builder.Append(SymbolDisplay.FormatLiteral(langValue, true));
+					}
+
+					builder.AppendLineLF(");");
+				}
+				else
+				{
+					builder.Append($"=> String.Format(CultureInfo, ResourceManager.GetString(\"{FunctionNamePostFix(definedLanguages)}\", CultureInfo), ");
+					for (int param = 0; param < numParams; param++)
+					{
+						if (param != numParams - 1)
+						{
+							builder.Append($"param{param}, ");
+						}
+						else
+						{
+							builder.Append($"param{param}");
+						}
+					}
+					builder.AppendLineLF(");");
+				}
+				
 			}
 		}
 	}

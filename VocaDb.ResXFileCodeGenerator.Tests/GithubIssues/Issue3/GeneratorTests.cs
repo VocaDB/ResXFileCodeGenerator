@@ -70,8 +70,8 @@ public class GeneratorTests
   <resheader name=""writer"">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name=""Invalid identifier {0}"" xml:space=""preserve"">
-    <value>String '{0}' is not a valid identifier.</value>
+  <data name=""1InvalidId"" xml:space=""preserve"">
+    <value>Identifier cannot start with a number.</value>
   </data>
 </root>";
 
@@ -95,9 +95,9 @@ public static class CommonMessages
     public static CultureInfo? CultureInfo { get; set; }
 
     /// <summary>
-    /// Looks up a localized string similar to String &#39;{0}&#39; is not a valid identifier..
+    /// Looks up a localized string similar to Identifier cannot start with a number..
     /// </summary>
-    public static string? Invalid_identifier__0_ => ResourceManager.GetString(""Invalid identifier {0}"", CultureInfo);
+    public static string? _1InvalidId => ResourceManager.GetString(""1InvalidId"", CultureInfo);
 }
 ";
 		var generator = new StringBuilderGenerator();

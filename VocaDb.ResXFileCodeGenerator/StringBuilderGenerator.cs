@@ -20,6 +20,12 @@ public sealed partial class StringBuilderGenerator : IGenerator
 		options: RegexOptions.Compiled | RegexOptions.CultureInvariant
 	);
 
+	private static readonly Regex s_validMemberNameRegex = new(
+		pattern: @"[^[a-zA-Z_$][a-zA-Z_$0-9]*$]",
+		options: RegexOptions.Compiled | RegexOptions.CultureInvariant
+	);
+
+
 	private static readonly DiagnosticDescriptor s_duplicateWarning = new(
 		id: "VocaDbResXFileCodeGenerator001",
 		title: "Duplicate member",
@@ -178,7 +184,14 @@ public sealed partial class StringBuilderGenerator : IGenerator
 		}
 		else
 		{
-			memberName = s_invalidMemberNameSymbols.Replace(name, "_");
+			if (!s_validMemberNameRegex.IsMatch(name))
+			{
+				memberName = "_" + name;
+			}
+			else
+			{
+				memberName = s_invalidMemberNameSymbols.Replace(name, "_");
+			}
 			resourceAccessByName = false;
 		}
 
@@ -224,14 +237,44 @@ public sealed partial class StringBuilderGenerator : IGenerator
 		builder.Append(indent);
 		builder.AppendLineLF("/// </summary>");
 
-		builder.Append(indent);
-		builder.Append("public ");
-		builder.Append(options.StaticMembers ? "static " : string.Empty);
-		builder.Append("string");
-		builder.Append(options.NullForgivingOperators ? null : "?");
-		builder.Append(" ");
-		builder.Append(memberName);
-		return true;
+		var numParams = neutralValue.Count(c => c == '{');
+
+		if (numParams == 0)
+		{
+			builder.Append(indent);
+			builder.Append("public ");
+			builder.Append(options.StaticMembers ? "static " : string.Empty);
+			builder.Append("string");
+			builder.Append(options.NullForgivingOperators ? null : "?");
+			builder.Append(" ");
+			builder.Append(memberName);
+			return true;
+		}
+		else
+		{
+			builder.Append(indent);
+			builder.Append("public ");
+			builder.Append(options.StaticMembers ? "static " : string.Empty);
+			builder.Append("string");
+			builder.Append(options.NullForgivingOperators ? null : "?");
+			builder.Append(" ");
+			builder.Append(memberName);
+			builder.Append("(");
+			for (int param = 0; param < numParams; param++)
+			{
+				if (param != numParams - 1)
+				{
+					builder.Append($"string param{param}, ");
+				}
+				else
+				{
+					builder.Append($"string param{param}");
+				}
+			}
+			builder.Append(")");
+			return true;
+		}
+		
 	}
 
 	private static StringBuilder GetBuilder(string withnamespace)
