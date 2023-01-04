@@ -8,7 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <Import Project="../VocaDb.ResXFileCodeGenerator/build/VocaDb.ResXFileCodeGenerator.props"/>
+  <Import Project="../VocaDb.ResXFileCodeGenerator/build/VocaDb.ResXFileCodeGenerator.props" />
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
@@ -34,6 +34,12 @@
 	  </EmbeddedResource>
     <EmbeddedResource Update="IntegrationTests\Test2.resx">
 	    <UseVocaDbResManager>true</UseVocaDbResManager>
+    </EmbeddedResource>
+    <EmbeddedResource Update="IntegrationTests\Test3.da-dk.resx">
+      <Generator>ResXFileCodeGeneratorEx</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="IntegrationTests\Test3.resx">
+      <Generator></Generator>
     </EmbeddedResource>
   </ItemGroup>
 

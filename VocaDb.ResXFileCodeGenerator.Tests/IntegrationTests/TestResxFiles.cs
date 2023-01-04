@@ -35,4 +35,14 @@ public class TestResxFiles
 		Test2.CreateDate.Should().Be("OldestDaDK");
 	}
 
+
+	[Fact]
+	public void TestCodeGenOnStaticMethods()
+	{
+		Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-us");
+		Test3.HttpError("404","Not Found","Order 123").Should().Be("ErrorCode:404 , ErrorDesc:Not Found , ResourceId:Order 123");
+		Thread.CurrentThread.CurrentUICulture = new CultureInfo("da-dk");
+		Test3.HttpError("404", "Not Found", "Order 123").Should().Be("ErrorCodeDaDk:404 , ErrorDescDaDk:Not Found , ResourceIdDaDk:Order 123");
+	}
+
 }
