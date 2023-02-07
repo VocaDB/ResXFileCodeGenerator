@@ -62,7 +62,7 @@ public sealed partial class StringBuilderGenerator : IGenerator
 			return;
 		}
 
-		var numParams = value.Count(c => c == '{');
+		var numParams = GetNumberOfParams(value);
 
 		if (numParams == 0)
 		{

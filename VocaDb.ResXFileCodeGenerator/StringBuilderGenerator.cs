@@ -237,7 +237,7 @@ public sealed partial class StringBuilderGenerator : IGenerator
 		builder.Append(indent);
 		builder.AppendLineLF("/// </summary>");
 
-		var numParams = neutralValue.Count(c => c == '{');
+		var numParams = GetNumberOfParams(neutralValue);
 
 		if (numParams == 0)
 		{
@@ -264,11 +264,11 @@ public sealed partial class StringBuilderGenerator : IGenerator
 			{
 				if (param != numParams - 1)
 				{
-					builder.Append($"string param{param}, ");
+					builder.Append($"object param{param}, ");
 				}
 				else
 				{
-					builder.Append($"string param{param}");
+					builder.Append($"object param{param}");
 				}
 			}
 			builder.Append(")");

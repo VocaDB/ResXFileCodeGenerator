@@ -105,12 +105,12 @@ public static class CommonMessages
     /// <summary>
     /// Looks up a localized string similar to Parameter1:{0},Parameter2:{1}.
     /// </summary>
-    public static string? Method1WithTwoParams(string param0, string param1)=> String.Format(CultureInfo, ResourceManager.GetString(""Method1WithTwoParams"", CultureInfo), param0, param1);
+    public static string? Method1WithTwoParams(object param0, object param1)=> String.Format(CultureInfo, ResourceManager.GetString(""Method1WithTwoParams"", CultureInfo), param0, param1);
 
     /// <summary>
     /// Looks up a localized string similar to Parameter1:{0},Parameter2:{1},Parameter3{2}.
     /// </summary>
-    public static string? Method2WithThreeParams(string param0, string param1, string param2)=> String.Format(CultureInfo, ResourceManager.GetString(""Method2WithThreeParams"", CultureInfo), param0, param1, param2);
+    public static string? Method2WithThreeParams(object param0, object param1, object param2)=> String.Format(CultureInfo, ResourceManager.GetString(""Method2WithThreeParams"", CultureInfo), param0, param1, param2);
 
     /// <summary>
     /// Looks up a localized string similar to Plain property with no params.

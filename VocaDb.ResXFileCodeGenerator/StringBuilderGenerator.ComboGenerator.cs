@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
@@ -163,7 +164,7 @@ namespace VocaDb.ResXFileCodeGenerator
 					continue;
 				}
 
-				var numParams = value.Count(c => c == '{');
+				var numParams = GetNumberOfParams(value);
 
 				if (numParams == 0)
 				{
@@ -201,5 +202,19 @@ namespace VocaDb.ResXFileCodeGenerator
 				
 			}
 		}
+
+		internal static int GetNumberOfParams(string value)
+		{
+			var matchs = Regex.Matches(value, @"\{(\d+)\}");
+			HashSet<int> validArgs = new HashSet<int>();
+			foreach (Match item in matchs)
+			{
+				var intStr = item.Value.Clip(1, item.Value.Length - 1);
+				var validInt = Int32.Parse(intStr);
+				validArgs.Add(validInt);
+			}
+			return matchs.Count;
+		}
+	
 	}
 }
